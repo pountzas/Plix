@@ -1,4 +1,4 @@
-This is [Plix] a clone project of [Plex](https://www.plex.com/) created with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is **Plix** a clone project of [Plex](https://www.plex.com/) created with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Status
 
