@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { VscMenu } from 'react-icons/vsc';
-import { FiActivity, FiTool } from 'react-icons/fi';
+import { FiActivity, FiTool, FiCast } from 'react-icons/fi';
 
 function Header() {
   return (
@@ -27,10 +27,13 @@ function Header() {
             GO PREMIUM
           </button>
           <div>
-            <FiActivity className='inline-block mr-4 text-2xl' />
+            <FiActivity className='mr-4 text-3xl text-gray-400' />
           </div>
           <div>
-            <FiTool className='inline-block mr-4 text-2xl' />
+            <FiTool className='mr-4 text-3xl text-gray-400' />
+          </div>
+          <div>
+            <FiCast className='mr-4 text-3xl text-gray-400' />
           </div>
         </div>
       </div>
