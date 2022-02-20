@@ -1,11 +1,17 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from '../styles/Home.module.css';
 
 export default function Home() {
   return (
     <div>
-      <h1>Plix</h1>
+      <Head>
+        <title>Plix</title>
+        <meta name='Plix' content='next app' />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+      <div className='flex justify-center items-center'>
+        <h1>Plix</h1>
+      </div>
     </div>
   );
 }
