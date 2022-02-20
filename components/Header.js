@@ -4,7 +4,7 @@ import { VscMenu } from 'react-icons/vsc';
 function Header() {
   return (
     <header>
-      <div className='bg-[#232B35] my-3 mx-2 rounded-md p-3 text-white font-semibold'>
+      <div className='bg-[#232B35] my-3 mx-2 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
         <div className='flex justify-start items-center'>
           <VscMenu className='inline-block mr-8 text-2xl' />
           <Image
@@ -20,6 +20,11 @@ function Header() {
             name='search'
             id=''
           />
+        </div>
+        <div>
+          <button className='bg-[#e5a00d] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
+            GO PREMIUM
+          </button>
         </div>
       </div>
     </header>
