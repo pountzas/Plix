@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { VscMenu } from 'react-icons/vsc';
+import { FiActivity } from 'react-icons/fi';
 
 function Header() {
   return (
@@ -21,10 +22,13 @@ function Header() {
             id=''
           />
         </div>
-        <div>
-          <button className='bg-[#e5a00d] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
+        <div className='flex justify-start items-center space-x-4'>
+          <button className='bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
             GO PREMIUM
           </button>
+          <div>
+            <FiActivity className='inline-block mr-4 text-2xl' />
+          </div>
         </div>
       </div>
     </header>
