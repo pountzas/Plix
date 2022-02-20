@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div>
+    <div className='min-h-screen bg-gradient-to-l from-[#313C4A] to-[#323C46]'>
       <Head>
         <title>Plix</title>
         <meta name='Plix' content='next app' />
