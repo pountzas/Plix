@@ -27,7 +27,7 @@ function Header() {
           </div>
         </div>
         <div className='flex justify-start items-center space-x-4'>
-          <button className='bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
+          <button className='hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
             GO PREMIUM
           </button>
           <div>
