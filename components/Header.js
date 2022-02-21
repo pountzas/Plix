@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { VscMenu } from 'react-icons/vsc';
 import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
+import { BsPersonCircle } from 'react-icons/bs';
 
 function Header() {
   return (
@@ -40,7 +41,7 @@ function Header() {
             <FiCast className='mr-4 text-3xl text-gray-400' />
           </div>
           <div>
-            <p className='px-2 py-1 rounded-full text-xl bg-red-800'>N</p>
+            <BsPersonCircle className='mr-4 text-3xl text-gray-200' />
           </div>
         </div>
       </div>
