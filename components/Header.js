@@ -35,6 +35,9 @@ function Header() {
           <div>
             <FiCast className='mr-4 text-3xl text-gray-400' />
           </div>
+          <div>
+            <p className='px-2 py-1 rounded-full text-xl bg-red-800'>N</p>
+          </div>
         </div>
       </div>
     </header>
