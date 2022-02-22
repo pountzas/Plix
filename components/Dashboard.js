@@ -1,5 +1,11 @@
+import Menu from './Menu';
+
 function Dashboard() {
-  return <div>Dashboard</div>;
+  return (
+    <div>
+      <Menu />
+    </div>
+  );
 }
 
 export default Dashboard;
