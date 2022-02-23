@@ -1,5 +1,6 @@
 import { CgHome } from 'react-icons/cg';
 import { BsFilm } from 'react-icons/bs';
+import { MdMonitor } from 'react-icons/md';
 
 function Menu() {
   return (
@@ -11,6 +12,10 @@ function Menu() {
       <div className='flex items-center space-x-4 pl-[2px] text-gray-300 text-xl'>
         <BsFilm />
         <p>Movies</p>
+      </div>
+      <div className='flex items-center space-x-4 text-gray-300 text-xl'>
+        <MdMonitor className='text-2xl' />
+        <p>TV Shows</p>
       </div>
     </section>
   );
