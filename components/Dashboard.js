@@ -3,7 +3,7 @@ import Menu from './Menu';
 
 function Dashboard() {
   return (
-    <div>
+    <div className='flex'>
       <Menu />
       <Feed />
     </div>
