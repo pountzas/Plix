@@ -6,7 +6,7 @@ import { BsPersonCircle } from 'react-icons/bs';
 function Header() {
   return (
     <header>
-      <div className='bg-[#232B35] my-3 mx-2 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
+      <div className='bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
         <div className='flex justify-start items-center'>
           <VscMenu className='inline-block mr-8 text-2xl text-gray-400' />
           <Image
