@@ -4,7 +4,7 @@ import { MdMonitor } from 'react-icons/md';
 
 function Menu() {
   return (
-    <section className='bg-[#232B35] space-y-3 my-3 mx-2 rounded-md p-3 max-w-xs'>
+    <section className='bg-[#232B35] space-y-3 my-3 mx-3 rounded-md p-3 max-w-xs min-h-[90vh]'>
       <div className='flex items-center space-x-4 text-gray-300 text-xl'>
         <CgHome className='text-2xl' />
         <p>Home</p>
