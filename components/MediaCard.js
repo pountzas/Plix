@@ -1,21 +1,23 @@
 import Image from 'next/image';
-import { GrCirclePlay } from 'react-icons/gr';
-import { GoPlay } from 'react-icons/go';
+
+import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
 
 function MediaCard() {
   return (
     <div className='pb-12'>
-      <div className='pb-2'>
-        <GrCirclePlay className='relative top-28 left-12 z-10 text-4xl text-gray-600' />
+      <div className='pb-2 group-hover:opacity-100'>
+        <div className=' text-5xl text-gray-400'>
+          <BsPlayCircle className='relative top-32 left-10 z-10' />
+        </div>
         <Image
-          className='absolute opacity-90 rounded-md'
+          className='absolute hover:opacity-50 rounded-md'
           src='https://www.themoviedb.org/t/p/w220_and_h330_face/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg'
           alt=''
           width='130px'
           height='195px'
         />
       </div>
-      <h2>Movie Title</h2>
+      <h3 className='text-sm'>Movie Title</h3>
     </div>
   );
 }
