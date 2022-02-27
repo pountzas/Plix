@@ -4,7 +4,7 @@ import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
 
 function MediaCard() {
   return (
-    <div className='pb-12'>
+    <div className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400'>
           <BsPlayCircle className='relative top-32 left-10 z-10' />
