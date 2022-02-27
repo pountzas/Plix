@@ -13,8 +13,26 @@ function Feed() {
           </div>
         </div>
       </div>
-      <h3>Latest Movies</h3>
-      <MediaCard />
+      <div className='pt-9'>
+        <h3>Latest Movies</h3>
+        <div className='pl-3 flex space-x-5 overflow-x-scroll scrollbar-hide  '>
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+          <MediaCard />
+        </div>
+      </div>
       <h3>Latest TV Shows</h3>
       <MediaCard />
     </section>
