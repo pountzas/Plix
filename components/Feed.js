@@ -3,7 +3,7 @@ import MediaCard from './MediaCard';
 
 function Feed() {
   return (
-    <section className='border p-3 mb-3 rounded-md text-2xl text-gray-300'>
+    <section className='max-w-[110rem] p-3 mb-3 mr-3 rounded-md text-2xl text-gray-300'>
       <div>
         <div className='flex justify-between items-center'>
           <h2>Home</h2>
