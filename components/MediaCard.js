@@ -8,6 +8,7 @@ function MediaCard() {
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400'>
           <BsPlayCircle className='relative top-32 left-10 z-10' />
+          <BsPlayCircleFill className='relative hidden top-32 left-10 z-10' />
         </div>
         <Image
           className='absolute hover:opacity-50 rounded-md'
