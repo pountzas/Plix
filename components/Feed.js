@@ -15,7 +15,7 @@ function Feed() {
       </div>
       <div className='pt-9'>
         <h3>Latest Movies</h3>
-        <div className='pl-3 flex space-x-5 overflow-x-scroll scrollbar-hide  '>
+        <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
           <MediaCard />
           <MediaCard />
           <MediaCard />
@@ -35,7 +35,7 @@ function Feed() {
       </div>
       <div className='pt-9'>
         <h3>Latest TV Shows</h3>
-        <div className='pl-3 flex space-x-5 overflow-x-scroll scrollbar-hide  '>
+        <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
           <MediaCard />
           <MediaCard />
           <MediaCard />
