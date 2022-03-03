@@ -2,4 +2,13 @@ function signin() {
   return <div>signin</div>;
 }
 
-export default signin;
+// Server side render
+export async function getServerSideProps(context) {
+  const providers = await getProviders();
+
+  return {
+    props: {
+      providers,
+    },
+  };
+}
