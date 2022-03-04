@@ -1,8 +1,9 @@
+import Header from '../../components/Header';
+
 export default function SignIn({ providers }) {
   return (
     <>
-function signin() {
-  return <div>signin</div>;
+      <Header />
       <div className='flex flex-col items-center justify-center min-h-screen py-2 -mt56 px-14 text-center'>
         <p className='font-xs italic'>
           This is not a real App, it is built for educational purposes only.
