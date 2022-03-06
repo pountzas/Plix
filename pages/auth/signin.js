@@ -17,8 +17,14 @@ export default function SignIn({ providers }) {
           This is not a real App, it is built for educational purposes only.
         </p>
         {Object.values(providers).map((provider) => (
-          <div key={provider.name}>
-            <button onClick={() => signIn(provider.id)}>
+          <div
+            className='flex flex-col items-center space-y-3 pt-5'
+            key={provider.name}
+          >
+            <button
+              className='bg-gray-300 rounded-2xl m-2 p-2'
+              onClick={() => signIn(provider.id)}
+            >
               Sign in with {provider.name}
             </button>
           </div>
