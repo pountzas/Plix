@@ -3,6 +3,7 @@ import { VscMenu } from 'react-icons/vsc';
 import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
 import { BsPersonCircle } from 'react-icons/bs';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 function Header() {
   const { data: session } = useSession();
@@ -13,12 +14,16 @@ function Header() {
       <div className='bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
         <div className='flex justify-start items-center'>
           <VscMenu className='inline-block mr-8 text-2xl text-gray-400' />
-          <Image
-            src='/../public/plix-logo-w.png'
-            alt='logo'
-            height={20}
-            width={60}
-          />
+          <Link href='/' passHref>
+            <div>
+              <Image
+                src='/../public/plix-logo-w.png'
+                alt='logo'
+                height={20}
+                width={60}
+              />
+            </div>
+          </Link>
           <div className='flex items-center'>
             <div className='bg-[#333A44] px-2 ml-8 py-2 rounded-l-2xl'>
               <FiSearch className='ml-2 text-2xl text-gray-500' />
