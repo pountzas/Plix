@@ -2,8 +2,12 @@ import Image from 'next/image';
 import { VscMenu } from 'react-icons/vsc';
 import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
 import { BsPersonCircle } from 'react-icons/bs';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 function Header() {
+  const { data: session } = useSession();
+  console.log(session);
+
   return (
     <header>
       <div className='bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
@@ -28,9 +32,22 @@ function Header() {
           </div>
         </div>
         <div className='flex justify-start items-center space-x-4'>
-          <button className='hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
-            GO PREMIUM
-          </button>
+          {session ? (
+            <>
+              <button
+                onClick={signIn}
+                className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'
+              >
+                Sign in
+              </button>
+            </>
+          ) : (
+            <>
+              <button className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
+                GO PREMIUM
+              </button>
+            </>
+          )}
           <div>
             <FiActivity className='mr-4 text-3xl text-gray-400' />
           </div>
