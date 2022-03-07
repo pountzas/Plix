@@ -33,20 +33,16 @@ function Header() {
         </div>
         <div className='flex justify-start items-center space-x-4'>
           {session ? (
-            <>
-              <button
-                onClick={signIn}
-                className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'
-              >
-                Sign in
-              </button>
-            </>
+            <button className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
+              GO PREMIUM
+            </button>
           ) : (
-            <>
-              <button className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'>
-                GO PREMIUM
-              </button>
-            </>
+            <button
+              onClick={signIn}
+              className='cursor-pointer hidden lg:inline-block bg-[#CC7B19] rounded-md py-1 px-4 font-bold text-orange-200 text-xl'
+            >
+              Sign in
+            </button>
           )}
           <div>
             <FiActivity className='mr-4 text-3xl text-gray-400' />
