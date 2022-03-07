@@ -15,14 +15,12 @@ function Header() {
         <div className='flex justify-start items-center'>
           <VscMenu className='inline-block mr-8 text-2xl text-gray-400' />
           <Link href='/' passHref>
-            <div>
-              <Image
-                src='/../public/plix-logo-w.png'
-                alt='logo'
-                height={20}
-                width={60}
-              />
-            </div>
+            <Image
+              src='/../public/plix-logo-w.png'
+              alt='logo'
+              height={20}
+              width={60}
+            />
           </Link>
           <div className='flex items-center'>
             <div className='bg-[#333A44] px-2 ml-8 py-2 rounded-l-2xl'>
@@ -58,9 +56,20 @@ function Header() {
           <div>
             <FiCast className='mr-4 text-3xl text-gray-400' />
           </div>
-          <div>
+          {session ? (
+            <Link href='/' passHref>
+              <Image
+                onClick={signOut}
+                className='rounded-full mr-4'
+                src={session.user.image}
+                alt='logo'
+                height={30}
+                width={30}
+              />
+            </Link>
+          ) : (
             <BsPersonCircle className='mr-4 text-3xl text-gray-200' />
-          </div>
+          )}
         </div>
       </div>
     </header>
