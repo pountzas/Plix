@@ -23,7 +23,7 @@ export default function SignIn({ providers }) {
           >
             <button
               className='bg-gray-300 rounded-2xl m-2 p-2'
-              onClick={() => signIn(provider.id)}
+              onClick={() => signIn(provider.id, { callbackUrl: '/' })}
             >
               Sign in with {provider.name}
             </button>
@@ -36,7 +36,7 @@ export default function SignIn({ providers }) {
 
 // Server side render
 export async function getServerSideProps(context) {
-  const providers = await getProviders();
+  const providers = await getProviders(context);
 
   return {
     props: {
