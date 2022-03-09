@@ -9,6 +9,9 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 - NEXT.js
 - React.js
 - Tailwind-css
+- NextAuth
+- Firebase
+- React-Media
 
 ## Getting Started
 
