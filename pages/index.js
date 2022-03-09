@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Header from '../components/Header';
 import Dashboard from '../components/Dashboard';
+import MediaModal from '../components/MediaModal';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -26,6 +27,9 @@ export default function Home() {
       </Head>
       <Header />
       {session && <Dashboard />}
+
+      {/* MediaModal */}
+      <MediaModal />
     </div>
   );
 }
