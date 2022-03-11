@@ -8,8 +8,13 @@ import { modalState, menuSizeState } from '../atoms/modalAtom';
 function Menu() {
   const [open, setOpen] = useRecoilState(modalState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+
   return (
-    <section className='bg-[#232B35] space-y-3 mb-3 mx-3 rounded-md p-3 pr-48 min-h-[90vh]'>
+    <section
+      className={`space-y-4 mb-3 mx-3 rounded-md p-3 min-h-[90vh] ${
+        !menuSize && 'bg-[#232B35] pr-48'
+      }  `}
+    >
       <div className='flex flex-nowrap cursor-pointer items-center space-x-4 text-gray-300 text-xl'>
         <CgHome className='text-2xl' />
         {!menuSize && <p>Home</p>}
