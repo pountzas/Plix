@@ -11,29 +11,29 @@ function Menu() {
 
   return (
     <section
-      className={`space-y-4 mb-3 mx-3 rounded-md p-3 min-h-[90vh] ${
-        !menuSize && 'bg-[#232B35] pr-48'
+      className={`space-y-5 mb-3 mx-3 rounded-md p-3 min-h-[90vh] transition-all ease-in-out delay-200 ${
+        !menuSize && 'bg-[#232B35] !space-y-3 pr-48'
       }  `}
     >
-      <div className='flex flex-nowrap cursor-pointer items-center space-x-4 text-gray-300 text-xl'>
-        <CgHome className='text-2xl' />
+      <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
+        <CgHome className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>Home</p>}
       </div>
 
-      <div className='flex flex-nowrap cursor-pointer items-center space-x-4 pl-[2px] text-gray-300 text-xl'>
-        <BsFilm />
+      <div className='flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl'>
+        <BsFilm className={` mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>Movies</p>}
       </div>
-      <div className='flex flex-nowrap cursor-pointer items-center space-x-4 text-gray-300 text-xl'>
-        <MdMonitor className='text-2xl' />
+      <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
+        <MdMonitor className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>TV Shows</p>}
       </div>
 
       <div
         onClick={() => setOpen(true)}
-        className='flex flex-nowrap cursor-pointer items-center space-x-4 text-gray-300 text-xl'
+        className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'
       >
-        <AiFillFolderAdd />
+        <AiFillFolderAdd className={` mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>Add Media</p>}
       </div>
     </section>
