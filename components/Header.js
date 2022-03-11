@@ -4,16 +4,25 @@ import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
 import { BsPersonCircle } from 'react-icons/bs';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRecoilState } from 'recoil';
+import { menuSizeState } from '../atoms/modalAtom';
 
 function Header() {
   const { data: session } = useSession();
-  console.log(session);
+  const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+
+  const handleMenuSize = () => {
+    setMenuSize(!menuSize);
+  };
 
   return (
     <header>
       <div className='bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
         <div className='flex justify-start items-center'>
-          <VscMenu className='inline-block mr-8 text-2xl text-gray-400' />
+          <VscMenu
+            onClick={handleMenuSize}
+            className='inline-block mr-8 text-2xl text-gray-400'
+          />
           <Link href='/' passHref>
             <Image
               src='/../public/plix-logo-w.png'
