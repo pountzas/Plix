@@ -7,8 +7,8 @@ function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
 
   return (
-    <section className='p-3 mb-3 mr-3 rounded-md text-2xl text-gray-300'>
-      <div className='flex justify-between items-center'>
+    <section className='p-3 mr-3 rounded-md text-2xl text-gray-300'>
+      <div className='flex justify-between items-center mb-7'>
         <h2>Home</h2>
         <div className='flex items-center space-x-2 object-contain'>
           <p>bar</p>
