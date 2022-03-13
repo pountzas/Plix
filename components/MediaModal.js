@@ -12,13 +12,17 @@ function MediaModal() {
   return (
     <>
       {open && (
-        <div className='fixed z-10 inset-16 overflow-y-auto bg-black text-white max-h-[80vh] max-w-[80vw] rounded-xl '>
-          <div className='flex items-center justify-between pt-4 px-4 text-gray-300'>
+          {/* modal header  */}
             <h2>Add Media</h2>
             <button className='' onClick={handleClose}>
               <AiOutlineCloseCircle className='text-2xl' />
             </button>
           </div>
+          <div>
+            {/* modal menu */}
+            {/* modal menu options */}
+          </div>
+          <div>{/* modal buttons */}</div>
         </div>
       )}
     </>
