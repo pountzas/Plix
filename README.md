@@ -14,6 +14,7 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 - NextAuth
 - Firebase
 - React-Media
+- Recoil
 
 ## Getting Started
 
