@@ -6,9 +6,9 @@ function MediaCard() {
   return (
     <div className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
-        <div className=' text-5xl text-gray-400'>
+        <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
           <BsPlayCircle className='relative top-32 left-10 z-10' />
-          <BsPlayCircleFill className='relative hidden top-32 left-10 z-10' />
+          <BsPlayCircleFill className='relative hidden hover:inline-block top-32 left-10 z-10' />
         </div>
         <Image
           className='absolute hover:opacity-50 rounded-md'
