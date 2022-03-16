@@ -23,8 +23,13 @@ function MediaModal() {
               <AiOutlineCloseCircle className='text-2xl' />
             </button>
           </div>
-          <div>
+          <div className='flex gap-5 p-2'>
             {/* modal menu */}
+            <div className='space-y-6 min-w-[15vw] min-h-[40vh] p-4'>
+              <p>Select type</p>
+              <p>Add folders</p>
+              <p>Advanced</p>
+            </div>
             {/* modal menu options */}
           </div>
           <div>{/* modal buttons */}</div>
