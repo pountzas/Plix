@@ -1,6 +1,9 @@
 import { useRecoilState } from 'recoil';
 import { modalState } from '../atoms/modalAtom';
 import { AiOutlineCloseCircle, AiOutlinePlus } from 'react-icons/ai';
+import { VscListSelection } from 'react-icons/vsc';
+import { FaFolderOpen } from 'react-icons/fa';
+import { BsGearFill } from 'react-icons/bs';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
@@ -26,9 +29,18 @@ function MediaModal() {
           <div className='flex gap-5 p-2'>
             {/* modal menu */}
             <div className='space-y-6 min-w-[15vw] min-h-[40vh] p-4'>
-              <p>Select type</p>
-              <p>Add folders</p>
-              <p>Advanced</p>
+              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19]'>
+                <VscListSelection className='text-2xl' />
+                <p>Select type</p>
+              </div>
+              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19]'>
+                <FaFolderOpen className='text-2xl' />
+                <p>Add folders</p>
+              </div>
+              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19]'>
+                <BsGearFill className='text-2xl' />
+                <p>Advanced</p>
+              </div>
             </div>
             {/* modal menu options */}
             <div className=''>
