@@ -35,6 +35,11 @@ function MediaModal() {
               <p>test</p>
             </div>
           </div>
+          <div className='flex items-center justify-end space-x-2 bg-gray-800 py-2 pr-2'>
+            {/* modal buttons */}
+            <button className='bg-gray-700 p-2 rounded-md'>Cancel</button>
+            <button className='bg-gray-900 p-2 rounded-md'>Next</button>
+          </div>
         </div>
       )}
     </>
