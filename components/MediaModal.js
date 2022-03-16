@@ -31,8 +31,10 @@ function MediaModal() {
               <p>Advanced</p>
             </div>
             {/* modal menu options */}
+            <div className=''>
+              <p>test</p>
+            </div>
           </div>
-          <div>{/* modal buttons */}</div>
         </div>
       )}
     </>
