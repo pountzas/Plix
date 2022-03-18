@@ -32,36 +32,45 @@ function MediaModal() {
           <div className='flex gap-5 pr-2'>
             {/* modal menu */}
             <div className='space-y-6 min-w-[15vw] min-h-[46vh] p-4'>
-              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19]'>
+              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
                 <VscListSelection className='text-2xl' />
                 <p>Select type</p>
-              </div>
-              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19]'>
+              </button>
+              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
                 <FaFolderOpen className='text-2xl' />
                 <p>Add folders</p>
-              </div>
-              <div className=' flex items-center space-x-3 text-gray-400 cursor-pointer !focus:text-[#CC7B19]'>
+              </button>
+              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
                 <BsGearFill className='text-2xl' />
                 <p>Advanced</p>
-              </div>
+              </button>
             </div>
             {/* modal menu options */}
             <div>
-              <p className='text-gray-400 font-semibold'>Select library type</p>
-              <div className='flex py-4 space-y-8 space-x-16 text-gray-400'>
-                <div className='flex flex-col items-center justify-end space-y-2 '>
-                  <BsFilm className='text-5xl' />
-                  <p>Movies</p>
-                </div>
-                <div className='flex flex-col items-center justify-center space-y-2 '>
-                  <MdMonitor className='text-5xl' />
-                  <p>TV Shows</p>
-                </div>
-                <div className='flex flex-col items-center justify-center space-y-2 '>
-                  <HiOutlineMusicNote className='text-5xl' />
-                  <p>Music</p>
+              {/* select library type section */}
+              <div>
+                <p className='text-gray-400 pt-4 font-semibold'>
+                  Select library type
+                </p>
+                <div className='flex py-4 space-y-8 space-x-16 text-gray-400'>
+                  <button className='flex flex-col items-center justify-end space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                    <BsFilm className='text-5xl' />
+                    <p>Movies</p>
+                  </button>
+                  <button className='flex flex-col items-center justify-center space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                    <MdMonitor className='text-5xl' />
+                    <p>TV Shows</p>
+                  </button>
+                  <button className='flex flex-col items-center justify-center space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                    <HiOutlineMusicNote className='text-5xl' />
+                    <p>Music</p>
+                  </button>
                 </div>
               </div>
+              {/* add folders section */}
+              <div></div>
+              {/* advanced section */}
+              <div></div>
             </div>
           </div>
           <div className='flex items-center justify-end space-x-2 bg-gray-800 py-2 pr-2'>
