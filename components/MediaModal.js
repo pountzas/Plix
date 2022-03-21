@@ -10,9 +10,11 @@ import { HiOutlineMusicNote } from 'react-icons/hi';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
-
+  const folderPickerRef = useRef(null);
   const handleClose = () => {
     setOpen(false);
+  };
+  const addFolderUrl = (e) => {
   };
 
   return (
@@ -72,9 +74,11 @@ function MediaModal() {
                 <p>Add folders to your library</p>
                 <input
                   className='bg-gray-800 rounded-xl mr-2'
+                  ref={folderPickerRef}
                   type='file'
                   directory=''
                   webkitdirectory=''
+                  onChange={addFolderUrl}
                 />
               <div></div>
               </div>
