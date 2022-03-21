@@ -68,7 +68,16 @@ function MediaModal() {
                 </div>
               </div>
               {/* add folders section */}
+              <div className=' space-y-6'>
+                <p>Add folders to your library</p>
+                <input
+                  className='bg-gray-800 rounded-xl mr-2'
+                  type='file'
+                  directory=''
+                  webkitdirectory=''
+                />
               <div></div>
+              </div>
               {/* advanced section */}
               <div></div>
             </div>
