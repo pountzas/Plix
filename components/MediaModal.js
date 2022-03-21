@@ -79,8 +79,14 @@ function MediaModal() {
                   directory=''
                   webkitdirectory=''
                   onChange={addFolderUrl}
+                  hidden
                 />
-              <div></div>
+                <button
+                  onClick={() => folderPickerRef.current.click()}
+                  className='p-2 bg-gray-600 rounded-lg'
+                >
+                  BROWSE FOR MEDIA FOLDER
+                </button>
               </div>
               {/* advanced section */}
               <div></div>
