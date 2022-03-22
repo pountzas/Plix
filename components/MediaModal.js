@@ -17,6 +17,9 @@ function MediaModal() {
   const addFolderUrl = (e) => {
     const reader = new FileReader();
     for (let i = 0; i < files.length; i++) {
+      // find videos with type
+      if (files[i].type.includes('video')) {
+      }
     }
     console.log(movieFiles);
   };
