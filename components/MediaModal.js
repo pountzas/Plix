@@ -15,6 +15,7 @@ function MediaModal() {
     setOpen(false);
   };
   const addFolderUrl = (e) => {
+    const reader = new FileReader();
   };
 
   return (
