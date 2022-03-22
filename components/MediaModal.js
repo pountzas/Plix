@@ -19,6 +19,14 @@ function MediaModal() {
     for (let i = 0; i < files.length; i++) {
       // find videos with type
       if (files[i].type.includes('video')) {
+
+        // regex files name without all characters after the year
+        const name = files[i].name.match(
+          /^(?!\d\d?[ex]\d\d?)(?:\[(?:[-\w\s]+)*\] )?(.*?)[-_. ]?(?:[\{\(\[]?(?:dvdrip|[-._\b]ita|[-._\b]eng|xvid| cd\d|dvdscr|\w{1,5}rip|divx|\d+p|\d{4}).*?)?\.([\w]{2,3})$/i
+        )[1];
+        // regex replace . with ' '
+        name = name.replace(/\./g, ' ');
+
       }
     }
     console.log(movieFiles);
