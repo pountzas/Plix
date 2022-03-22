@@ -16,6 +16,9 @@ function MediaModal() {
   };
   const addFolderUrl = (e) => {
     const reader = new FileReader();
+
+    const movieFiles = [];
+
     for (let i = 0; i < files.length; i++) {
       // find videos with type
       if (files[i].type.includes('video')) {
@@ -27,6 +30,15 @@ function MediaModal() {
         // regex replace . with ' '
         name = name.replace(/\./g, ' ');
 
+        movieFiles.push({
+          name: name,
+          // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
+          fileName: files[i].name,
+          ObjUrl: URL.createObjectURL(files[i]),
+          folderPath: files[i].webkitRelativePath,
+          folderPath2: files[i].webkitdirectory,
+          rootPath: files[i].path,
+        });
       }
     }
     console.log(movieFiles);
