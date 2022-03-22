@@ -16,6 +16,9 @@ function MediaModal() {
   };
   const addFolderUrl = (e) => {
     const reader = new FileReader();
+    for (let i = 0; i < files.length; i++) {
+    }
+    console.log(movieFiles);
   };
 
   return (
