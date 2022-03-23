@@ -6,5 +6,12 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require('tailwind-scrollbar'), require('tailwind-scrollbar-hide')],
+  plugins: [
+    require('tailwind-scrollbar'),
+    require('tailwind-scrollbar-hide'),
+    require('@tailwindcss/forms'),
+    // require('@tailwindcss/typography'),
+    // require('@tailwindcss/ui'),
+    // require('@tailwindcss/aspect-ratio'),
+  ],
 };
