@@ -2,6 +2,7 @@ import { MdViewComfy } from 'react-icons/md';
 import MediaCard from './MediaCard';
 import { useRecoilState } from 'recoil';
 import { modalState, menuSizeState } from '../atoms/modalAtom';
+import MovieFiles from './MovieFiles';
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
@@ -25,31 +26,23 @@ function Feed() {
         <div>
           <h3>Latest Movies</h3>
           <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
+            {MovieFiles.map((movie) => (
+              <MediaCard
+                key={movie.tbdbId}
+                tbdbId={movie.tbdbId}
+                tmdbPoster={movie.tmdbPoster}
+                tmdbTitle={movie.tmdbTitle}
+                tmdbOverview={movie.tmdbOverview}
+                tmdbReleaseDate={movie.tmdbReleaseDate}
+                tmdbRating={movie.tmdbRating}
+                tmdbGenre={movie.tmdbGenre}
+                fileName={movie.fileName}
+                ObjUrl={movie.ObjUrl}
+                folderPath={movie.folderPath}
+                folderPath2={movie.folderPath2}
+                rootPath={movie.rootPath}
+              />
+            ))}
           </div>
         </div>
         <div className='pt-9'>
