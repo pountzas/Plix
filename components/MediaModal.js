@@ -33,9 +33,21 @@ function MediaModal() {
         name = name.replace(/\./g, ' ');
 
         const getMediaData = async () => {
-          const response = await fetch(
-            `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}`
-          );
+          if (name) {
+            const response = await fetch(
+              `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}`
+            );
+
+            const data = await response.json();
+            console.log(data.results[0]);
+            const tmdbId = data.results[0].id;
+            const tmdbPoster = data.results[0].poster_path;
+            const tmdbTitle = data.results[0].title;
+            const tmdbOverview = data.results[0].overview;
+            const tmdbReleaseDate = data.results[0].release_date;
+            const tmdbRating = data.results[0].vote_average;
+            const tmdbGenre = data.results[0].genre_ids;
+
         movieFiles.push({
           name: name,
           // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
@@ -45,6 +57,7 @@ function MediaModal() {
           folderPath2: files[i].webkitdirectory,
           rootPath: files[i].path,
         });
+          }
         };
       }
     }
