@@ -16,6 +16,9 @@ function MediaModal() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const movieFiles = [];
+
   const addFolderUrl = (e) => {
     const reader = new FileReader();
 
@@ -48,15 +51,16 @@ function MediaModal() {
             const tmdbRating = data.results[0].vote_average;
             const tmdbGenre = data.results[0].genre_ids;
 
-        movieFiles.push({
-          name: name,
-          // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
-          fileName: files[i].name,
-          ObjUrl: URL.createObjectURL(files[i]),
-          folderPath: files[i].webkitRelativePath,
-          folderPath2: files[i].webkitdirectory,
-          rootPath: files[i].path,
-        });
+            movieFiles.push({
+              name,
+              tmdbId,
+              tmdbPoster,
+              tmdbTitle,
+              tmdbOverview,
+              tmdbReleaseDate,
+              tmdbRating,
+              tmdbGenre,
+            });
           }
         };
       }
