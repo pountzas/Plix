@@ -43,13 +43,13 @@ function MediaModal() {
 
             const data = await response.json();
             console.log(data.results[0]);
-            const tmdbId = data.results[0].id;
-            const tmdbPoster = data.results[0].poster_path;
-            const tmdbTitle = data.results[0].title;
-            const tmdbOverview = data.results[0].overview;
-            const tmdbReleaseDate = data.results[0].release_date;
-            const tmdbRating = data.results[0].vote_average;
-            const tmdbGenre = data.results[0].genre_ids;
+            const tmdbId = data.results[0]?.id;
+            const tmdbPoster = data.results[0]?.poster_path;
+            const tmdbTitle = data.results[0]?.title;
+            const tmdbOverview = data.results[0]?.overview;
+            const tmdbReleaseDate = data.results[0]?.release_date;
+            const tmdbRating = data.results[0]?.vote_average;
+            const tmdbGenre = data.results[0]?.genre_ids;
 
             movieFiles.push({
               name,
