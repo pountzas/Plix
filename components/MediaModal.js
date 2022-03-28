@@ -12,6 +12,7 @@ import { useState, useRef } from 'react';
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const folderPickerRef = useRef(null);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -31,6 +32,10 @@ function MediaModal() {
         // regex replace . with ' '
         name = name.replace(/\./g, ' ');
 
+        const getMediaData = async () => {
+          const response = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}`
+          );
         movieFiles.push({
           name: name,
           // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
@@ -40,6 +45,7 @@ function MediaModal() {
           folderPath2: files[i].webkitdirectory,
           rootPath: files[i].path,
         });
+        };
       }
     }
     console.log(movieFiles);
