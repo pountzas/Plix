@@ -8,6 +8,7 @@ import { BsFilm } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
 import { useState, useRef } from 'react';
+import MovieFiles from './MovieFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
@@ -16,8 +17,6 @@ function MediaModal() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const movieFiles = [];
 
   const addFolderUrl = (e) => {
     const reader = new FileReader();
@@ -51,7 +50,7 @@ function MediaModal() {
             const tmdbRating = data.results[0]?.vote_average;
             const tmdbGenre = data.results[0]?.genre_ids;
 
-            movieFiles.push({
+            MovieFiles.push({
               name,
               tmdbId,
               tmdbPoster,
@@ -70,7 +69,7 @@ function MediaModal() {
         };
       }
     }
-    console.log(movieFiles);
+    console.log(MovieFiles);
   };
 
   return (
