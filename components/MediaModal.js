@@ -57,22 +57,25 @@ function MediaModal() {
             const tmdbRating = data.results[0]?.vote_average;
             const tmdbGenre = data.results[0]?.genre_ids;
 
-            tmdbId &&
-              MovieFiles.push({
-                name,
-                tmdbId,
-                tmdbPoster,
-                tmdbTitle,
-                tmdbOverview,
-                tmdbReleaseDate,
-                tmdbRating,
-                tmdbGenre,
-                fileName: files[i].name,
-                ObjUrl: URL.createObjectURL(files[i]),
-                folderPath: files[i].webkitRelativePath,
-                folderPath2: files[i].webkitdirectory,
-                rootPath: files[i].path,
-              });
+            tmdbId
+              ? MovieFiles.push({
+                  name,
+                  id: i,
+                  tmdbId,
+                  tmdbPoster,
+                  tmdbTitle,
+                  tmdbOverview,
+                  tmdbReleaseDate: tmdbReleaseDate.substring(0, 4),
+                  tmdbRating,
+                  tmdbGenre,
+                  fileName: files[i].name,
+                  ObjUrl: URL.createObjectURL(files[i]),
+                  folderPath: files[i].webkitRelativePath,
+                  folderPath2: files[i].webkitdirectory,
+                  rootPath: files[i].path,
+                  // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
+                })
+              : console.log(name + ' not found ' + files[i].webkitRelativePath);
           }
         };
       }
