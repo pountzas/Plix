@@ -57,21 +57,22 @@ function MediaModal() {
             const tmdbRating = data.results[0]?.vote_average;
             const tmdbGenre = data.results[0]?.genre_ids;
 
-            MovieFiles.push({
-              name,
-              tmdbId,
-              tmdbPoster,
-              tmdbTitle,
-              tmdbOverview,
-              tmdbReleaseDate,
-              tmdbRating,
-              tmdbGenre,
-              fileName: files[i].name,
-              ObjUrl: URL.createObjectURL(files[i]),
-              folderPath: files[i].webkitRelativePath,
-              folderPath2: files[i].webkitdirectory,
-              rootPath: files[i].path,
-            });
+            tmdbId &&
+              MovieFiles.push({
+                name,
+                tmdbId,
+                tmdbPoster,
+                tmdbTitle,
+                tmdbOverview,
+                tmdbReleaseDate,
+                tmdbRating,
+                tmdbGenre,
+                fileName: files[i].name,
+                ObjUrl: URL.createObjectURL(files[i]),
+                folderPath: files[i].webkitRelativePath,
+                folderPath2: files[i].webkitdirectory,
+                rootPath: files[i].path,
+              });
           }
         };
       }
