@@ -32,7 +32,7 @@ function MediaCard({
           height='195px'
         />
       </div>
-      <h3 className='text-sm'>Movie Title</h3>
+      <h3 className=' text-center text-sm'>{tmdbTitle}</h3>
     </div>
   );
 }
