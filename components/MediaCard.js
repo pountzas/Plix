@@ -2,7 +2,21 @@ import Image from 'next/image';
 
 import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
 
-function MediaCard() {
+function MediaCard({
+  name,
+  tmdbId,
+  tmdbPoster,
+  tmdbTitle,
+  tmdbOverview,
+  tmdbReleaseDate,
+  tmdbRating,
+  tmdbGenre,
+  fileName,
+  ObjUrl,
+  folderPath,
+  folderPath2,
+  rootPath,
+}) {
   return (
     <div className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
