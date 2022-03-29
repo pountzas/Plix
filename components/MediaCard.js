@@ -32,7 +32,8 @@ function MediaCard({
           height='195px'
         />
       </div>
-      <h3 className=' text-center text-sm'>{tmdbTitle}</h3>
+      <h3 className='font-semibold text-sm'>{tmdbTitle}</h3>
+      <h3 className='text-sm text-gray-400 font-semibold'>{tmdbReleaseDate}</h3>
     </div>
   );
 }
