@@ -21,7 +21,14 @@ function MediaModal() {
   const addFolderUrl = (e) => {
     const reader = new FileReader();
 
-    const movieFiles = [];
+    const path = e.target.files[0];
+    const filesPath = e.target.result;
+    const files = e.target.files;
+    // const url = URL.createObjectURL(e.target.files[0]);
+    // console.log('url', url);
+    console.log(path);
+    console.log(filesPath);
+    console.log(files.length);
 
     for (let i = 0; i < files.length; i++) {
       // find videos with type
