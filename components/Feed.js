@@ -48,29 +48,7 @@ function Feed() {
         <div className='pt-9'>
           <h3>Latest TV Shows</h3>
           <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
-            <MediaCard />
+            {/* <MediaCard /> */}
           </div>
         </div>
       </div>
