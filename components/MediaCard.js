@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
 
 function MediaCard({
+  id,
   name,
   tmdbId,
   tmdbPoster,
@@ -18,7 +19,7 @@ function MediaCard({
   rootPath,
 }) {
   return (
-    <div key={tmdbId} className='pb-12 min-w-max'>
+    <div key={id} className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
           <BsPlayCircle className='relative top-32 left-10 z-10' />
