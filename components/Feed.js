@@ -29,6 +29,7 @@ function Feed() {
             {MovieFiles.map((movie) => (
               <MediaCard
                 key={movie.tbdbId}
+                id={movie.id}
                 tbdbId={movie.tbdbId}
                 tmdbPoster={movie.tmdbPoster}
                 tmdbTitle={movie.tmdbTitle}
