@@ -38,7 +38,7 @@ function Feed() {
                 tmdbRating={movie.tmdbRating}
                 tmdbGenre={movie.tmdbGenre}
                 fileName={movie.fileName}
-                ObjUrl={movie.ObjUrl}
+                objurl={movie.ObjUrl}
                 folderPath={movie.folderPath}
                 folderPath2={movie.folderPath2}
                 rootPath={movie.rootPath}
