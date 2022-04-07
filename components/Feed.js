@@ -28,7 +28,7 @@ function Feed() {
           <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
             {MovieFiles.map((movie) => (
               <MediaCard
-                key={movie.tbdbId}
+                key={movie.id}
                 id={movie.id}
                 tbdbId={movie.tbdbId}
                 tmdbPoster={movie.tmdbPoster}
