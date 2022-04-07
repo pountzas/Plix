@@ -53,7 +53,10 @@ function MediaModal() {
             const tmdbPoster = data.results[0]?.poster_path;
             const tmdbTitle = data.results[0]?.title;
             const tmdbOverview = data.results[0]?.overview;
-            const tmdbReleaseDate = data.results[0]?.release_date;
+            const tmdbReleaseDate = data.results[0]?.release_date.substring(
+              0,
+              4
+            );
             const tmdbRating = data.results[0]?.vote_average;
             const tmdbGenre = data.results[0]?.genre_ids;
 
