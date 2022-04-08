@@ -14,3 +14,8 @@ export const mediaItemState = atom({
   key: 'mediaItemState',
   default: false,
 });
+
+export const mediaValueState = atom({
+  key: 'mediaValueState',
+  default: {},
+});
