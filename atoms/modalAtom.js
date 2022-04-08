@@ -9,3 +9,8 @@ export const menuSizeState = atom({
   key: 'menuSizeState',
   default: false,
 });
+
+export const mediaItemState = atom({
+  key: 'mediaItemState',
+  default: false,
+});
