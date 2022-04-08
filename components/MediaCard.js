@@ -13,7 +13,7 @@ function MediaCard({
   tmdbRating,
   tmdbGenre,
   fileName,
-  ObjUrl,
+  objurl,
   folderPath,
   folderPath2,
   rootPath,
