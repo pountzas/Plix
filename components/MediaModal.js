@@ -1,13 +1,13 @@
 import { useRecoilState } from 'recoil';
 import { modalState } from '../atoms/modalAtom';
+
 import { AiOutlineCloseCircle, AiOutlinePlus } from 'react-icons/ai';
 import { VscListSelection } from 'react-icons/vsc';
 import { FaFolderOpen } from 'react-icons/fa';
-import { BsGearFill } from 'react-icons/bs';
-import { BsFilm } from 'react-icons/bs';
+import { BsFilm, BsGearFill } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import MovieFiles from './MovieFiles';
 
 function MediaModal() {
