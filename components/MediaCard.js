@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { useRecoilState } from 'recoil';
+import { mediaItemState } from '../atoms/modalAtom';
 
 import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
 
@@ -18,8 +20,12 @@ function MediaCard({
   folderPath2,
   rootPath,
 }) {
+  const handleMediaCardClick = () => {
+    setMediaItem(true);
+  };
+
   return (
-    <div key={id} className='pb-12 min-w-max'>
+    <div onClick={handleMediaCardClick} className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
           <BsPlayCircle className='relative top-32 left-10 z-10' />
