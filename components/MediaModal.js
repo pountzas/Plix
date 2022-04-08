@@ -24,8 +24,6 @@ function MediaModal() {
     const path = e.target.files[0];
     const filesPath = e.target.result;
     const files = e.target.files;
-    // const url = URL.createObjectURL(e.target.files[0]);
-    // console.log('url', url);
     console.log(path);
     console.log(filesPath);
     console.log(files.length);
@@ -33,7 +31,6 @@ function MediaModal() {
     for (let i = 0; i < files.length; i++) {
       // find videos with type
       if (files[i].type.includes('video')) {
-
         // regex files name without all characters after the year
         const name = files[i].name.match(
           /^(?!\d\d?[ex]\d\d?)(?:\[(?:[-\w\s]+)*\] )?(.*?)[-_. ]?(?:[\{\(\[]?(?:dvdrip|[-._\b]ita|[-._\b]eng|xvid| cd\d|dvdscr|\w{1,5}rip|divx|\d+p|\d{4}).*?)?\.([\w]{2,3})$/i
@@ -48,7 +45,7 @@ function MediaModal() {
             );
 
             const data = await response.json();
-            console.log(data.results[0]);
+
             const tmdbId = data.results[0]?.id;
             const tmdbPoster = data.results[0]?.poster_path;
             const tmdbTitle = data.results[0]?.title;
