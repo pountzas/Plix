@@ -68,7 +68,7 @@ function MediaModal() {
                   tmdbPoster,
                   tmdbTitle,
                   tmdbOverview,
-                  tmdbReleaseDate: tmdbReleaseDate.substring(0, 4),
+                  tmdbReleaseDate,
                   tmdbRating,
                   tmdbGenre,
                   fileName: files[i].name,
