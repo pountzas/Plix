@@ -78,6 +78,7 @@ function MediaModal() {
               : console.log(name + ' not found ' + files[i].webkitRelativePath);
           }
         };
+        getMediaData();
       }
     }
     console.log(MovieFiles);
