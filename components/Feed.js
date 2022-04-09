@@ -30,6 +30,7 @@ function Feed() {
               <MediaCard
                 key={movie.id}
                 id={movie.id}
+                name={movie.name}
                 tbdbId={movie.tbdbId}
                 tmdbPoster={movie.tmdbPoster}
                 tmdbTitle={movie.tmdbTitle}
