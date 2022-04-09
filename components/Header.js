@@ -23,14 +23,14 @@ function Header() {
             onClick={handleMenuSize}
             className='inline-block mr-8 text-2xl text-gray-400'
           />
-          <Link href='/' passHref>
-            <Image
-              src='/../public/plix-logo-w.png'
-              alt='logo'
-              height={20}
-              width={60}
-            />
-          </Link>
+          {/* <Link href='/' passHref> */}
+          <Image
+            src='/../public/plix-logo-w.png'
+            alt='logo'
+            height={20}
+            width={60}
+          />
+          {/* </Link> */}
           <div className='flex items-center'>
             <div className='bg-[#333A44] px-2 ml-8 py-2 rounded-l-2xl'>
               <FiSearch className='ml-2 text-2xl text-gray-500' />
@@ -66,17 +66,17 @@ function Header() {
             <FiCast className='mr-4 text-3xl text-gray-400' />
           </div>
           {session ? (
-            <Link href='/' passHref>
-              <Image
-                onClick={signOut}
-                className='rounded-full mr-4'
-                src={session.user.image}
-                alt='logo'
-                height={30}
-                width={30}
-              />
-            </Link>
+            // <Link href='/' passHref>
+            <Image
+              onClick={signOut}
+              className='rounded-full mr-4'
+              src={session.user.image}
+              alt='logo'
+              height={30}
+              width={30}
+            />
           ) : (
+            // </Link>
             <BsPersonCircle className='mr-4 text-3xl text-gray-200' />
           )}
         </div>
