@@ -21,8 +21,28 @@ function MediaCard({
   folderPath2,
   rootPath,
 }) {
+  const sendMediaValue = () => {
+    MediaItemProps = {
+      id,
+      name,
+      tmdbId,
+      tmdbPoster,
+      tmdbTitle,
+      tmdbOverview,
+      tmdbReleaseDate,
+      tmdbRating,
+      tmdbGenre,
+      fileName,
+      objurl,
+      folderPath,
+      folderPath2,
+      rootPath,
+    };
+  };
+
   const handleMediaCardClick = () => {
     setMediaItem(true);
+    sendMediaValue();
   };
 
   return (
