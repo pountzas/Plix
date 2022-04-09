@@ -1,4 +1,5 @@
 import { useRecoilState } from 'recoil';
+import { mediaItemState } from '../atoms/modalAtom';
 import MediaItemProps from './props/MediaItemProps';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 
