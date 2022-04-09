@@ -2,7 +2,7 @@ import { MdViewComfy } from 'react-icons/md';
 import MediaCard from './MediaCard';
 import { useRecoilState } from 'recoil';
 import { modalState, menuSizeState } from '../atoms/modalAtom';
-import MovieFiles from './MovieFiles';
+import MovieFiles from './props/MovieFiles';
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import MediaItemProps from './props/MediaItemProps';
 import { useRecoilState } from 'recoil';
 import { mediaItemState } from '../atoms/modalAtom';
 

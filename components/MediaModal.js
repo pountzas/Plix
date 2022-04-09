@@ -8,7 +8,7 @@ import { BsFilm, BsGearFill } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
 import { useRef } from 'react';
-import MovieFiles from './MovieFiles';
+import MovieFiles from './props/MovieFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
