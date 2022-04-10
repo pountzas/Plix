@@ -45,7 +45,12 @@ function MediaModal() {
             );
 
             const data = await response.json();
-
+            const adult = data.results[0].adult; //
+            const backdrop_path = data.results[0].backdrop_path; //
+            const lang = data.results[0].original_language; //
+            const popularity = data.results[0].popularity; //
+            const voteAverage = data.results[0].vote_average; //
+            const voteCount = data.results[0].vote_count; //
             const tmdbId = data.results[0]?.id;
             const tmdbPoster = data.results[0]?.poster_path;
             const tmdbTitle = data.results[0]?.title;
