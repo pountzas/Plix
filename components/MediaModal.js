@@ -41,7 +41,7 @@ function MediaModal() {
         const getMediaData = async () => {
           if (name) {
             const response = await fetch(
-              `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}`
+              `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
             );
 
             const data = await response.json();
