@@ -34,6 +34,10 @@ function MediaItem() {
           width='640px'
           height='400px'
         />
+        <div className='max-w-[40vw] space-y-4'>
+          <div className='text-gray-200'>{MediaItemProps.tmdbTitle}</div>
+        </div>
+      </div>
     </div>
   );
 }
