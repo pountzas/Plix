@@ -32,6 +32,12 @@ function Feed() {
                 id={movie.id}
                 name={movie.name}
                 tbdbId={movie.tbdbId}
+                adult={movie.adult}
+                backdrop={movie.backdrop_path}
+                lang={movie.original_language}
+                popularity={movie.popularity}
+                voteAverage={movie.vote_average}
+                voteCount={movie.vote_count}
                 tmdbPoster={movie.tmdbPoster}
                 tmdbTitle={movie.tmdbTitle}
                 tmdbOverview={movie.tmdbOverview}
