@@ -57,13 +57,13 @@ function Header() {
             </button>
           )}
           <div>
-            <FiActivity className='mr-4 text-3xl text-gray-400' />
+            <FiActivity className='mr-4 text-3xl text-gray-400 hidden md:inline-block' />
           </div>
           <div>
-            <FiTool className='mr-4 text-3xl text-gray-400' />
+            <FiTool className='mr-4 text-3xl text-gray-400 hidden md:inline-block' />
           </div>
           <div>
-            <FiCast className='mr-4 text-3xl text-gray-400' />
+            <FiCast className='mr-4 text-3xl text-gray-400 hidden md:inline-block' />
           </div>
           {session ? (
             // <Link href='/' passHref>
