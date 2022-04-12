@@ -12,7 +12,7 @@ function Menu() {
   return (
     <section
       className={`space-y-5 mb-3 mx-3 rounded-md p-3 min-h-[90vh] transition-all ease-in-out delay-200 ${
-        !menuSize && 'bg-[#232B35] !space-y-3 pr-48'
+        !menuSize && 'bg-[#232B35] !space-y-3 min-w-[180px]'
       }  `}
     >
       <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
