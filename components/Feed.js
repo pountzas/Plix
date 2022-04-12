@@ -31,7 +31,7 @@ function Feed() {
                 key={movie.id}
                 id={movie.id}
                 name={movie.name}
-                tbdbId={movie.tbdbId}
+                tmdbId={movie.tmdbId}
                 adult={movie.adult}
                 backdrop={movie.backdrop_path}
                 lang={movie.original_language}
