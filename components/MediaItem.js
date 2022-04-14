@@ -17,6 +17,49 @@ function MediaItem() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
 
+  const getMediaDetails = async () => {
+    const mediaDetails = await fetch(
+      `https://api.themoviedb.org/3/movie/${MediaItemProps.tmdbId}/credits?api_key=120f1a60fbfcc0d0f3e9775e7816cde3`
+    );
+    const mediaData = await mediaDetails.json();
+    mediaData.cast.map((cast) => {
+      MediaCredits.push({
+        key: cast.order,
+        name: cast.name,
+        character: cast.character,
+        profile_path: cast.profile_path,
+        dep: cast.known_for_department,
+      });
+    });
+    mediaData.crew.map((crew) => {
+      if (crew.job === 'Director') {
+        Directors.push({
+          key: crew.id,
+          name: crew.name,
+          profile_path: crew.profile_path,
+        });
+      }
+      if (crew.job === 'Writer') {
+        Writers.push({
+          key: crew.id,
+          name: crew.name,
+          profile_path: crew.profile_path,
+        });
+      }
+      // if (crew.job === 'Production') {
+      //   actors.push({
+      //     key: crew.id,
+      //     name: crew.name,
+      //     profile_path: crew.profile_path,
+      //   });
+      // }
+    });
+  };
+  console.log(Directors);
+  console.log(Writers);
+  getMediaDetails();
+
+  console.log(MediaCredits);
   const handleClose = () => {
     setMediaItem(false);
   };
