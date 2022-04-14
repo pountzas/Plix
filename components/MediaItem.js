@@ -43,9 +43,37 @@ function MediaItem() {
             <div className='text-gray-200'>TODO movie length</div>
           </div>
           <div className='text-gray-200'>{MediaItemProps.tmdbOverview}</div>
+          {/* movie info */}
+          <div className='flex space-x-4'>
+            <div className='text-gray-400 font-semibold'>
+              <p>DIRECTED BY</p>
+              <p>WRITTEN BY</p>
+              <p>STUDIO</p>
+              <p>GENRE</p>
+            </div>
+            <div className='text-gray-200'>
+              <div>
+                {Directors.map((director) => {
+                  return (
+                    <div key={director.key}>
+                      <p>{director.name}TODO</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div>
+                {Writers.map((writer) => {
+                  return (
+                    <div key={writer.key}>
+                      <p>{writer.name}TODO</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p>{MediaItemProps.tmdbProduction} TODO</p>
+              <p>{MediaItemProps.tmdbGenre} TODO</p>
+            </div>
           </div>
-        </div>
-      </div>
     </div>
   );
 }
