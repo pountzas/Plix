@@ -45,46 +45,33 @@ function MediaModal() {
             );
 
             const data = await response.json();
-            const adult = data.results[0].adult; //
-            const backdrop_path = data.results[0]?.backdrop_path; //
-            const lang = data.results[0]?.original_language; //
-            const popularity = data.results[0]?.popularity; //
-            const voteAverage = data.results[0]?.vote_average; //
-            const voteCount = data.results[0]?.vote_count; //
             const tmdbId = data.results[0]?.id;
-            const tmdbPoster = data.results[0]?.poster_path;
-            const tmdbTitle = data.results[0]?.title;
-            const tmdbOverview = data.results[0]?.overview;
-            const tmdbReleaseDate = data.results[0]?.release_date.substring(
-              0,
-              4
-            );
-            const tmdbRating = data.results[0]?.vote_average;
-            const tmdbGenre = data.results[0]?.genre_ids;
 
             tmdbId
               ? MovieFiles.push({
                   name,
                   id: i,
                   tmdbId,
-                  adult,
-                  backdrop_path,
-                  lang,
-                  popularity,
-                  voteAverage,
-                  voteCount,
-                  tmdbPoster,
-                  tmdbTitle,
-                  tmdbOverview,
-                  tmdbReleaseDate,
-                  tmdbRating,
-                  tmdbGenre,
+                  adult: data.results[0].adult,
+                  backdrop_path: data.results[0]?.backdrop_path,
+                  lang: data.results[0]?.original_language,
+                  popularity: data.results[0]?.popularity,
+                  voteAverage: data.results[0]?.vote_average,
+                  voteCount: data.results[0]?.vote_count,
+                  tmdbPoster: data.results[0]?.poster_path,
+                  tmdbTitle: data.results[0]?.title,
+                  tmdbOverview: data.results[0]?.overview,
+                  tmdbReleaseDate: data.results[0]?.release_date.substring(
+                    0,
+                    4
+                  ),
+                  tmdbRating: data.results[0]?.vote_average,
+                  tmdbGenre: data.results[0]?.genre_ids,
                   fileName: files[i].name,
                   ObjUrl: URL.createObjectURL(files[i]),
                   folderPath: files[i].webkitRelativePath,
                   folderPath2: files[i].webkitdirectory,
                   rootPath: files[i].path,
-                  // name: files[i].name.match(/^(.+?)\.[^.]+$/)[1], // regex files name to be until before the last dot
                 })
               : console.log(name + ' not found ' + files[i].webkitRelativePath);
           }
