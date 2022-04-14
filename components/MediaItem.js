@@ -148,8 +148,10 @@ function MediaItem() {
                   layout='fixed'
                   quality='medium'
                 />
-          </div>
-        </div>
+                <div className='inline-block w-[100px]'>
+                  <div className='text-gray-200'>{actor.name}</div>
+                  <div className='text-gray-400'>{actor.character}</div>
+                </div>
     </div>
   );
 }
