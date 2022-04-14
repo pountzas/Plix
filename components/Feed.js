@@ -27,8 +27,8 @@ function Feed() {
       <div
         className={`${
           menuSize
-            ? 'md:max-w-[75vw] lg:max-w-[86vw] xl:max-w-[89vw] 2xl:max-w-[94vw]'
-            : 'md:max-w-[50vw] lg:max-w-[65vw] xl:max-w-[72vw] 2xl:max-w-[81vw]'
+            ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw] 2xl:w-[92vw]'
+            : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
         } `}
       >
         <div>
