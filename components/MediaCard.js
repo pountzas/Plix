@@ -68,6 +68,7 @@ function MediaCard({
           className='absolute hover:opacity-50 rounded-md'
           src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
           alt=''
+          loading='lazy'
           width='130px'
           height='195px'
         />
