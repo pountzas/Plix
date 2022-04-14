@@ -1,5 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { modalState } from '../atoms/modalAtom';
+import { modalState, homeMovieState } from '../atoms/modalAtom';
 
 import { AiOutlineCloseCircle, AiOutlinePlus } from 'react-icons/ai';
 import { VscListSelection } from 'react-icons/vsc';
@@ -12,6 +12,8 @@ import MovieFiles from './props/MovieFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
+  const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+
   const folderPickerRef = useRef(null);
 
   const handleClose = () => {
