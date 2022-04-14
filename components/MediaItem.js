@@ -1,13 +1,17 @@
 import Image from 'next/image';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
-import { mediaItemState } from '../atoms/modalAtom';
+import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
+
 import MediaItemProps from './props/MediaItemProps';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
 
 function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
+  const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+  const [cast, setCast] = useRecoilState(castState);
+
   const handleClose = () => {
     setMediaItem(false);
   };
