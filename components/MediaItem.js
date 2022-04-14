@@ -1,10 +1,10 @@
 import Image from 'next/image';
+import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
 import { mediaItemState } from '../atoms/modalAtom';
 import MediaItemProps from './props/MediaItemProps';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
-import ReactPlayer from 'react-player';
 
 function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
