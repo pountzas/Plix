@@ -31,6 +31,7 @@ function Feed() {
             : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
         } `}
       >
+        {latestMovie && (
           <div>
             <h3>Latest Movies</h3>
             <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
