@@ -1,3 +1,3 @@
-const MediaCredits = [{}];
+const MediaCredits = [];
 
 export default MediaCredits;
