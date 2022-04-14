@@ -33,10 +33,7 @@ function Feed() {
       >
         <div>
           <h3>Latest Movies</h3>
-          <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
-            {MovieFiles.map((movie) => (
-              <MediaCard
-                key={movie.id}
+            <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
                 id={movie.id}
                 name={movie.name}
                 tmdbId={movie.tmdbId}
@@ -63,10 +60,7 @@ function Feed() {
         </div>
         <div className='pt-9'>
           <h3>Latest TV Shows</h3>
-          <div className='pl-3 flex space-x-7 overflow-x-scroll scrollbar-hide'>
-            {/* <MediaCard /> */}
-          </div>
-        </div>
+            <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
       </div>
     </section>
   );
