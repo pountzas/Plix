@@ -137,6 +137,11 @@ function MediaItem() {
         <div className='pt-8'>
           <div className='text-gray-200'>Cast</div>
           <div className='flex overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 max-w-[80vw]'>
+            {MediaCredits.slice(0, 30).map((actor) => (
+              <div
+                className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
+                key={actor.key}
+              >
                 <Image
                   className='rounded-full shadow-xl'
                   // placeholder='blur'
@@ -152,6 +157,10 @@ function MediaItem() {
                   <div className='text-gray-200'>{actor.name}</div>
                   <div className='text-gray-400'>{actor.character}</div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
     </div>
   );
 }
