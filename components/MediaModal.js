@@ -122,18 +122,51 @@ function MediaModal() {
                   Select library type
                 </p>
                 <div className='flex py-4 space-y-8 space-x-16 text-gray-400'>
-                  <button className='flex flex-col items-center justify-end space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  <label
+                    htmlFor='movies'
+                    className='flex flex-col items-center justify-end space-y-2 cursor-pointer active:text-[#CC7B19] focus:text-[#CC7B19] focus:font-semibold'
+                  >
                     <BsFilm className='text-5xl' />
                     <p>Movies</p>
-                  </button>
-                  <button className='flex flex-col items-center justify-center space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  </label>
+                  <input
+                    type='radio'
+                    id='movies'
+                    name='media'
+                    value='movies'
+                    defaultChecked
+                    className='hidden focus:after:text-[#CC7B19]'
+                  />
+
+                  <input
+                    type='radio'
+                    id='tv'
+                    name='media'
+                    value='tv'
+                    className='hidden'
+                  />
+                  <label
+                    htmlFor='tv'
+                    className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                  >
                     <MdMonitor className='text-5xl' />
                     <p>TV Shows</p>
-                  </button>
-                  <button className='flex flex-col items-center justify-center space-y-2 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  </label>
+
+                  <input
+                    type='radio'
+                    id='music'
+                    name='media'
+                    value='music'
+                    className='hidden'
+                  />
+                  <label
+                    htmlFor='music'
+                    className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                  >
                     <HiOutlineMusicNote className='text-5xl' />
                     <p>Music</p>
-                  </button>
+                  </label>
                 </div>
               </div>
               {/* add folders section */}
