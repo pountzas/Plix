@@ -31,33 +31,37 @@ function Feed() {
             : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
         } `}
       >
-        <div>
-          <h3>Latest Movies</h3>
+          <div>
+            <h3>Latest Movies</h3>
             <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
-                id={movie.id}
-                name={movie.name}
-                tmdbId={movie.tmdbId}
-                adult={movie.adult}
-                backdrop={movie.backdrop_path}
-                lang={movie.original_language}
-                popularity={movie.popularity}
-                voteAverage={movie.vote_average}
-                voteCount={movie.vote_count}
-                tmdbPoster={movie.tmdbPoster}
-                tmdbTitle={movie.tmdbTitle}
-                tmdbOverview={movie.tmdbOverview}
-                tmdbReleaseDate={movie.tmdbReleaseDate}
-                tmdbRating={movie.tmdbRating}
-                tmdbGenre={movie.tmdbGenre}
-                fileName={movie.fileName}
-                objurl={movie.ObjUrl}
-                folderPath={movie.folderPath}
-                folderPath2={movie.folderPath2}
-                rootPath={movie.rootPath}
-              />
-            ))}
+              {MovieFiles.map((movie) => (
+                <MediaCard
+                  key={movie.id}
+                  id={movie.id} // to remove
+                  name={movie.name}
+                  tmdbId={movie.tmdbId}
+                  adult={movie.adult}
+                  backdrop={movie.backdrop_path}
+                  lang={movie.original_language}
+                  popularity={movie.popularity}
+                  voteAverage={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  tmdbPoster={movie.tmdbPoster}
+                  tmdbTitle={movie.tmdbTitle}
+                  tmdbOverview={movie.tmdbOverview}
+                  tmdbReleaseDate={movie.tmdbReleaseDate}
+                  tmdbRating={movie.tmdbRating}
+                  tmdbGenre={movie.tmdbGenre}
+                  fileName={movie.fileName}
+                  objurl={movie.ObjUrl}
+                  folderPath={movie.folderPath}
+                  folderPath2={movie.folderPath2}
+                  rootPath={movie.rootPath}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
         <div className='pt-9'>
           <h3>Latest TV Shows</h3>
             <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
