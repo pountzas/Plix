@@ -40,6 +40,7 @@ function MediaItem() {
             <div className='text-gray-200'>
               {MediaItemProps.tmdbReleaseDate}
             </div>
+          <div className='text-gray-200'>{MediaItemProps.tmdbOverview}</div>
           </div>
         </div>
       </div>
