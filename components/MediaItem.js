@@ -4,10 +4,15 @@ import { useRecoilState } from 'recoil';
 import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
+import MediaCredits from './props/MediaCredits';
+
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
 
 function MediaItem() {
+  const Directors = [];
+  const Writers = [];
+
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
