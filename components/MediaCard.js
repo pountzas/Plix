@@ -27,6 +27,8 @@ function MediaCard({
   folderPath2,
   rootPath,
 }) {
+  const handlePlayer = () => {};
+
   const sendMediaValue = () => {
     MediaItemProps = {
       id,
@@ -61,8 +63,11 @@ function MediaCard({
     <div onClick={handleMediaCardClick} className='pb-12 min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
-          <BsPlayCircle className='relative top-32 left-10 z-10' />
-          <BsPlayCircleFill className='relative hidden hover:inline-block top-32 left-10 z-10' />
+          <div onClick={handlePlayer}>
+            <BsPlayCircleFill className='relative top-32 left-10 z-10 p-1 hover:text-left hover:bg-[#CC7B19] rounded-full' />
+          </div>
+
+          {/* <BsPlayCircle className='relative hidden top-32 left-10 z-10 hover:bg-[#CC7B19] rounded-full' /> */}
         </div>
         <Image
           className='absolute hover:opacity-50 rounded-md'
