@@ -137,6 +137,17 @@ function MediaItem() {
         <div className='pt-8'>
           <div className='text-gray-200'>Cast</div>
           <div className='flex overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 max-w-[80vw]'>
+                <Image
+                  className='rounded-full shadow-xl'
+                  // placeholder='blur'
+                  src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
+                  alt=''
+                  width='150px'
+                  height='150px'
+                  loading='lazy'
+                  layout='fixed'
+                  quality='medium'
+                />
           </div>
         </div>
     </div>
