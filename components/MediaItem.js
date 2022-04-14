@@ -134,6 +134,8 @@ function MediaItem() {
               <p>{MediaItemProps.tmdbGenre} TODO</p>
             </div>
           </div>
+      {cast && (
+        // casting
         <div className='pt-8'>
           <div className='text-gray-200'>Cast</div>
           <div className='flex overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 max-w-[80vw]'>
@@ -161,6 +163,7 @@ function MediaItem() {
             ))}
           </div>
         </div>
+      )}
     </div>
   );
 }
