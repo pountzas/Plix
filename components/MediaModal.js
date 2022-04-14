@@ -200,7 +200,12 @@ function MediaModal() {
             >
               Cancel
             </button>
-            <button className='bg-gray-900 p-2 rounded-md'>Next</button>
+            <button
+              onClick={showLatestMovies}
+              className='bg-gray-900 p-2 rounded-md'
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
