@@ -76,6 +76,7 @@ function MediaItem() {
       <button className='pt-3' onClick={handleClose}>
         <FaBackward className='text-gray-500 text-2xl' />
       </button>
+      <div className='lg:flex items-center lg:space-x-8'>
         <ReactPlayer
           // className='rounded'
           config={{
@@ -94,7 +95,7 @@ function MediaItem() {
           width='640px'
           height='400px'
         />
-        <div className='max-w-[40vw] space-y-4'>
+        <div className='lg:max-w-[40vw] space-y-4'>
           <div className='text-gray-200'>{MediaItemProps.tmdbTitle}</div>
           <div className='flex items-center space-x-4'>
             <div className='text-gray-200'>
@@ -134,6 +135,8 @@ function MediaItem() {
               <p>{MediaItemProps.tmdbGenre} TODO</p>
             </div>
           </div>
+        </div>
+      </div>
       {cast && (
         // casting
         <div className='pt-8'>
