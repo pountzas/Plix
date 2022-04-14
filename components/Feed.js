@@ -1,11 +1,13 @@
 import { MdViewComfy } from 'react-icons/md';
 import MediaCard from './MediaCard';
 import { useRecoilState } from 'recoil';
-import { modalState, menuSizeState } from '../atoms/modalAtom';
+import { menuSizeState, homeMovieState, homeTvState } from '../atoms/modalAtom';
 import MovieFiles from './props/MovieFiles';
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+  const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [latestTv, setLatestTv] = useRecoilState(homeTvState);
 
   return (
     <section className='p-3 mr-3 rounded-md text-2xl text-gray-300'>
