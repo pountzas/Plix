@@ -62,6 +62,13 @@ function MediaItem() {
   console.log(MediaCredits);
   const handleClose = () => {
     setMediaItem(false);
+    MediaItemProps = {};
+    MediaCredits = [];
+    Directors = [];
+    Writers = [];
+    // setCast(false);
+  };
+  console.log(MediaItemProps);
   };
 
   return (
