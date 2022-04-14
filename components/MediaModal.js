@@ -20,6 +20,11 @@ function MediaModal() {
     setOpen(false);
   };
 
+  const showLatestMovies = () => {
+    setLatestMovie(true);
+    handleClose();
+  };
+
   const addFolderUrl = (e) => {
     const reader = new FileReader();
 
