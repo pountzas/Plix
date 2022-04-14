@@ -69,7 +69,8 @@ function MediaItem() {
     // setCast(false);
   };
   console.log(MediaItemProps);
-  };
+
+  setCast(true);
 
   return (
     <div>
