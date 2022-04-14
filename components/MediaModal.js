@@ -87,7 +87,7 @@ function MediaModal() {
   return (
     <>
       {open && (
-        <div className='flex flex-col justify-between fixed z-10 inset-52 overflow-y-auto bg-[#2D3742] text-white border-gray-900 border-2 max-w-[80vw] rounded-lg'>
+        <div className='flex flex-col justify-between fixed z-10 inset-2 overflow-y-auto bg-[#2D3742] text-white border-gray-900 border-2 max-w-[85vw] max-h-[50vh] rounded-lg'>
           {/* modal header  */}
           <div className='flex items-center bg-gray-800 justify-between pt-4 px-4 text-gray-400 pb-3'>
             <div className='flex space-x-2 items-center'>
@@ -100,7 +100,7 @@ function MediaModal() {
           </div>
           <div className='flex gap-5 pr-2'>
             {/* modal menu */}
-            <div className='space-y-6 min-w-[15vw] min-h-[46vh] p-4'>
+            <div className='space-y-6 min-w-[15vw] min-h-[35vh] p-4'>
               <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
                 <VscListSelection className='text-2xl' />
                 <p>Select type</p>
