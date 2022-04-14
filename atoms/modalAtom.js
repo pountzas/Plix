@@ -25,6 +25,11 @@ export const homeTvState = atom({
   default: false,
 });
 
+export const castState = atom({
+  key: 'homeMovieState',
+  default: false,
+});
+
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},
