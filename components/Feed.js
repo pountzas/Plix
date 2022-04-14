@@ -63,9 +63,14 @@ function Feed() {
             </div>
           </div>
         )}
-        <div className='pt-9'>
-          <h3>Latest TV Shows</h3>
+        {latestTv && (
+          <div className='pt-9'>
+            <h3>Latest TV Shows</h3>
             <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
+              {/* <MediaCard /> */}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
