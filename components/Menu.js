@@ -26,11 +26,12 @@ function Menu() {
         <CgHome className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>Home</p>}
       </div>
-
-      <div className='flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl'>
-        <BsFilm className={` mr-4 ${!menuSize && 'mr-8'}`} />
-        {!menuSize && <p>Movies</p>}
-      </div>
+      {latestMovie && (
+        <div className='flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl'>
+          <BsFilm className={` mr-4 ${!menuSize && 'mr-8'}`} />
+          {!menuSize && <p>Movies</p>}
+        </div>
+      )}
       <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
         <MdMonitor className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>TV Shows</p>}
