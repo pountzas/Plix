@@ -27,6 +27,7 @@ function MediaCard({
   folderPath2,
   rootPath,
 }) {
+  const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const handlePlayer = () => {};
 
   const sendMediaValue = () => {
