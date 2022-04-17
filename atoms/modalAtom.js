@@ -40,6 +40,11 @@ export const homeMenuState = atom({
   default: true,
 });
 
+export const movieMenuState = atom({
+  key: 'movieMenuState',
+  default: false,
+});
+
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},
