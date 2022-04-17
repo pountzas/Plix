@@ -3,11 +3,18 @@ import { BsFilm } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { AiFillFolderAdd } from 'react-icons/ai';
 import { useRecoilState } from 'recoil';
-import { modalState, menuSizeState } from '../atoms/modalAtom';
+import {
+  modalState,
+  menuSizeState,
+  homeMovieState,
+  homeTvState,
+} from '../atoms/modalAtom';
 
 function Menu() {
   const [open, setOpen] = useRecoilState(modalState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+  const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [latestTv, setLatestTv] = useRecoilState(homeTvState);
 
   return (
     <section
