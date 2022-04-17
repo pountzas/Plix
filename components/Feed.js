@@ -87,38 +87,41 @@ function Feed() {
         </section>
       )}
 
-      <section>
-        <div>
-          <h3>Movies</h3>
-          <div className='pl-3 flex flex-wrap items-center justify-center space-x-7 '>
-            {MovieFiles.map((movie) => (
-              <MediaCard
-                key={movie.id}
-                id={movie.id} // to remove
-                name={movie.name}
-                tmdbId={movie.tmdbId}
-                adult={movie.adult}
-                backdrop={movie.backdrop_path}
-                lang={movie.original_language}
-                popularity={movie.popularity}
-                voteAverage={movie.vote_average}
-                voteCount={movie.vote_count}
-                tmdbPoster={movie.tmdbPoster}
-                tmdbTitle={movie.tmdbTitle}
-                tmdbOverview={movie.tmdbOverview}
-                tmdbReleaseDate={movie.tmdbReleaseDate}
-                tmdbRating={movie.tmdbRating}
-                tmdbGenre={movie.tmdbGenre}
-                fileName={movie.fileName}
-                objurl={movie.ObjUrl}
-                folderPath={movie.folderPath}
-                folderPath2={movie.folderPath2}
-                rootPath={movie.rootPath}
-              />
-            ))}
+      {/* Movie menu */}
+      {movieMenu && (
+        <section>
+          <div>
+            <h3>Movies</h3>
+            <div className='pl-3 flex flex-wrap items-center justify-center space-x-7 '>
+              {MovieFiles.map((movie) => (
+                <MediaCard
+                  key={movie.id}
+                  id={movie.id} // to remove
+                  name={movie.name}
+                  tmdbId={movie.tmdbId}
+                  adult={movie.adult}
+                  backdrop={movie.backdrop_path}
+                  lang={movie.original_language}
+                  popularity={movie.popularity}
+                  voteAverage={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  tmdbPoster={movie.tmdbPoster}
+                  tmdbTitle={movie.tmdbTitle}
+                  tmdbOverview={movie.tmdbOverview}
+                  tmdbReleaseDate={movie.tmdbReleaseDate}
+                  tmdbRating={movie.tmdbRating}
+                  tmdbGenre={movie.tmdbGenre}
+                  fileName={movie.fileName}
+                  objurl={movie.ObjUrl}
+                  folderPath={movie.folderPath}
+                  folderPath2={movie.folderPath2}
+                  rootPath={movie.rootPath}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </section>
   );
 }
