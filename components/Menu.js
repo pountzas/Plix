@@ -22,6 +22,12 @@ function Menu() {
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
   const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
 
+  const menuHome = () => {
+    setHomeMenu(true);
+    setMovieMenu(false);
+    setTvMenu(false);
+  };
+
   const menuMovie = () => {
     setHomeMenu(false);
     setMovieMenu(true);
@@ -34,7 +40,10 @@ function Menu() {
         !menuSize && 'bg-[#232B35] !space-y-3 min-w-[180px]'
       }  `}
     >
-      <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
+      <div
+        onClick={menuHome}
+        className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'
+      >
         <CgHome className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
         {!menuSize && <p>Home</p>}
       </div>
