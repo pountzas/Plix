@@ -22,6 +22,12 @@ function Menu() {
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
   const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
 
+  const menuMovie = () => {
+    setHomeMenu(false);
+    setMovieMenu(true);
+    setTvMenu(false);
+  };
+
   return (
     <section
       className={`space-y-5 mb-3 mx-3 rounded-md p-3 min-h-[90vh] transition-all ease-in-out delay-200 ${
@@ -33,7 +39,10 @@ function Menu() {
         {!menuSize && <p>Home</p>}
       </div>
       {latestMovie && (
-        <div className='flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl'>
+        <div
+          onClick={menuMovie}
+          className='flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl'
+        >
           <BsFilm className={` mr-4 ${!menuSize && 'mr-8'}`} />
           {!menuSize && <p>Movies</p>}
         </div>
