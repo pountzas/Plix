@@ -8,6 +8,9 @@ import {
   menuSizeState,
   homeMovieState,
   homeTvState,
+  homeMenuState,
+  movieMenuState,
+  tvMenuState,
 } from '../atoms/modalAtom';
 
 function Menu() {
@@ -15,6 +18,9 @@ function Menu() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
   const [latestTv, setLatestTv] = useRecoilState(homeTvState);
+  const [homeMenu, setHomeMenu] = useRecoilState(homeMenuState);
+  const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
+  const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
 
   return (
     <section
