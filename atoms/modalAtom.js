@@ -45,6 +45,11 @@ export const movieMenuState = atom({
   default: false,
 });
 
+export const tvMenuState = atom({
+  key: 'tvMenuState',
+  default: false,
+});
+
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},
