@@ -25,6 +25,11 @@ export const homeTvState = atom({
   default: false,
 });
 
+export const homeMusicState = atom({
+  key: 'homeMusicState',
+  default: false,
+});
+
 export const castState = atom({
   key: 'castState',
   default: false,
