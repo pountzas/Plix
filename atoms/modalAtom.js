@@ -35,6 +35,11 @@ export const castState = atom({
   default: false,
 });
 
+export const homeMenuState = atom({
+  key: 'homeMenuState',
+  default: true,
+});
+
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},
