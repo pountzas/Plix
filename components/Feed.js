@@ -14,7 +14,7 @@ function Feed() {
       <div
         className={`${
           menuSize
-            ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw] 2xl:w-[92vw]'
+            ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
             : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
         } flex justify-between items-center mb-7 `}
       >
@@ -27,7 +27,7 @@ function Feed() {
       <div
         className={`${
           menuSize
-            ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw] 2xl:w-[92vw]'
+            ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
             : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
         } `}
       >
