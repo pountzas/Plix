@@ -92,126 +92,131 @@ function MediaModal() {
   return (
     <>
       {open && (
-        <div className='flex flex-col justify-between fixed z-10 inset-2 overflow-y-auto bg-[#2D3742] text-white border-gray-900 border-2 max-w-[85vw] max-h-[50vh] rounded-lg'>
-          {/* modal header  */}
-          <div className='flex items-center bg-gray-800 justify-between pt-4 px-4 text-gray-400 pb-3'>
-            <div className='flex space-x-2 items-center'>
-              <AiOutlinePlus />
-              <h2>Add Library</h2>
-            </div>
-            <button className='' onClick={handleClose}>
-              <AiOutlineCloseCircle className='text-2xl' />
-            </button>
-          </div>
-          <div className='flex gap-5 pr-2'>
-            {/* modal menu */}
-            <div className='space-y-6 min-w-[15vw] min-h-[35vh] p-4'>
-              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
-                <VscListSelection className='text-2xl' />
-                <p>Select type</p>
-              </button>
-              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
-                <FaFolderOpen className='text-2xl' />
-                <p>Add folders</p>
-              </button>
-              <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
-                <BsGearFill className='text-2xl' />
-                <p>Advanced</p>
-              </button>
-            </div>
-            {/* modal menu options */}
-            <div>
-              {/* select library type section */}
-              <div>
-                <p className='text-gray-400 pt-4 font-semibold'>
-                  Select library type
-                </p>
-                <div className='flex py-4 space-y-8 space-x-16 text-gray-400'>
-                  <label
-                    htmlFor='movies'
-                    className='flex flex-col items-center justify-end space-y-2 cursor-pointer active:text-[#CC7B19] focus:text-[#CC7B19] focus:font-semibold'
-                  >
-                    <BsFilm className='text-5xl' />
-                    <p>Movies</p>
-                  </label>
-                  <input
-                    type='radio'
-                    id='movies'
-                    name='media'
-                    value='movies'
-                    defaultChecked
-                    className='hidden focus:after:text-[#CC7B19]'
-                  />
-
-                  <input
-                    type='radio'
-                    id='tv'
-                    name='media'
-                    value='tv'
-                    className='hidden'
-                  />
-                  <label
-                    htmlFor='tv'
-                    className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
-                  >
-                    <MdMonitor className='text-5xl' />
-                    <p>TV Shows</p>
-                  </label>
-
-                  <input
-                    type='radio'
-                    id='music'
-                    name='media'
-                    value='music'
-                    className='hidden'
-                  />
-                  <label
-                    htmlFor='music'
-                    className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
-                  >
-                    <HiOutlineMusicNote className='text-5xl' />
-                    <p>Music</p>
-                  </label>
-                </div>
+        <div className='flex items-center justify-center justify-items-center text-center fixed z-10 inset-0 overflow-y-auto'>
+          <div className='flex flex-col justify-self-center justify-between  bg-[#2D3742] text-white border-gray-900 border-2 min-w-[600px] min-h-[300px] max-w-[800px] max-h-[500px] rounded-lg'>
+            {/* modal header  */}
+            <div className='flex items-center bg-gray-800 justify-between pt-4 px-4 text-gray-400 pb-3'>
+              <div className='flex space-x-2 items-center'>
+                <AiOutlinePlus />
+                <h2>Add Library</h2>
               </div>
-              {/* add folders section */}
-              <div className=' space-y-6'>
-                <p>Add folders to your library</p>
-                <input
-                  className='bg-gray-800 rounded-xl mr-2'
-                  ref={folderPickerRef}
-                  type='file'
-                  directory=''
-                  webkitdirectory=''
-                  onChange={addFolderUrl}
-                  hidden
-                />
-                <button
-                  onClick={() => folderPickerRef.current.click()}
-                  className='p-2 bg-gray-600 rounded-lg'
-                >
-                  BROWSE FOR MEDIA FOLDER
+              <button className='' onClick={handleClose}>
+                <AiOutlineCloseCircle className='text-2xl' />
+              </button>
+            </div>
+            <div className='flex gap-5 pr-2'>
+              {/* modal menu */}
+              <div className='space-y-6 min-w-[15vw] min-h-[35vh] p-4'>
+                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  <VscListSelection className='text-2xl' />
+                  <p>Select type</p>
+                </button>
+                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  <FaFolderOpen className='text-2xl' />
+                  <p>Add folders</p>
+                </button>
+                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                  <BsGearFill className='text-2xl' />
+                  <p>Advanced</p>
                 </button>
               </div>
-              {/* advanced section */}
-              <div></div>
+              {/* modal menu options */}
+              <div>
+                {/* select library type section */}
+                <div>
+                  <p className='text-gray-400 pt-4 font-semibold'>
+                    Select library type
+                  </p>
+                  <div className='flex pb-4 space-y-8 space-x-16 text-gray-400'>
+                    <label
+                      htmlFor='movies'
+                      className='flex flex-col items-center justify-end space-y-2 cursor-pointer active:text-[#CC7B19] focus:text-[#CC7B19] focus:font-semibold'
+                    >
+                      <BsFilm className='text-4xl' />
+                      <p>Movies</p>
+                    </label>
+                    <input
+                      type='radio'
+                      id='movies'
+                      name='media'
+                      value='movies'
+                      defaultChecked
+                      className='hidden focus:after:text-[#CC7B19]'
+                    />
+
+                    <input
+                      type='radio'
+                      id='tv'
+                      name='media'
+                      value='tv'
+                      className='hidden'
+                    />
+                    <label
+                      htmlFor='tv'
+                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                    >
+                      <MdMonitor className='text-4xl' />
+                      <p className='inline-block w-[70px]'>TV Shows</p>
+                    </label>
+
+                    <input
+                      type='radio'
+                      id='music'
+                      name='media'
+                      value='music'
+                      className='hidden'
+                    />
+                    <label
+                      htmlFor='music'
+                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                    >
+                      <HiOutlineMusicNote className='text-4xl' />
+                      <p>Music</p>
+                    </label>
+                  </div>
+                </div>
+                {/* add folders section */}
+                <div className='space-y-2 pb-4'>
+                  <p>Add folders to your library</p>
+                  <input
+                    className='bg-gray-800 rounded-xl mr-2'
+                    ref={folderPickerRef}
+                    type='file'
+                    directory=''
+                    webkitdirectory=''
+                    onChange={addFolderUrl}
+                    hidden
+                  />
+                  <button
+                    onClick={() => folderPickerRef.current.click()}
+                    className='p-2 bg-gray-600 rounded-lg'
+                  >
+                    BROWSE FOR MEDIA FOLDER
+                  </button>
+                </div>
+                {/* advanced section */}
+                <div></div>
+              </div>
+            </div>
+            <div className='flex items-center justify-end space-x-2 bg-gray-800 py-2 pr-2'>
+              {/* modal buttons */}
+              <button
+                className='bg-gray-700 p-2 rounded-md'
+                onClick={handleClose}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={showLatestMovies}
+                className='bg-gray-900 p-2 rounded-md'
+              >
+                OK
+              </button>
             </div>
           </div>
-          <div className='flex items-center justify-end space-x-2 bg-gray-800 py-2 pr-2'>
-            {/* modal buttons */}
-            <button
-              className='bg-gray-700 p-2 rounded-md'
-              onClick={handleClose}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={showLatestMovies}
-              className='bg-gray-900 p-2 rounded-md'
-            >
-              OK
-            </button>
-          </div>
+          <span className='hidden sm:inline-block sm:align-middle sm:h-screen'>
+            &#8203;
+          </span>
         </div>
       )}
     </>
