@@ -32,10 +32,12 @@ function Menu() {
           {!menuSize && <p>Movies</p>}
         </div>
       )}
-      <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
-        <MdMonitor className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
-        {!menuSize && <p>TV Shows</p>}
-      </div>
+      {latestTv && (
+        <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
+          <MdMonitor className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
+          {!menuSize && <p>TV Shows</p>}
+        </div>
+      )}
 
       <div
         onClick={() => setOpen(true)}
