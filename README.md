@@ -14,6 +14,8 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 ## Information
 
 - Functional clone of [Plex Tv](https://www.plex.tv/) app, for learning purposes.
+- This app can manage local media.
+- It is intended to be used on Computers. No mobile or tablet!
 - Uses only movie TMDB API at the moment.
 
 
