@@ -23,7 +23,7 @@ export default function Home() {
       <Head>
         <title>Plix</title>
         <meta name='Plix' content='next app' />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel='icon' href='/Plex.ico' />
       </Head>
       <Header />
       {session && <Dashboard />}
