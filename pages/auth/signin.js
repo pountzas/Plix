@@ -8,7 +8,7 @@ export default function SignIn({ providers }) {
       <Header />
       <div className='flex flex-col items-center justify-center min-h-screen py-2 -mt56 px-14 text-center'>
         <Image
-          src='/../public/plix-logo-w.png'
+          src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
           alt='logo'
           height={200}
           width={600}

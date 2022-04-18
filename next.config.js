@@ -5,6 +5,7 @@ module.exports = {
       'localhost:3000',
       'www.themoviedb.org',
       'lh3.googleusercontent.com',
+      'res.cloudinary.com',
     ],
   },
 };

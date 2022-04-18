@@ -25,7 +25,7 @@ function Header() {
           />
           {/* <Link href='/' passHref> */}
           <Image
-            src='/../public/plix-logo-w.png'
+            src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
             alt='logo'
             height={20}
             width={60}
