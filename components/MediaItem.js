@@ -23,7 +23,7 @@ function MediaItem() {
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
-    }, 500);
+    }, 2500);
   }, [setCast, setMenuSize, menuSize]);
 
   const getMediaDetails = async () => {
