@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Image from 'next/image';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
@@ -16,6 +17,14 @@ function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
+
+  useEffect(() => {
+    // delay 3 seconds
+    setTimeout(() => {
+      setCast(true);
+      setMenuSize(menuSize);
+    }, 500);
+  }, [setCast, setMenuSize, menuSize]);
 
   const getMediaDetails = async () => {
     const mediaDetails = await fetch(
@@ -66,6 +75,7 @@ function MediaItem() {
     MediaCredits = [];
     Directors = [];
     Writers = [];
+    setCast(false);
     // setCast(false);
   };
   console.log(MediaItemProps);
