@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
@@ -6,25 +6,28 @@ import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
 import MediaCredits from './props/MediaCredits';
+import MediaCrew from './props/MediaCrew';
+import Writers from './props/Writers';
 
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
 
 function MediaItem() {
-  const Directors = [];
-  const Writers = [];
-
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
+  const [crew, setCrew] = useState(false);
 
   useEffect(() => {
     // delay 3 seconds
+    getMediaDetails();
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
-    }, 2500);
-  }, [setCast, setMenuSize, menuSize]);
+      setCrew(true);
+    }, 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getMediaDetails = async () => {
     const mediaDetails = await fetch(
@@ -42,45 +45,36 @@ function MediaItem() {
     });
     mediaData.crew.map((crew) => {
       if (crew.job === 'Director') {
-        Directors.push({
+        MediaCrew.push({
           key: crew.id,
           name: crew.name,
-          profile_path: crew.profile_path,
+          dep: crew.job,
         });
+        console.log(MediaCrew);
       }
       if (crew.job === 'Writer') {
         Writers.push({
           key: crew.id,
           name: crew.name,
-          profile_path: crew.profile_path,
+          dep: crew.job,
         });
+        console.log(Writers);
       }
-      // if (crew.job === 'Production') {
-      //   actors.push({
-      //     key: crew.id,
-      //     name: crew.name,
-      //     profile_path: crew.profile_path,
-      //   });
-      // }
     });
   };
-  console.log(Directors);
-  console.log(Writers);
-  getMediaDetails();
 
   console.log(MediaCredits);
+
   const handleClose = () => {
     setMediaItem(false);
     MediaItemProps = {};
     MediaCredits = [];
-    Directors = [];
+    MediaCrew = [];
     Writers = [];
     setCast(false);
     // setCast(false);
   };
   console.log(MediaItemProps);
-
-  setCast(true);
 
   return (
     <div>
@@ -107,7 +101,9 @@ function MediaItem() {
           height='400px'
         />
         <div className='lg:max-w-[40vw] space-y-4'>
-          <div className='text-gray-200'>{MediaItemProps.tmdbTitle}</div>
+          <div className='text-3xl text-gray-100'>
+            {MediaItemProps.tmdbTitle}
+          </div>
           <div className='flex items-center space-x-4'>
             <div className='text-gray-200'>
               {MediaItemProps.tmdbReleaseDate}
@@ -116,36 +112,56 @@ function MediaItem() {
           </div>
           <div className='text-gray-200'>{MediaItemProps.tmdbOverview}</div>
           {/* movie info */}
-          <div className='flex space-x-4'>
-            <div className='text-gray-400 font-semibold'>
-              <p>DIRECTED BY</p>
-              <p>WRITTEN BY</p>
-              <p>STUDIO</p>
-              <p>GENRE</p>
-            </div>
-            <div className='text-gray-200'>
-              <div>
-                {Directors.map((director) => {
-                  return (
-                    <div key={director.key}>
-                      <p>{director.name}TODO</p>
-                    </div>
-                  );
-                })}
+          {crew && (
+            <div className='flex space-x-4'>
+              <div className='text-gray-400 font-semibold'>
+                <p>DIRECTED BY</p>
+                <p>WRITTEN BY</p>
+                <p>STUDIO</p>
+                <p>GENRE</p>
               </div>
-              <div>
-                {Writers.map((writer) => {
-                  return (
-                    <div key={writer.key}>
-                      <p>{writer.name}TODO</p>
-                    </div>
-                  );
-                })}
+              <div className='text-gray-200'>
+                <div>
+                  <div className='flex items-start space-x-1'>
+                    {MediaCrew.length > 0 ? (
+                      MediaCrew.slice(0, 3).map((crew) => {
+                        console.log(crew.name);
+                        console.log(crew.dep);
+                        return (
+                          <p className='' key={crew.key}>
+                            {crew.name}
+                            <br />
+                          </p>
+                        );
+                      })
+                    ) : (
+                      <p>Unknown Director</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div className='flex items-start space-x-1'>
+                    {Writers.length > 0 ? (
+                      Writers.slice(0, 3).map((crew) => {
+                        console.log(crew.name);
+                        console.log(crew.dep);
+                        return (
+                          <p className='' key={crew.key}>
+                            {crew.name}
+                            <br />
+                          </p>
+                        );
+                      })
+                    ) : (
+                      <p>Unknown Writers</p>
+                    )}
+                  </div>
+                </div>
+                <p>{MediaItemProps.tmdbProduction} TODO</p>
+                <p>{MediaItemProps.tmdbGenre} TODO</p>
               </div>
-              <p>{MediaItemProps.tmdbProduction} TODO</p>
-              <p>{MediaItemProps.tmdbGenre} TODO</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {cast && (
