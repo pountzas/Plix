@@ -42,26 +42,21 @@ function MediaItem() {
     });
     mediaData.crew.map((crew) => {
       if (crew.job === 'Director') {
-        Directors.push({
+        MediaCrew.push({
           key: crew.id,
           name: crew.name,
-          profile_path: crew.profile_path,
+          dep: crew.job,
         });
+        console.log(MediaCrew);
       }
       if (crew.job === 'Writer') {
         Writers.push({
           key: crew.id,
           name: crew.name,
-          profile_path: crew.profile_path,
+          dep: crew.job,
         });
+        console.log(Writers);
       }
-      // if (crew.job === 'Production') {
-      //   actors.push({
-      //     key: crew.id,
-      //     name: crew.name,
-      //     profile_path: crew.profile_path,
-      //   });
-      // }
     });
   };
   console.log(Directors);
