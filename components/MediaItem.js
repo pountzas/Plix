@@ -6,6 +6,7 @@ import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
 import MediaCredits from './props/MediaCredits';
+import MediaCrew from './props/MediaCrew';
 
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
