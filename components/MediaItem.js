@@ -24,8 +24,10 @@ function MediaItem() {
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
-    }, 2500);
-  }, [setCast, setMenuSize, menuSize]);
+      setCrew(true);
+    }, 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getMediaDetails = async () => {
     const mediaDetails = await fetch(
@@ -73,8 +75,6 @@ function MediaItem() {
     // setCast(false);
   };
   console.log(MediaItemProps);
-
-  setCast(true);
 
   return (
     <div>
