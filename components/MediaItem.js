@@ -135,7 +135,7 @@ function MediaItem() {
                         );
                       })
                     ) : (
-                      <p>Unknown Director</p>
+                      <p className='text-gray-400'>Unknown Director</p>
                     )}
                   </div>
                 </div>
@@ -153,7 +153,7 @@ function MediaItem() {
                         );
                       })
                     ) : (
-                      <p>Unknown Writers</p>
+                      <p className='text-gray-400'>Unknown Writers</p>
                     )}
                   </div>
                 </div>
