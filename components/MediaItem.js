@@ -69,7 +69,7 @@ function MediaItem() {
     setMediaItem(false);
     MediaItemProps = {};
     MediaCredits = [];
-    Directors = [];
+    MediaCrew = [];
     Writers = [];
     setCast(false);
     // setCast(false);
