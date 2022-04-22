@@ -20,6 +20,7 @@ function MediaItem() {
 
   useEffect(() => {
     // delay 3 seconds
+    getMediaDetails();
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
@@ -59,11 +60,9 @@ function MediaItem() {
       }
     });
   };
-  console.log(Directors);
-  console.log(Writers);
-  getMediaDetails();
 
   console.log(MediaCredits);
+
   const handleClose = () => {
     setMediaItem(false);
     MediaItemProps = {};
