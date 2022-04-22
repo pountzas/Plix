@@ -101,7 +101,9 @@ function MediaItem() {
           height='400px'
         />
         <div className='lg:max-w-[40vw] space-y-4'>
-          <div className='text-gray-200'>{MediaItemProps.tmdbTitle}</div>
+          <div className='text-3xl text-gray-100'>
+            {MediaItemProps.tmdbTitle}
+          </div>
           <div className='flex items-center space-x-4'>
             <div className='text-gray-200'>
               {MediaItemProps.tmdbReleaseDate}
