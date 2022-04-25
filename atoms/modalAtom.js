@@ -55,6 +55,10 @@ export const bgImageUrl = atom({
   default: '',
 });
 
+export const imageState = atom({
+  key: 'imageState',
+  default: false,
+});
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},
