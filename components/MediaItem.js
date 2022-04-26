@@ -90,7 +90,7 @@ function MediaItem() {
   return (
     <div>
       <button className='pt-3' onClick={handleClose}>
-        <FaBackward className='text-gray-500 hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
+        <FaBackward className='text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
       </button>
       <div className='lg:flex items-center lg:space-x-8'>
         <ReactPlayer
