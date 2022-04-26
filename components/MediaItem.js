@@ -178,8 +178,8 @@ function MediaItem() {
           <div
             className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
               menuSize
-                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[93vw]'
-                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[86vw]'
+                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[92vw]'
+                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
             }`}
           >
             {MediaCredits.slice(0, 30).map((actor) => (
@@ -198,7 +198,7 @@ function MediaItem() {
                   layout='fixed'
                   quality='medium'
                 />
-                <div className='inline-block w-[100px]'>
+                <div className='inline-block w-[100px] pt-1'>
                   <div className='text-gray-200'>{actor.name}</div>
                   <div className='text-gray-400'>{actor.character}</div>
                 </div>

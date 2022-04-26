@@ -21,28 +21,30 @@ export default function Home() {
   }, [image, bgImage]);
 
   return (
-    <div
-      className={`relative min-w-full bg-gradient-to-bl from-[#2A3440] to-[#323C45] ${
-        movieMenu
-          ? !image
-            ? `min-h-[12600px] `
+    <div className='relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-full min-h-[1200px]'>
+      <div
+        className={`absolute min-w-full ${
+          movieMenu
+            ? !image
+              ? `min-h-[12600px] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
+              : `min-h-screen `
             : `min-h-screen `
-          : `min-h-screen `
-      }`}
-    >
-      {image && (
-        <div>
-          <Image
-            className='z-0 opacity-20 min-w-full min-h-screen '
-            src={`https://www.themoviedb.org/t/p/original${bgImage}`}
-            alt=''
-            layout='fill'
-            loading='lazy'
-            placeholder={`blur`}
-            blurDataURL={`https://www.themoviedb.org/t/p/w220_and_h330_face${bgImage}`}
-          />
-        </div>
-      )}
+        }`}
+      >
+        {image && (
+          <div>
+            <Image
+              className='z-0 opacity-20 min-w-full min-h-screen '
+              src={`https://www.themoviedb.org/t/p/original${bgImage}`}
+              alt=''
+              layout='fill'
+              loading='lazy'
+              placeholder={`blur`}
+              blurDataURL={`https://www.themoviedb.org/t/p/w220_and_h330_face${bgImage}`}
+            />
+          </div>
+        )}
+      </div>
       <div className='z-2 absolute'>
         <Head>
           <title>Plix</title>
