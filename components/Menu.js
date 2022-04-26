@@ -11,6 +11,7 @@ import {
   homeMenuState,
   movieMenuState,
   tvMenuState,
+  imageState,
 } from '../atoms/modalAtom';
 
 function Menu() {
@@ -21,6 +22,7 @@ function Menu() {
   const [homeMenu, setHomeMenu] = useRecoilState(homeMenuState);
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
   const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
+  const [image, setImage] = useRecoilState(imageState);
 
   const menuHome = () => {
     setHomeMenu(true);
@@ -37,8 +39,8 @@ function Menu() {
   return (
     <section
       className={`space-y-5 mb-3 mx-3 rounded-md p-3 min-h-[90vh] transition-all ease-in-out delay-200 ${
-        !menuSize && 'bg-[#232B35] !space-y-3 min-w-[180px]'
-      }  `}
+        image && 'opacity-80'
+      } ${!menuSize && 'bg-[#232B35] !space-y-3 min-w-[180px]'}  `}
     >
       <div
         onClick={menuHome}

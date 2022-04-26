@@ -50,6 +50,15 @@ export const tvMenuState = atom({
   default: false,
 });
 
+export const bgImageUrl = atom({
+  key: 'bgImageUrl',
+  default: '',
+});
+
+export const imageState = atom({
+  key: 'imageState',
+  default: false,
+});
 export const mediaValueState = atom({
   key: 'mediaValueState',
   default: {},

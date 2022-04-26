@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
-import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
+import {
+  mediaItemState,
+  menuSizeState,
+  castState,
+  bgImageUrl,
+  imageState,
+} from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
 import MediaCredits from './props/MediaCredits';
@@ -16,16 +22,24 @@ function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
+  const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
+  const [image, setImage] = useRecoilState(imageState);
   const [crew, setCrew] = useState(false);
 
   useEffect(() => {
-    // delay 3 seconds
     getMediaDetails();
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
       setCrew(true);
     }, 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setBgImage(MediaItemProps.backdrop);
+    setImage(true);
+    console.log('background image' + MediaItemProps.backdrop);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -50,7 +64,6 @@ function MediaItem() {
           name: crew.name,
           dep: crew.job,
         });
-        console.log(MediaCrew);
       }
       if (crew.job === 'Writer') {
         Writers.push({
@@ -58,12 +71,9 @@ function MediaItem() {
           name: crew.name,
           dep: crew.job,
         });
-        console.log(Writers);
       }
     });
   };
-
-  console.log(MediaCredits);
 
   const handleClose = () => {
     setMediaItem(false);
@@ -72,14 +82,15 @@ function MediaItem() {
     MediaCrew = [];
     Writers = [];
     setCast(false);
-    // setCast(false);
+    setBgImage('');
+    setImage(false);
   };
   console.log(MediaItemProps);
 
   return (
     <div>
       <button className='pt-3' onClick={handleClose}>
-        <FaBackward className='text-gray-500 hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
+        <FaBackward className='text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
       </button>
       <div className='lg:flex items-center lg:space-x-8'>
         <ReactPlayer
@@ -125,8 +136,6 @@ function MediaItem() {
                   <div className='flex items-start space-x-1'>
                     {MediaCrew.length > 0 ? (
                       MediaCrew.slice(0, 3).map((crew) => {
-                        console.log(crew.name);
-                        console.log(crew.dep);
                         return (
                           <p className='' key={crew.key}>
                             {crew.name}
@@ -135,7 +144,7 @@ function MediaItem() {
                         );
                       })
                     ) : (
-                      <p>Unknown Director</p>
+                      <p className='text-gray-400'>Unknown Director</p>
                     )}
                   </div>
                 </div>
@@ -143,8 +152,6 @@ function MediaItem() {
                   <div className='flex items-start space-x-1'>
                     {Writers.length > 0 ? (
                       Writers.slice(0, 3).map((crew) => {
-                        console.log(crew.name);
-                        console.log(crew.dep);
                         return (
                           <p className='' key={crew.key}>
                             {crew.name}
@@ -153,7 +160,7 @@ function MediaItem() {
                         );
                       })
                     ) : (
-                      <p>Unknown Writers</p>
+                      <p className='text-gray-400'>Unknown Writers</p>
                     )}
                   </div>
                 </div>
@@ -168,7 +175,13 @@ function MediaItem() {
         // casting
         <div className='pt-8'>
           <div className='text-gray-200'>Cast</div>
-          <div className='flex overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 max-w-[79vw]'>
+          <div
+            className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
+              menuSize
+                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[93vw]'
+                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[86vw]'
+            }`}
+          >
             {MediaCredits.slice(0, 30).map((actor) => (
               <div
                 className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'

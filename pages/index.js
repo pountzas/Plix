@@ -4,32 +4,57 @@ import Dashboard from '../components/Dashboard';
 import MediaModal from '../components/MediaModal';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRecoilState } from 'recoil';
+import { bgImageUrl, imageState, movieMenuState } from '../atoms/modalAtom';
+import Image from 'next/image';
 
 export default function Home() {
   const { data: session } = useSession();
-  const router = useRouter();
+  const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
+  const [image, setImage] = useRecoilState(imageState);
+  const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
 
-  // useEffect(() => {
-  //   if (!session) {
-  //     router.push('/auth/signin');
-  //   } else {
-  //     router.push('/');
-  //   }
-  // }, [router, session]);
+  useEffect(() => {
+    if (image) {
+      console.log(bgImage + 'bgImage');
+    }
+  }, [image, bgImage]);
 
   return (
-    <div className='absolute min-w-full min-h-screen bg-gradient-to-bl from-[#2A3440] to-[#323C45]'>
-      <Head>
-        <title>Plix</title>
-        <meta name='Plix' content='next app' />
-        <link rel='icon' href='/Plex.ico' />
-      </Head>
-      <Header />
-      {session && <Dashboard />}
+    <div
+      className={`relative min-w-full bg-gradient-to-bl from-[#2A3440] to-[#323C45] ${
+        movieMenu
+          ? !image
+            ? `min-h-[12600px] `
+            : `min-h-screen `
+          : `min-h-screen `
+      }`}
+    >
+      {image && (
+        <div>
+          <Image
+            className='z-0 opacity-20 min-w-full min-h-screen '
+            src={`https://www.themoviedb.org/t/p/original${bgImage}`}
+            alt=''
+            layout='fill'
+            loading='lazy'
+            placeholder={`blur`}
+            blurDataURL={`https://www.themoviedb.org/t/p/w220_and_h330_face${bgImage}`}
+          />
+        </div>
+      )}
+      <div className='z-2 absolute'>
+        <Head>
+          <title>Plix</title>
+          <meta name='Plix' content='next app' />
+          <link rel='icon' href='/Plex.ico' />
+        </Head>
+        <Header />
+        {session && <Dashboard />}
 
-      {/* MediaModal */}
-      <MediaModal />
+        {/* MediaModal */}
+        <MediaModal />
+      </div>
     </div>
   );
 }

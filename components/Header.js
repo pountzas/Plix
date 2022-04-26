@@ -17,7 +17,10 @@ function Header() {
 
   return (
     <header>
-      <div className='bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between'>
+      <div
+        className={`bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
+            ${!session && 'w-[98vw]'}`}
+      >
         <div className='flex justify-start items-center'>
           <VscMenu
             onClick={handleMenuSize}
