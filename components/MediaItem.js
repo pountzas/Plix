@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
-import { mediaItemState, menuSizeState, castState } from '../atoms/modalAtom';
+import {
+  mediaItemState,
+  menuSizeState,
+  castState,
+  bgImageUrl,
+  imageState,
+} from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
 import MediaCredits from './props/MediaCredits';
@@ -16,16 +22,24 @@ function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [cast, setCast] = useRecoilState(castState);
+  const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
+  const [image, setImage] = useRecoilState(imageState);
   const [crew, setCrew] = useState(false);
 
   useEffect(() => {
-    // delay 3 seconds
     getMediaDetails();
     setTimeout(() => {
       setCast(true);
       setMenuSize(menuSize);
       setCrew(true);
     }, 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setBgImage(MediaItemProps.backdrop);
+    setImage(true);
+    console.log('background image' + MediaItemProps.backdrop);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -50,7 +64,6 @@ function MediaItem() {
           name: crew.name,
           dep: crew.job,
         });
-        console.log(MediaCrew);
       }
       if (crew.job === 'Writer') {
         Writers.push({
@@ -58,12 +71,9 @@ function MediaItem() {
           name: crew.name,
           dep: crew.job,
         });
-        console.log(Writers);
       }
     });
   };
-
-  console.log(MediaCredits);
 
   const handleClose = () => {
     setMediaItem(false);
@@ -72,7 +82,8 @@ function MediaItem() {
     MediaCrew = [];
     Writers = [];
     setCast(false);
-    // setCast(false);
+    setBgImage('');
+    setImage(false);
   };
   console.log(MediaItemProps);
 
@@ -125,8 +136,6 @@ function MediaItem() {
                   <div className='flex items-start space-x-1'>
                     {MediaCrew.length > 0 ? (
                       MediaCrew.slice(0, 3).map((crew) => {
-                        console.log(crew.name);
-                        console.log(crew.dep);
                         return (
                           <p className='' key={crew.key}>
                             {crew.name}
@@ -143,8 +152,6 @@ function MediaItem() {
                   <div className='flex items-start space-x-1'>
                     {Writers.length > 0 ? (
                       Writers.slice(0, 3).map((crew) => {
-                        console.log(crew.name);
-                        console.log(crew.dep);
                         return (
                           <p className='' key={crew.key}>
                             {crew.name}
