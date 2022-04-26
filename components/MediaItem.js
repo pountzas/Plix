@@ -187,18 +187,20 @@ function MediaItem() {
                 className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
                 key={actor.key}
               >
-                <Image
-                  className='rounded-full shadow-xl'
-                  // placeholder='blur'
-                  src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
-                  alt=''
-                  width='150px'
-                  height='150px'
-                  loading='lazy'
-                  layout='fixed'
-                  quality='medium'
-                />
-                <div className='inline-block w-[100px] pt-1'>
+                <div className='flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full '>
+                  <Image
+                    className='rounded-full shadow-xl'
+                    // placeholder='blur'
+                    src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
+                    alt=''
+                    width='120px'
+                    height='120px'
+                    loading='lazy'
+                    layout='fixed'
+                    quality='medium'
+                  />
+                </div>
+                <div className='flex flex-col items-center text-center justify-center w-[100px] pt-1'>
                   <div className='text-gray-200'>{actor.name}</div>
                   <div className='text-gray-400'>{actor.character}</div>
                 </div>
