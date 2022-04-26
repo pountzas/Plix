@@ -2,7 +2,6 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 
 ![img](./public/plix-logo-w.png)
 
-
 ## Sort presentation
 
 <!-- <video src='https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a' width=180/> -->
@@ -18,14 +17,14 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 - It is intended to be used on Computers. No mobile or tablet!
 - Uses only movie TMDB API at the moment.
 
-
 ## To Do!
 
 - add Tv Series TMDB API
 - add Music TMDB API
 - add subtitles functionality
+- add header search functionality according to page
+- set app image background according to media
 - create firebase database per user (data are lost on refresh)
-
 
 ## Status
 
