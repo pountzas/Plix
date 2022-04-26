@@ -156,7 +156,7 @@ function MediaModal() {
                       className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
                     >
                       <MdMonitor className='text-4xl' />
-                      <p className='inline-block w-[70px]'>TV Shows</p>
+                      <p className='inline-block w-[80px]'>TV Shows</p>
                     </label>
 
                     <input
