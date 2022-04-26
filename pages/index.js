@@ -22,12 +22,13 @@ export default function Home() {
 
   return (
     <div
-      className={
+      className={`relative min-w-full bg-gradient-to-bl from-[#2A3440] to-[#323C45] ${
         movieMenu
-          ? `min-h-[8000px] `
-          : `min-h-screen ` +
-            `relative min-w-full bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
-      }
+          ? !image
+            ? `min-h-[12600px] `
+            : `min-h-screen `
+          : `min-h-screen `
+      }`}
     >
       {image && (
         <div>
