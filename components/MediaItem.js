@@ -175,7 +175,13 @@ function MediaItem() {
         // casting
         <div className='pt-8'>
           <div className='text-gray-200'>Cast</div>
-          <div className='flex overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 max-w-[79vw]'>
+          <div
+            className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
+              menuSize
+                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[93vw]'
+                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[86vw]'
+            }`}
+          >
             {MediaCredits.slice(0, 30).map((actor) => (
               <div
                 className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
