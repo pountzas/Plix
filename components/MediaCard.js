@@ -25,7 +25,7 @@ function MediaCard({
   objurl,
   folderPath,
   folderPath2,
-  rootPath,
+  rootPath
 }) {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const handlePlayer = () => {};
@@ -51,7 +51,7 @@ function MediaCard({
       objurl,
       folderPath,
       folderPath2,
-      rootPath,
+      rootPath
     };
   };
 
@@ -61,7 +61,7 @@ function MediaCard({
   };
 
   return (
-    <div onClick={handleMediaCardClick} className='pb-12 min-w-max'>
+    <div onClick={handleMediaCardClick} className='min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
           <div onClick={handlePlayer}>
