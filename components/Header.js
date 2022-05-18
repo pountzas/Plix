@@ -18,8 +18,8 @@ function Header() {
   return (
     <header>
       <div
-        className={`bg-[#232B35] my-3 mx-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
-            ${!session && 'w-[98vw]'}`}
+        className={`bg-[#232B35] m-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
+            ${!session && 'w-[97vw]'}`}
       >
         <div className='flex justify-start items-center'>
           <VscMenu

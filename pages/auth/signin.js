@@ -4,9 +4,9 @@ import Image from 'next/image';
 
 export default function SignIn({ providers }) {
   return (
-    <section className='bg-gray-800'>
+    <section className='bg-gray-800 min-h-[100vh]'>
       <Header />
-      <div className='flex flex-col items-center justify-center min-h-screen py-2 -mt56 px-14 text-center'>
+      <div className='flex flex-col items-center justify-center mt-40 text-center'>
         <Image
           src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
           alt='logo'
@@ -40,7 +40,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      providers,
-    },
+      providers
+    }
   };
 }

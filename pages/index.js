@@ -21,12 +21,16 @@ export default function Home() {
   }, [image, bgImage]);
 
   return (
-    <div className='relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-full min-h-[1200px]'>
+    <div
+      className={`relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-screen ${
+        session ? 'min-h-[101vh]' : 'min-h-[100vh]'
+      }`}
+    >
       <div
         className={`absolute min-w-full ${
           movieMenu
             ? !image
-              ? `min-h-[12600px] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
+              ? `min-h-[100vh] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
               : `min-h-screen `
             : `min-h-screen `
         }`}
@@ -34,7 +38,7 @@ export default function Home() {
         {image && (
           <div>
             <Image
-              className='z-0 opacity-20 min-w-full min-h-screen '
+              className='z-0 opacity-30 min-w-full min-h-screen '
               src={`https://www.themoviedb.org/t/p/original${bgImage}`}
               alt=''
               layout='fill'
