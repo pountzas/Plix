@@ -23,7 +23,7 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 - add Music TMDB API
 - add subtitles functionality
 - add header search functionality according to page
-- set app image background according to media
+- set app image background according to media ☑️
 - create firebase database per user (data are lost on refresh)
 
 ## Status
