@@ -1,4 +1,3 @@
-import { MdViewComfy } from 'react-icons/md';
 import MediaCard from './MediaCard';
 import { useRecoilState } from 'recoil';
 import {
@@ -10,17 +9,8 @@ import {
   tvMenuState,
   sliderState
 } from '../atoms/modalAtom';
+import SliderComp from './SliderComp';
 import MovieFiles from './props/MovieFiles';
-
-import Slider, { SliderTooltip } from 'rc-slider';
-import 'rc-slider/assets/index.css';
-import 'rc-tooltip/assets/bootstrap.css';
-
-// const createSliderWithTooltip = Slider.createSliderWithTooltip;
-// const Range = createSliderWithTooltip(Slider.Range);
-// const { Handle } = Slider;
-
-const wrapperStyle = { width: 100, margin: 25 };
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
@@ -40,23 +30,16 @@ function Feed() {
               menuSize
                 ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
                 : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-            } flex justify-between items-center mb-7 `}
+            } flex justify-between items-center mb-7`}
           >
             <h2>Home</h2>
-            <div className='flex items-center space-x-2 object-contain'>
-              <div style={wrapperStyle}>
-                {/* <p>Slider with fixed values</p> */}
-                <Slider
-                  min={0}
-                  max={100}
-                  defaultValue={slider}
-                  // marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
-                  step={25}
-                  onChange={(value) => setSlider(value)}
-                />
-              </div>
-              <MdViewComfy className='text-3xl' />
-            </div>
+            <SliderComp
+              defaultValue={slider}
+              step={25}
+              min={0}
+              max={100}
+              onChange={(value) => setSlider(value)}
+            />
           </div>
           <div
             className={`${
@@ -113,7 +96,16 @@ function Feed() {
       {movieMenu && (
         <section>
           <div className=''>
-            <h3>Movies</h3>
+            <div className='flex items-center justify-between pr-24'>
+              <h3>Movies</h3>
+              <SliderComp
+                defaultValue={slider}
+                step={25}
+                min={0}
+                max={100}
+                onChange={(value) => setSlider(value)}
+              />
+            </div>
             <div className='min-h-[50vh]'>
               <div className='flex flex-wrap justify-start overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
                 {MovieFiles.map((movie) => (
