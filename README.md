@@ -4,11 +4,8 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 
 ## Sort presentation
 
-<!-- <video src='https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a' width=180/> -->
-<a href="https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a">
-    <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/94bf6a2376c646969b5225dd73a5f20a-with-play.gif">
-  </a>
-  </br>
+[video presentation](https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a)
+
 
 ## Information
 
