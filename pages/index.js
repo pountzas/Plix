@@ -5,7 +5,12 @@ import MediaModal from '../components/MediaModal';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { bgImageUrl, imageState, movieMenuState } from '../atoms/modalAtom';
+import {
+  bgImageUrl,
+  imageState,
+  movieMenuState,
+  bgOpacityState
+} from '../atoms/modalAtom';
 import Image from 'next/image';
 
 export default function Home() {
@@ -13,6 +18,7 @@ export default function Home() {
   const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
   const [image, setImage] = useRecoilState(imageState);
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
+  const [bgOpacity, setBgOpacity] = useRecoilState(bgOpacityState);
 
   useEffect(() => {
     if (image) {
@@ -38,7 +44,7 @@ export default function Home() {
         {image && (
           <div>
             <Image
-              className='z-0 opacity-30 min-w-full min-h-screen '
+              className={`z-0 opacity-[${bgOpacity}] ${bgOpacity} min-w-full min-h-screen`}
               src={`https://www.themoviedb.org/t/p/original${bgImage}`}
               alt=''
               layout='fill'

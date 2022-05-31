@@ -62,13 +62,15 @@ function MediaCard({
     setMediaItem(true);
     sendMediaValue();
   };
-
+  // console.log(SliderProps[slider]['title']);
   return (
     <div onClick={handleMediaCardClick} className='min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>
         <div className=' text-5xl text-gray-400 hover:group-even:hidden hover:group-last:inline-block'>
           <div onClick={handlePlayer}>
-            <BsPlayCircleFill className='relative top-32 left-10 z-10 p-1 hover:text-left hover:bg-[#CC7B19] rounded-full' />
+            <BsPlayCircleFill
+              className={`${SliderProps[slider]['play']} relative transition-all z-10 p-1 hover:bg-[#CC7B19] rounded-full`}
+            />
           </div>
 
           {/* <BsPlayCircle className='relative hidden top-32 left-10 z-10 hover:bg-[#CC7B19] rounded-full' /> */}
@@ -83,7 +85,7 @@ function MediaCard({
         />
       </div>
       <h3
-        className={`font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis w-[130px]`}
+        className={`font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[slider]['title']}`}
       >
         {tmdbTitle}
       </h3>
