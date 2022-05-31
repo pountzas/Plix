@@ -42,6 +42,7 @@ export default function Home() {
               src={`https://www.themoviedb.org/t/p/original${bgImage}`}
               alt=''
               layout='fill'
+              objectFit='cover'
               loading='lazy'
               placeholder={`blur`}
               blurDataURL={`https://www.themoviedb.org/t/p/w220_and_h330_face${bgImage}`}

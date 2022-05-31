@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import MediaItemProps from './props/MediaItemProps';
 import { useRecoilState } from 'recoil';
-import { mediaItemState } from '../atoms/modalAtom';
+import { mediaItemState, sliderState } from '../atoms/modalAtom';
 
 import { BsPlayCircleFill, BsPlayCircle } from 'react-icons/bs';
+import SliderProps from './props/SliderProps';
 
 function MediaCard({
   id,
@@ -28,6 +29,8 @@ function MediaCard({
   rootPath
 }) {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
+  const [slider, setSlider] = useRecoilState(sliderState);
+
   const handlePlayer = () => {};
 
   const sendMediaValue = () => {
@@ -73,13 +76,15 @@ function MediaCard({
         <Image
           className='absolute hover:opacity-50 rounded-md'
           src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
-          alt=''
+          alt='movie poster'
           loading='lazy'
-          width='130px'
-          height='195px'
+          height={SliderProps[slider]['height']}
+          width={SliderProps[slider]['width']}
         />
       </div>
-      <h3 className='font-semibold text-sm w-[130px] overflow-hidden whitespace-nowrap text-ellipsis '>
+      <h3
+        className={`font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis w-[130px]`}
+      >
         {tmdbTitle}
       </h3>
       <h3 className='text-sm text-gray-400 font-semibold'>{tmdbReleaseDate}</h3>
