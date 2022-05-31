@@ -8,15 +8,19 @@ import {
   castState,
   bgImageUrl,
   imageState,
+  sliderState,
+  bgOpacityState
 } from '../atoms/modalAtom';
 
 import MediaItemProps from './props/MediaItemProps';
 import MediaCredits from './props/MediaCredits';
 import MediaCrew from './props/MediaCrew';
 import Writers from './props/Writers';
+import SliderProps from './props/SliderProps';
 
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaBackward } from 'react-icons/fa';
+import SliderComp from './SliderComp';
 
 function MediaItem() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
@@ -24,6 +28,8 @@ function MediaItem() {
   const [cast, setCast] = useRecoilState(castState);
   const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
   const [image, setImage] = useRecoilState(imageState);
+  const [slider, setSlider] = useRecoilState(sliderState);
+  const [bgOpacity, setBgOpacity] = useRecoilState(bgOpacityState);
   const [crew, setCrew] = useState(false);
 
   useEffect(() => {
@@ -54,7 +60,7 @@ function MediaItem() {
         name: cast.name,
         character: cast.character,
         profile_path: cast.profile_path,
-        dep: cast.known_for_department,
+        dep: cast.known_for_department
       });
     });
     mediaData.crew.map((crew) => {
@@ -62,14 +68,14 @@ function MediaItem() {
         MediaCrew.push({
           key: crew.id,
           name: crew.name,
-          dep: crew.job,
+          dep: crew.job
         });
       }
       if (crew.job === 'Writer') {
         Writers.push({
           key: crew.id,
           name: crew.name,
-          dep: crew.job,
+          dep: crew.job
         });
       }
     });
@@ -89,21 +95,38 @@ function MediaItem() {
 
   return (
     <div>
-      <button className='pt-3' onClick={handleClose}>
-        <FaBackward className='text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
-      </button>
+      <div className='flex items-start justify-between pr-4'>
+        <button className='pt-3' onClick={handleClose}>
+          <FaBackward className='text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
+        </button>
+        <div>
+          <SliderComp
+            defaultValue={slider}
+            step={25}
+            min={0}
+            max={100}
+            onChange={(value) => setSlider(value)}
+          />
+          <SliderComp
+            defaultValue={bgOpacity}
+            step={0.1}
+            min={0.1}
+            max={1}
+            onChange={(value) => setBgOpacity(value)}
+          />
+        </div>
+      </div>
       <div className='lg:flex items-center lg:space-x-8'>
         <ReactPlayer
-          // className='rounded'
           config={{
             file: {
               attributes: {
                 controlsList: 'nodownload',
                 volume: 1,
                 controls: true,
-                color: '#fff',
-              },
-            },
+                color: '#fff'
+              }
+            }
           }}
           url={MediaItemProps.objurl}
           controls
@@ -182,7 +205,7 @@ function MediaItem() {
                 : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
             }`}
           >
-            {MediaCredits.slice(0, 30).map((actor) => (
+            {MediaCredits.slice(0, 50).map((actor) => (
               <div
                 className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
                 key={actor.key}
@@ -190,11 +213,10 @@ function MediaItem() {
                 <div className='flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full '>
                   <Image
                     className='rounded-full shadow-xl'
-                    // placeholder='blur'
                     src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
                     alt=''
-                    width='120px'
-                    height='120px'
+                    width={SliderProps[slider]['width']}
+                    height={SliderProps[slider]['width']}
                     loading='lazy'
                     layout='fixed'
                     quality='medium'

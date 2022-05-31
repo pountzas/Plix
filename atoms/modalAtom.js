@@ -68,3 +68,8 @@ export const sliderState = atom({
   key: 'sliderState',
   default: 25
 });
+
+export const bgOpacityState = atom({
+  key: 'bgOpacityState',
+  default: 0.2
+});
