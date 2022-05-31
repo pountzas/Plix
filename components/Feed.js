@@ -7,9 +7,20 @@ import {
   homeTvState,
   homeMenuState,
   movieMenuState,
-  tvMenuState
+  tvMenuState,
+  sliderState
 } from '../atoms/modalAtom';
 import MovieFiles from './props/MovieFiles';
+
+import Slider, { SliderTooltip } from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
+
+// const createSliderWithTooltip = Slider.createSliderWithTooltip;
+// const Range = createSliderWithTooltip(Slider.Range);
+// const { Handle } = Slider;
+
+const wrapperStyle = { width: 100, margin: 25 };
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
@@ -18,6 +29,7 @@ function Feed() {
   const [homeMenu, setHomeMenu] = useRecoilState(homeMenuState);
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
   const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
+  const [slider, setSlider] = useRecoilState(sliderState);
 
   return (
     <section className='pt-3 px-3 mr-3 rounded-md text-2xl text-gray-300'>
@@ -32,7 +44,17 @@ function Feed() {
           >
             <h2>Home</h2>
             <div className='flex items-center space-x-2 object-contain'>
-              <p>bar</p>
+              <div style={wrapperStyle}>
+                {/* <p>Slider with fixed values</p> */}
+                <Slider
+                  min={0}
+                  max={100}
+                  defaultValue={slider}
+                  // marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
+                  step={25}
+                  onChange={(value) => setSlider(value)}
+                />
+              </div>
               <MdViewComfy className='text-3xl' />
             </div>
           </div>
