@@ -12,7 +12,7 @@ function SliderComp({ defaultValue, step, onClick, onChange, min, max }) {
   return (
     <div>
       <div className='flex items-center space-x-2 object-contain'>
-        <div className='w-[100px] m-[25px] text-gray-500'>
+        <div className='w-[100px] m-[15px] text-gray-500'>
           <Slider
             min={min}
             max={max}
