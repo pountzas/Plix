@@ -12,6 +12,7 @@ import {
   bgOpacityState
 } from '../atoms/modalAtom';
 import Image from 'next/image';
+import SliderBgOpacity from '../components/props/SliderBgOpacity';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -44,7 +45,7 @@ export default function Home() {
         {image && (
           <div>
             <Image
-              className={`z-0 opacity-[${bgOpacity}] ${bgOpacity} min-w-full min-h-screen`}
+              className={`z-0 ${SliderBgOpacity[bgOpacity]['opacityValue']} min-w-full min-h-screen`}
               src={`https://www.themoviedb.org/t/p/original${bgImage}`}
               alt=''
               layout='fill'
