@@ -29,7 +29,7 @@ export default function Home() {
   }, [image, bgImage]);
 
   useEffect(() => {
-    setImageOpacityStyles(SliderBgOpacity[bgOpacity]['opacityValue']);
+    setImageOpacityStyles(SliderBgOpacity[bgOpacity]);
     console.log(imageOpacityStyles + 'bgOpacity');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bgOpacity]);
