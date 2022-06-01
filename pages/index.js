@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Dashboard from '../components/Dashboard';
 import MediaModal from '../components/MediaModal';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import {
   bgImageUrl,
@@ -20,12 +20,19 @@ export default function Home() {
   const [image, setImage] = useRecoilState(imageState);
   const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
   const [bgOpacity, setBgOpacity] = useRecoilState(bgOpacityState);
+  const [imageOpacityStyles, setImageOpacityStyles] = useState('');
 
   useEffect(() => {
     if (image) {
       console.log(bgImage + 'bgImage');
     }
   }, [image, bgImage]);
+
+  useEffect(() => {
+    setImageOpacityStyles(SliderBgOpacity[bgOpacity]['opacityValue']);
+    console.log(imageOpacityStyles + 'bgOpacity');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bgOpacity]);
 
   return (
     <div
@@ -45,7 +52,7 @@ export default function Home() {
         {image && (
           <div>
             <Image
-              className={`z-0 ${SliderBgOpacity[bgOpacity]['opacityValue']} min-w-full min-h-screen`}
+              className={`z-0 ${imageOpacityStyles} min-w-full min-h-screen`}
               src={`https://www.themoviedb.org/t/p/original${bgImage}`}
               alt=''
               layout='fill'
