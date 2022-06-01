@@ -49,7 +49,7 @@ function MediaModal() {
           if (name) {
             const response = await fetch(
               `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
-            );
+            ).catch((err) => console.log(err));
 
             const data = await response.json();
             const tmdbId = data.results[0]?.id;
@@ -78,7 +78,7 @@ function MediaModal() {
                   ObjUrl: URL.createObjectURL(files[i]),
                   folderPath: files[i].webkitRelativePath,
                   folderPath2: files[i].webkitdirectory,
-                  rootPath: files[i].path,
+                  rootPath: files[i].path
                 })
               : console.log(name + ' not found ' + files[i].webkitRelativePath);
           }
