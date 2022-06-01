@@ -62,7 +62,7 @@ function MediaCard({
     setMediaItem(true);
     sendMediaValue();
   };
-  // console.log(SliderProps[slider]['title']);
+
   return (
     <div onClick={handleMediaCardClick} className='min-w-max'>
       <div className='pb-2 group-hover:opacity-100'>

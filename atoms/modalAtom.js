@@ -71,5 +71,5 @@ export const sliderState = atom({
 
 export const bgOpacityState = atom({
   key: 'bgOpacityState',
-  default: 0.2
+  default: 2
 });

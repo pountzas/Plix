@@ -91,7 +91,6 @@ function MediaItem() {
     setBgImage('');
     setImage(false);
   };
-  console.log(MediaItemProps);
 
   return (
     <div>
@@ -99,22 +98,25 @@ function MediaItem() {
         <button className='pt-3' onClick={handleClose}>
           <FaBackward className='text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl' />
         </button>
-        <div>
-          <SliderComp
-            defaultValue={slider}
-            step={25}
-            min={0}
-            max={100}
-            onChange={(value) => setSlider(value)}
-          />
-          <SliderComp
-            defaultValue={bgOpacity}
-            step={0.1}
-            min={0.1}
-            max={1}
-            onChange={(value) => setBgOpacity(value)}
-          />
-        </div>
+        {crew && (
+          <div>
+            <SliderComp
+              defaultValue={slider}
+              step={25}
+              min={0}
+              max={100}
+              onChange={(value) => setSlider(value)}
+            />
+            <SliderComp
+              defaultValue={bgOpacity}
+              step={1}
+              min={1}
+              max={10}
+              onClick={() => setImage(!image)}
+              onChange={(value) => setBgOpacity(value)}
+            />
+          </div>
+        )}
       </div>
       <div className='lg:flex items-center lg:space-x-8'>
         <ReactPlayer
