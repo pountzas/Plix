@@ -23,12 +23,6 @@ export default function Home() {
   const [imageOpacityStyles, setImageOpacityStyles] = useState('');
 
   useEffect(() => {
-    if (image) {
-      console.log(bgImage + 'bgImage');
-    }
-  }, [image, bgImage]);
-
-  useEffect(() => {
     setImageOpacityStyles(SliderBgOpacity[bgOpacity]);
     console.log(imageOpacityStyles + 'bgOpacity');
     // eslint-disable-next-line react-hooks/exhaustive-deps
