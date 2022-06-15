@@ -33,14 +33,18 @@ function Feed() {
                 : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
             } mb-7`}
           >
-            <h2>Home</h2>
-            <SliderComp
-              defaultValue={slider}
-              step={25}
-              min={0}
-              max={100}
-              onChange={(value) => setSlider(value)}
-            />
+            {(latestMovie || latestTv) && (
+              <div className='flex items-center justify-between'>
+                <h2>Home</h2>
+                <SliderComp
+                  defaultValue={slider}
+                  step={25}
+                  min={0}
+                  max={100}
+                  onChange={(value) => setSlider(value)}
+                />
+              </div>
+            )}
           </div>
           <div
             className={`${
