@@ -31,7 +31,7 @@ function Feed() {
               menuSize
                 ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
                 : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-            } flex justify-between items-center mb-7`}
+            } mb-7`}
           >
             <h2>Home</h2>
             <SliderComp
@@ -120,8 +120,8 @@ function Feed() {
                 onChange={(value) => setSlider(value)}
               />
             </div>
-            <div className='min-h-[50vh]'>
-              <div className='flex flex-wrap justify-start overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+            <div className=''>
+              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
                 {MovieFiles.map((movie) => (
                   <div className='pr-7' key={movie.id}>
                     <MediaCard
