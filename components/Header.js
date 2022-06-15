@@ -4,11 +4,12 @@ import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
 import { BsPersonCircle } from 'react-icons/bs';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useRecoilState } from 'recoil';
-import { menuSizeState } from '../atoms/modalAtom';
+import { menuSizeState, imageState } from '../atoms/modalAtom';
 
 function Header() {
   const { data: session } = useSession();
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+  const [image, setImage] = useRecoilState(imageState);
 
   const handleMenuSize = () => {
     setMenuSize(!menuSize);
@@ -17,8 +18,8 @@ function Header() {
   return (
     <header>
       <div
-        className={`bg-[#232B35] opacity-75 m-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
-            ${!session && 'w-[97vw]'}`}
+        className={`bg-[#232B35] m-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
+            ${!session && 'w-[97vw]'} ${image && 'opacity-75'}`}
       >
         <div className='flex justify-start items-center'>
           <VscMenu
