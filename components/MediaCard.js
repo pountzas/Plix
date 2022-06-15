@@ -92,7 +92,7 @@ function MediaCard({
             />
           </div>
         </div>
-        <div className={`outline-[#CC7B19] hover:outline rounded-md`}>
+        <div className={`outline-[#CC7B19] group-hover:outline rounded-md`}>
           <Image
             className='rounded-md'
             src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
