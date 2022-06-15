@@ -38,9 +38,12 @@ function Menu() {
 
   return (
     <section
-      className={`space-y-5 mb-3 mx-3 rounded-md pt-3 px-3 min-h-[90vh] transition-all ease-in-out delay-200 ${
+      className={`relative space-y-5 mb-3 mx-3 rounded-md pt-3 px-3 min-h-[80vh] transition-all ease-in-out delay-200 ${
         image && 'opacity-80'
-      } ${!menuSize && 'bg-[#232B35] !space-y-3 min-w-[180px]'}  `}
+      } ${
+        !menuSize &&
+        ' bg-gradient-to-b from-[#232B35] to-transparent !space-y-3 min-w-[180px]'
+      }  `}
     >
       <div
         onClick={menuHome}
