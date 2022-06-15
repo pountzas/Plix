@@ -91,24 +91,26 @@ function MediaCard({
               className={`${SliderProps[slider]['later']} hover:text-[#CC7B19] relative z-10 text-gray-300`}
             />
           </div>
-
-          {/* <BsPlayCircle className='relative hidden top-32 left-10 z-10 hover:bg-[#CC7B19] rounded-full' /> */}
         </div>
-        <Image
-          className='absolute hover:opacity-50 rounded-md'
-          src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
-          alt='movie poster'
-          loading='lazy'
-          height={SliderProps[slider]['height']}
-          width={SliderProps[slider]['width']}
-        />
+        <div className={`outline-[#CC7B19] hover:outline rounded-md`}>
+          <Image
+            className='rounded-md'
+            src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
+            alt='movie poster'
+            loading='lazy'
+            height={SliderProps[slider]['height']}
+            width={SliderProps[slider]['width']}
+          />
+        </div>
       </div>
       <h3
-        className={`font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[slider]['title']}`}
+        className={`cursor-pointer font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[slider]['title']}`}
       >
         {tmdbTitle}
       </h3>
-      <h3 className='text-sm text-gray-400 font-semibold'>{tmdbReleaseDate}</h3>
+      <h3 className='cursor-pointer text-sm text-gray-400 font-semibold'>
+        {tmdbReleaseDate}
+      </h3>
     </div>
   );
 }
