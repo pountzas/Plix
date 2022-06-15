@@ -1,4 +1,5 @@
 import MediaCard from './MediaCard';
+import Image from 'next/image';
 import { useRecoilState } from 'recoil';
 import {
   menuSizeState,
@@ -48,6 +49,19 @@ function Feed() {
                 : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
             } `}
           >
+            {!latestMovie && !latestTv && (
+              <div className='flex flex-col justify-center items-center pt-20'>
+                <Image
+                  src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
+                  alt='logo'
+                  height={200}
+                  width={600}
+                />
+                <p className='font-thin italic text-gray-200 pt-20'>
+                  Add Media from menu bar on the left.
+                </p>
+              </div>
+            )}
             {latestMovie && (
               <div>
                 <h3>Latest Movies</h3>
