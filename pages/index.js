@@ -23,12 +23,6 @@ export default function Home() {
   const [imageOpacityStyles, setImageOpacityStyles] = useState('');
 
   useEffect(() => {
-    if (image) {
-      console.log(bgImage + 'bgImage');
-    }
-  }, [image, bgImage]);
-
-  useEffect(() => {
     setImageOpacityStyles(SliderBgOpacity[bgOpacity]);
     console.log(imageOpacityStyles + 'bgOpacity');
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,15 +30,13 @@ export default function Home() {
 
   return (
     <div
-      className={`relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-screen ${
-        session ? 'min-h-[101vh]' : 'min-h-[100vh]'
-      }`}
+      className={`relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-[100vw] min-h-[100vh]`}
     >
       <div
         className={`absolute min-w-full ${
           movieMenu
             ? !image
-              ? `min-h-[100vh] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
+              ? `max-h-[90vh] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
               : `min-h-screen `
             : `min-h-screen `
         }`}

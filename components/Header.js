@@ -3,13 +3,13 @@ import { VscMenu } from 'react-icons/vsc';
 import { FiActivity, FiTool, FiCast, FiSearch } from 'react-icons/fi';
 import { BsPersonCircle } from 'react-icons/bs';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useRecoilState } from 'recoil';
-import { menuSizeState } from '../atoms/modalAtom';
+import { menuSizeState, imageState } from '../atoms/modalAtom';
 
 function Header() {
   const { data: session } = useSession();
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
+  const [image, setImage] = useRecoilState(imageState);
 
   const handleMenuSize = () => {
     setMenuSize(!menuSize);
@@ -19,21 +19,19 @@ function Header() {
     <header>
       <div
         className={`bg-[#232B35] m-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
-            ${!session && 'w-[97vw]'}`}
+            ${!session && 'w-[97vw]'} ${image && 'opacity-75'}`}
       >
         <div className='flex justify-start items-center'>
           <VscMenu
             onClick={handleMenuSize}
             className='inline-block mr-8 text-2xl text-gray-400'
           />
-          {/* <Link href='/' passHref> */}
           <Image
             src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
             alt='logo'
             height={20}
             width={60}
           />
-          {/* </Link> */}
           <div className='flex items-center'>
             <div className='bg-[#333A44] px-2 ml-8 py-2 rounded-l-2xl'>
               <FiSearch className='ml-2 text-2xl text-gray-500' />
@@ -69,7 +67,6 @@ function Header() {
             <FiCast className='mr-4 text-3xl text-gray-400 hidden md:inline-block' />
           </div>
           {session ? (
-            // <Link href='/' passHref>
             <Image
               onClick={signOut}
               className='rounded-full mr-4'
@@ -79,7 +76,6 @@ function Header() {
               width={30}
             />
           ) : (
-            // </Link>
             <BsPersonCircle className='mr-4 text-3xl text-gray-200' />
           )}
         </div>

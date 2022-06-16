@@ -59,10 +59,6 @@ export const imageState = atom({
   key: 'imageState',
   default: false
 });
-export const mediaValueState = atom({
-  key: 'mediaValueState',
-  default: {}
-});
 
 export const sliderState = atom({
   key: 'sliderState',

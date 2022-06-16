@@ -92,7 +92,7 @@ function MediaModal() {
   return (
     <>
       {open && (
-        <div className='flex items-center justify-center justify-items-center text-center fixed z-10 inset-0 overflow-y-auto'>
+        <div className='flex items-center justify-center justify-items-center text-center fixed z-10 inset-0 overflow-y-auto backdrop-blur-md'>
           <div className='flex flex-col justify-self-center justify-between  bg-[#2D3742] text-white border-gray-900 border-2 min-w-[600px] min-h-[300px] max-w-[800px] max-h-[500px] rounded-lg'>
             {/* modal header  */}
             <div className='flex items-center bg-gray-800 justify-between pt-4 px-4 text-gray-400 pb-3'>

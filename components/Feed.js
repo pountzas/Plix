@@ -1,4 +1,5 @@
 import MediaCard from './MediaCard';
+import Image from 'next/image';
 import { useRecoilState } from 'recoil';
 import {
   menuSizeState,
@@ -30,16 +31,20 @@ function Feed() {
               menuSize
                 ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
                 : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-            } flex justify-between items-center mb-7`}
+            } mb-7`}
           >
-            <h2>Home</h2>
-            <SliderComp
-              defaultValue={slider}
-              step={25}
-              min={0}
-              max={100}
-              onChange={(value) => setSlider(value)}
-            />
+            {(latestMovie || latestTv) && (
+              <div className='flex items-center justify-between'>
+                <h2>Home</h2>
+                <SliderComp
+                  defaultValue={slider}
+                  step={25}
+                  min={0}
+                  max={100}
+                  onChange={(value) => setSlider(value)}
+                />
+              </div>
+            )}
           </div>
           <div
             className={`${
@@ -48,6 +53,19 @@ function Feed() {
                 : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
             } `}
           >
+            {!latestMovie && !latestTv && (
+              <div className='flex flex-col justify-center items-center pt-20'>
+                <Image
+                  src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
+                  alt='logo'
+                  height={200}
+                  width={600}
+                />
+                <p className='font-thin italic text-gray-200 pt-20'>
+                  Add Media from menu bar on the left.
+                </p>
+              </div>
+            )}
             {latestMovie && (
               <div>
                 <h3>Latest Movies</h3>
@@ -106,8 +124,8 @@ function Feed() {
                 onChange={(value) => setSlider(value)}
               />
             </div>
-            <div className='min-h-[50vh]'>
-              <div className='flex flex-wrap justify-start overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+            <div className=''>
+              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
                 {MovieFiles.map((movie) => (
                   <div className='pr-7' key={movie.id}>
                     <MediaCard

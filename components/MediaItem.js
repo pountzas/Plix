@@ -118,121 +118,123 @@ function MediaItem() {
           </div>
         )}
       </div>
-      <div className='lg:flex items-center lg:space-x-8'>
-        <ReactPlayer
-          config={{
-            file: {
-              attributes: {
-                controlsList: 'nodownload',
-                volume: 1,
-                controls: true,
-                color: '#fff'
+      <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[75vh] scrollbar-hide object-contain'>
+        <div className='lg:flex items-center lg:space-x-8'>
+          <ReactPlayer
+            config={{
+              file: {
+                attributes: {
+                  controlsList: 'nodownload',
+                  volume: 1,
+                  controls: true,
+                  color: '#fff'
+                }
               }
-            }
-          }}
-          url={MediaItemProps.objurl}
-          controls
-          pip={true}
-          width='640px'
-          height='400px'
-        />
-        <div className='lg:max-w-[40vw] space-y-4'>
-          <div className='text-3xl text-gray-100'>
-            {MediaItemProps.tmdbTitle}
-          </div>
-          <div className='flex items-center space-x-4'>
-            <div className='text-gray-200'>
-              {MediaItemProps.tmdbReleaseDate}
+            }}
+            url={MediaItemProps.objurl}
+            controls
+            pip={true}
+            width='640px'
+            height='400px'
+          />
+          <div className='lg:max-w-[40vw] space-y-4'>
+            <div className='text-3xl text-gray-100'>
+              {MediaItemProps.tmdbTitle}
             </div>
-            <div className='text-gray-200'>TODO movie length</div>
-          </div>
-          <div className='text-gray-200'>{MediaItemProps.tmdbOverview}</div>
-          {/* movie info */}
-          {crew && (
-            <div className='flex space-x-4'>
-              <div className='text-gray-400 font-semibold'>
-                <p>DIRECTED BY</p>
-                <p>WRITTEN BY</p>
-                <p>STUDIO</p>
-                <p>GENRE</p>
-              </div>
+            <div className='flex items-center space-x-4'>
               <div className='text-gray-200'>
-                <div>
-                  <div className='flex items-start space-x-1'>
-                    {MediaCrew.length > 0 ? (
-                      MediaCrew.slice(0, 3).map((crew) => {
-                        return (
-                          <p className='' key={crew.key}>
-                            {crew.name}
-                            <br />
-                          </p>
-                        );
-                      })
-                    ) : (
-                      <p className='text-gray-400'>Unknown Director</p>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className='flex items-start space-x-1'>
-                    {Writers.length > 0 ? (
-                      Writers.slice(0, 3).map((crew) => {
-                        return (
-                          <p className='' key={crew.key}>
-                            {crew.name}
-                            <br />
-                          </p>
-                        );
-                      })
-                    ) : (
-                      <p className='text-gray-400'>Unknown Writers</p>
-                    )}
-                  </div>
-                </div>
-                <p>{MediaItemProps.tmdbProduction} TODO</p>
-                <p>{MediaItemProps.tmdbGenre} TODO</p>
+                {MediaItemProps.tmdbReleaseDate}
               </div>
+              <div className='text-gray-200'>TODO movie length</div>
             </div>
-          )}
-        </div>
-      </div>
-      {cast && (
-        // casting
-        <div className='pt-8'>
-          <div className='text-gray-200'>Cast</div>
-          <div
-            className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
-              menuSize
-                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[92vw]'
-                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
-            }`}
-          >
-            {MediaCredits.slice(0, 50).map((actor) => (
-              <div
-                className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
-                key={actor.key}
-              >
-                <div className='flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full '>
-                  <Image
-                    className='rounded-full shadow-xl'
-                    src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
-                    alt=''
-                    width={SliderProps[slider]['width']}
-                    height={SliderProps[slider]['width']}
-                    loading='lazy'
-                    layout='fixed'
-                    quality='medium'
-                  />
+            <div className='text-gray-200'>{MediaItemProps.tmdbOverview}</div>
+            {/* movie info */}
+            {crew && (
+              <div className='flex space-x-4'>
+                <div className='text-gray-400 font-semibold'>
+                  <p>DIRECTED BY</p>
+                  <p>WRITTEN BY</p>
+                  <p>STUDIO</p>
+                  <p>GENRE</p>
                 </div>
-                <div className='flex flex-col items-center text-center justify-center w-[100px] pt-1'>
-                  <div className='text-gray-200'>{actor.name}</div>
-                  <div className='text-gray-400'>{actor.character}</div>
+                <div className='text-gray-200'>
+                  <div>
+                    <div className='flex items-start space-x-1'>
+                      {MediaCrew.length > 0 ? (
+                        MediaCrew.slice(0, 3).map((crew) => {
+                          return (
+                            <p className='' key={crew.key}>
+                              {crew.name}
+                              <br />
+                            </p>
+                          );
+                        })
+                      ) : (
+                        <p className='text-gray-400'>Unknown Director</p>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div className='flex items-start space-x-1'>
+                      {Writers.length > 0 ? (
+                        Writers.slice(0, 3).map((crew) => {
+                          return (
+                            <p className='' key={crew.key}>
+                              {crew.name}
+                              <br />
+                            </p>
+                          );
+                        })
+                      ) : (
+                        <p className='text-gray-400'>Unknown Writers</p>
+                      )}
+                    </div>
+                  </div>
+                  <p>{MediaItemProps.tmdbProduction} TODO</p>
+                  <p>{MediaItemProps.tmdbGenre} TODO</p>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
-      )}
+        {cast && (
+          // casting
+          <div className='pt-8'>
+            <div className='text-gray-200'>Cast</div>
+            <div
+              className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
+                menuSize
+                  ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[92vw]'
+                  : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
+              }`}
+            >
+              {MediaCredits.map((actor) => (
+                <div
+                  className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
+                  key={actor.key}
+                >
+                  <div className='flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full '>
+                    <Image
+                      className='rounded-full shadow-xl'
+                      src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
+                      alt=''
+                      width={SliderProps[slider]['width']}
+                      height={SliderProps[slider]['width']}
+                      loading='lazy'
+                      layout='fixed'
+                      quality='medium'
+                    />
+                  </div>
+                  <div className='flex flex-col items-center text-center justify-center w-[100px] pt-1'>
+                    <div className='text-gray-200'>{actor.name}</div>
+                    <div className='text-gray-400'>{actor.character}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
