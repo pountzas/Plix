@@ -57,48 +57,54 @@ function MediaModal() {
         )[1];
         // regex replace . with ' '
         name = name.replace(/\./g, ' ');
+        if (movieLibrary) {
+          const getMovieData = async () => {
+            if (name) {
+              const response = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
+              ).catch((err) => console.log(err));
 
-        const getMediaData = async () => {
-          if (name) {
-            const response = await fetch(
-              `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
-            ).catch((err) => console.log(err));
+              const data = await response.json();
+              const tmdbId = data.results[0]?.id;
 
-            const data = await response.json();
-            const tmdbId = data.results[0]?.id;
-
-            tmdbId
-              ? MovieFiles.push({
-                  name,
-                  id: i,
-                  tmdbId,
-                  adult: data.results[0].adult,
-                  backdrop_path: data.results[0]?.backdrop_path,
-                  lang: data.results[0]?.original_language,
-                  popularity: data.results[0]?.popularity,
-                  voteAverage: data.results[0]?.vote_average,
-                  voteCount: data.results[0]?.vote_count,
-                  tmdbPoster: data.results[0]?.poster_path,
-                  tmdbTitle: data.results[0]?.title,
-                  tmdbOverview: data.results[0]?.overview,
-                  tmdbReleaseDate: data.results[0]?.release_date.substring(
-                    0,
-                    4
-                  ),
-                  tmdbRating: data.results[0]?.vote_average,
-                  tmdbGenre: data.results[0]?.genre_ids,
-                  fileName: files[i].name,
-                  ObjUrl: URL.createObjectURL(files[i]),
-                  folderPath: files[i].webkitRelativePath,
-                  folderPath2: files[i].webkitdirectory,
-                  rootPath: files[i].path
-                })
-              : console.log(name + ' not found ' + files[i].webkitRelativePath);
-          }
-        };
-        getMediaData();
+              tmdbId
+                ? MovieFiles.push({
+                    name,
+                    id: i,
+                    tmdbId,
+                    adult: data.results[0].adult,
+                    backdrop_path: data.results[0]?.backdrop_path,
+                    lang: data.results[0]?.original_language,
+                    popularity: data.results[0]?.popularity,
+                    voteAverage: data.results[0]?.vote_average,
+                    voteCount: data.results[0]?.vote_count,
+                    tmdbPoster: data.results[0]?.poster_path,
+                    tmdbTitle: data.results[0]?.title,
+                    tmdbOverview: data.results[0]?.overview,
+                    tmdbReleaseDate: data.results[0]?.release_date.substring(
+                      0,
+                      4
+                    ),
+                    tmdbRating: data.results[0]?.vote_average,
+                    tmdbGenre: data.results[0]?.genre_ids,
+                    fileName: files[i].name,
+                    ObjUrl: URL.createObjectURL(files[i]),
+                    folderPath: files[i].webkitRelativePath,
+                    folderPath2: files[i].webkitdirectory,
+                    rootPath: files[i].path
+                  })
+                : console.log(
+                    name + ' not found ' + files[i].webkitRelativePath
+                  );
+            }
+          };
+          getMovieData();
+        }
       }
     }
+    setOk(true);
+  };
+
   const handleMenuSection = () => {
     !movieLibrary && setTypeSection(false),
       setFolderLoadSection(true),
