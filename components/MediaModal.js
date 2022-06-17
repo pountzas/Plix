@@ -99,7 +99,10 @@ function MediaModal() {
         getMediaData();
       }
     }
-    console.log(MovieFiles);
+  const handleMenuSection = () => {
+    !movieLibrary && setTypeSection(false),
+      setFolderLoadSection(true),
+      setMovieLibrary(true);
   };
 
   return (
