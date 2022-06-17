@@ -7,12 +7,19 @@ import { FaFolderOpen } from 'react-icons/fa';
 import { BsFilm, BsGearFill } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import MovieFiles from './props/MovieFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [typeSection, setTypeSection] = useState(true);
+  const [folderLoadSection, setFolderLoadSection] = useState(false);
+  const [advancedSection, setAdvancedSection] = useState(false);
+  const [movieLibrary, setMovieLibrary] = useState(false);
+  const [tvLibrary, setTvLibrary] = useState(false);
+  const [musicLibrary, setMusicLibrary] = useState(false);
+  const [ok, setOk] = useState(false);
 
   const folderPickerRef = useRef(null);
 
