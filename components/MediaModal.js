@@ -170,7 +170,10 @@ function MediaModal() {
                   <div className='flex pb-4 space-y-8 space-x-16 text-gray-400'>
                     <label
                       htmlFor='movies'
-                      className='flex flex-col items-center justify-end space-y-2 cursor-pointer active:text-[#CC7B19] focus:text-[#CC7B19] focus:font-semibold'
+                      onClick={handleMenuSection}
+                      className={`flex flex-col items-center justify-end space-y-2 cursor-pointer ${
+                        movieLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <BsFilm className='text-4xl' />
                       <p>Movies</p>
@@ -181,7 +184,7 @@ function MediaModal() {
                       name='media'
                       value='movies'
                       defaultChecked
-                      className='hidden focus:after:text-[#CC7B19]'
+                      className='hidden'
                     />
 
                     <input
@@ -193,10 +196,12 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='tv'
-                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                      className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
+                        tvLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <MdMonitor className='text-4xl' />
-                      <p className='inline-block w-[80px]'>TV Shows</p>
+                      <p className='inline-block w-[90px]'>TV Shows</p>
                     </label>
 
                     <input
@@ -208,7 +213,9 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='music'
-                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                      className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
+                        musicLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <HiOutlineMusicNote className='text-4xl' />
                       <p>Music</p>
