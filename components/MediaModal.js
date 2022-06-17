@@ -129,15 +129,33 @@ function MediaModal() {
             <div className='flex pr-2'>
               {/* modal menu */}
               <div className='space-y-6 min-w-[200px] min-h-[35vh] p-4'>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !typeSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <VscListSelection className='text-2xl' />
                   <p>Select type</p>
                 </button>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !folderLoadSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <FaFolderOpen className='text-2xl' />
                   <p>Add folders</p>
                 </button>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !advancedSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <BsGearFill className='text-2xl' />
                   <p>Advanced</p>
                 </button>
