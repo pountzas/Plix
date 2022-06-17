@@ -249,8 +249,10 @@ function MediaModal() {
                 Cancel
               </button>
               <button
-                onClick={showLatestMovies}
-                className='bg-gray-900 p-2 rounded-md'
+                onClick={ok && showLatestMovies}
+                className={`p-2 rounded-md ${
+                  ok ? 'bg-gray-900' : 'bg-red-700'
+                }`}
               >
                 OK
               </button>
