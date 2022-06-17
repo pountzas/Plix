@@ -25,6 +25,12 @@ function MediaModal() {
 
   const handleClose = () => {
     setOpen(false);
+    setMovieLibrary(false);
+    setTvLibrary(false);
+    setMusicLibrary(false);
+    setTypeSection(true);
+    setFolderLoadSection(false);
+    setAdvancedSection(false);
   };
 
   const showLatestMovies = () => {
