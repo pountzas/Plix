@@ -216,24 +216,26 @@ function MediaModal() {
                   </div>
                 </div>
                 {/* add folders section */}
-                <div className='space-y-2 pb-4'>
-                  <p>Add folders to your library</p>
-                  <input
-                    className='bg-gray-800 rounded-xl mr-2'
-                    ref={folderPickerRef}
-                    type='file'
-                    directory=''
-                    webkitdirectory=''
-                    onChange={addFolderUrl}
-                    hidden
-                  />
-                  <button
-                    onClick={() => folderPickerRef.current.click()}
-                    className='p-2 bg-gray-600 rounded-lg'
-                  >
-                    BROWSE FOR MEDIA FOLDER
-                  </button>
-                </div>
+                {folderLoadSection && (
+                  <div className='space-y-2 pb-4'>
+                    <p>Add folders to your library</p>
+                    <input
+                      className='bg-gray-800 rounded-xl mr-2'
+                      ref={folderPickerRef}
+                      type='file'
+                      directory=''
+                      webkitdirectory=''
+                      onChange={addFolderUrl}
+                      hidden
+                    />
+                    <button
+                      onClick={() => folderPickerRef.current.click()}
+                      className='p-2 bg-gray-600 rounded-lg'
+                    >
+                      BROWSE FOR MEDIA FOLDER
+                    </button>
+                  </div>
+                )}
                 {/* advanced section */}
                 <div></div>
               </div>
