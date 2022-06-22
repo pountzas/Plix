@@ -7,17 +7,30 @@ import { FaFolderOpen } from 'react-icons/fa';
 import { BsFilm, BsGearFill } from 'react-icons/bs';
 import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import MovieFiles from './props/MovieFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [typeSection, setTypeSection] = useState(true);
+  const [folderLoadSection, setFolderLoadSection] = useState(false);
+  const [advancedSection, setAdvancedSection] = useState(false);
+  const [movieLibrary, setMovieLibrary] = useState(false);
+  const [tvLibrary, setTvLibrary] = useState(false);
+  const [musicLibrary, setMusicLibrary] = useState(false);
+  const [ok, setOk] = useState(false);
 
   const folderPickerRef = useRef(null);
 
   const handleClose = () => {
     setOpen(false);
+    setMovieLibrary(false);
+    setTvLibrary(false);
+    setMusicLibrary(false);
+    setTypeSection(true);
+    setFolderLoadSection(false);
+    setAdvancedSection(false);
   };
 
   const showLatestMovies = () => {
@@ -44,49 +57,58 @@ function MediaModal() {
         )[1];
         // regex replace . with ' '
         name = name.replace(/\./g, ' ');
+        if (movieLibrary) {
+          const getMovieData = async () => {
+            if (name) {
+              const response = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
+              ).catch((err) => console.log(err));
 
-        const getMediaData = async () => {
-          if (name) {
-            const response = await fetch(
-              `https://api.themoviedb.org/3/search/movie?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name}&append_to_response=videos,images`
-            ).catch((err) => console.log(err));
+              const data = await response.json();
+              const tmdbId = data.results[0]?.id;
 
-            const data = await response.json();
-            const tmdbId = data.results[0]?.id;
-
-            tmdbId
-              ? MovieFiles.push({
-                  name,
-                  id: i,
-                  tmdbId,
-                  adult: data.results[0].adult,
-                  backdrop_path: data.results[0]?.backdrop_path,
-                  lang: data.results[0]?.original_language,
-                  popularity: data.results[0]?.popularity,
-                  voteAverage: data.results[0]?.vote_average,
-                  voteCount: data.results[0]?.vote_count,
-                  tmdbPoster: data.results[0]?.poster_path,
-                  tmdbTitle: data.results[0]?.title,
-                  tmdbOverview: data.results[0]?.overview,
-                  tmdbReleaseDate: data.results[0]?.release_date.substring(
-                    0,
-                    4
-                  ),
-                  tmdbRating: data.results[0]?.vote_average,
-                  tmdbGenre: data.results[0]?.genre_ids,
-                  fileName: files[i].name,
-                  ObjUrl: URL.createObjectURL(files[i]),
-                  folderPath: files[i].webkitRelativePath,
-                  folderPath2: files[i].webkitdirectory,
-                  rootPath: files[i].path
-                })
-              : console.log(name + ' not found ' + files[i].webkitRelativePath);
-          }
-        };
-        getMediaData();
+              tmdbId
+                ? MovieFiles.push({
+                    name,
+                    id: i,
+                    tmdbId,
+                    adult: data.results[0].adult,
+                    backdrop_path: data.results[0]?.backdrop_path,
+                    lang: data.results[0]?.original_language,
+                    popularity: data.results[0]?.popularity,
+                    voteAverage: data.results[0]?.vote_average,
+                    voteCount: data.results[0]?.vote_count,
+                    tmdbPoster: data.results[0]?.poster_path,
+                    tmdbTitle: data.results[0]?.title,
+                    tmdbOverview: data.results[0]?.overview,
+                    tmdbReleaseDate: data.results[0]?.release_date.substring(
+                      0,
+                      4
+                    ),
+                    tmdbRating: data.results[0]?.vote_average,
+                    tmdbGenre: data.results[0]?.genre_ids,
+                    fileName: files[i].name,
+                    ObjUrl: URL.createObjectURL(files[i]),
+                    folderPath: files[i].webkitRelativePath,
+                    folderPath2: files[i].webkitdirectory,
+                    rootPath: files[i].path
+                  })
+                : console.log(
+                    name + ' not found ' + files[i].webkitRelativePath
+                  );
+            }
+          };
+          getMovieData();
+        }
       }
     }
-    console.log(MovieFiles);
+    setOk(true);
+  };
+
+  const handleMenuSection = () => {
+    !movieLibrary && setTypeSection(false),
+      setFolderLoadSection(true),
+      setMovieLibrary(true);
   };
 
   return (
@@ -107,15 +129,33 @@ function MediaModal() {
             <div className='flex pr-2'>
               {/* modal menu */}
               <div className='space-y-6 min-w-[200px] min-h-[35vh] p-4'>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !typeSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <VscListSelection className='text-2xl' />
                   <p>Select type</p>
                 </button>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !folderLoadSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <FaFolderOpen className='text-2xl' />
                   <p>Add folders</p>
                 </button>
-                <button className=' flex items-center space-x-3 text-gray-400 cursor-pointer focus:text-[#CC7B19] focus:font-semibold'>
+                <button
+                  className={`flex items-center space-x-3 cursor-pointer ${
+                    !advancedSection
+                      ? 'text-gray-400'
+                      : 'text-[#CC7B19] font-semibold'
+                  }`}
+                >
                   <BsGearFill className='text-2xl' />
                   <p>Advanced</p>
                 </button>
@@ -130,7 +170,10 @@ function MediaModal() {
                   <div className='flex pb-4 space-y-8 space-x-16 text-gray-400'>
                     <label
                       htmlFor='movies'
-                      className='flex flex-col items-center justify-end space-y-2 cursor-pointer active:text-[#CC7B19] focus:text-[#CC7B19] focus:font-semibold'
+                      onClick={handleMenuSection}
+                      className={`flex flex-col items-center justify-end space-y-2 cursor-pointer ${
+                        movieLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <BsFilm className='text-4xl' />
                       <p>Movies</p>
@@ -141,7 +184,7 @@ function MediaModal() {
                       name='media'
                       value='movies'
                       defaultChecked
-                      className='hidden focus:after:text-[#CC7B19]'
+                      className='hidden'
                     />
 
                     <input
@@ -153,10 +196,12 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='tv'
-                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                      className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
+                        tvLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <MdMonitor className='text-4xl' />
-                      <p className='inline-block w-[80px]'>TV Shows</p>
+                      <p className='inline-block w-[90px]'>TV Shows</p>
                     </label>
 
                     <input
@@ -168,7 +213,9 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='music'
-                      className='flex flex-col items-center justify-center space-y-2 cursor-pointer checked:text-[#CC7B19] checked:font-semibold'
+                      className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
+                        musicLibrary && 'text-[#CC7B19] font-semibold'
+                      }`}
                     >
                       <HiOutlineMusicNote className='text-4xl' />
                       <p>Music</p>
@@ -176,24 +223,26 @@ function MediaModal() {
                   </div>
                 </div>
                 {/* add folders section */}
-                <div className='space-y-2 pb-4'>
-                  <p>Add folders to your library</p>
-                  <input
-                    className='bg-gray-800 rounded-xl mr-2'
-                    ref={folderPickerRef}
-                    type='file'
-                    directory=''
-                    webkitdirectory=''
-                    onChange={addFolderUrl}
-                    hidden
-                  />
-                  <button
-                    onClick={() => folderPickerRef.current.click()}
-                    className='p-2 bg-gray-600 rounded-lg'
-                  >
-                    BROWSE FOR MEDIA FOLDER
-                  </button>
-                </div>
+                {folderLoadSection && (
+                  <div className='space-y-2 pb-4'>
+                    <p>Add folders to your library</p>
+                    <input
+                      className='bg-gray-800 rounded-xl mr-2'
+                      ref={folderPickerRef}
+                      type='file'
+                      directory=''
+                      webkitdirectory=''
+                      onChange={addFolderUrl}
+                      hidden
+                    />
+                    <button
+                      onClick={() => folderPickerRef.current.click()}
+                      className='p-2 bg-gray-600 rounded-lg'
+                    >
+                      BROWSE FOR MEDIA FOLDER
+                    </button>
+                  </div>
+                )}
                 {/* advanced section */}
                 <div></div>
               </div>
@@ -207,8 +256,10 @@ function MediaModal() {
                 Cancel
               </button>
               <button
-                onClick={showLatestMovies}
-                className='bg-gray-900 p-2 rounded-md'
+                onClick={ok && showLatestMovies}
+                className={`p-2 rounded-md ${
+                  ok ? 'bg-gray-900' : 'bg-red-700'
+                }`}
               >
                 OK
               </button>
