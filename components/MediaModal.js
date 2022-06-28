@@ -1,5 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { modalState, homeMovieState } from '../atoms/modalAtom';
+import { modalState, homeMovieState, homeTvState } from '../atoms/modalAtom';
 
 import { AiOutlineCloseCircle, AiOutlinePlus } from 'react-icons/ai';
 import { VscListSelection } from 'react-icons/vsc';
@@ -13,6 +13,7 @@ import MovieFiles from './props/MovieFiles';
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [latestTv, setLatestTv] = useRecoilState(homeTvState);
   const [typeSection, setTypeSection] = useState(true);
   const [folderLoadSection, setFolderLoadSection] = useState(false);
   const [advancedSection, setAdvancedSection] = useState(false);
@@ -35,6 +36,11 @@ function MediaModal() {
 
   const showLatestMovies = () => {
     setLatestMovie(true);
+    handleClose();
+  };
+
+  const showLatestTv = () => {
+    setLatestTv(true);
     handleClose();
   };
 
@@ -119,6 +125,16 @@ function MediaModal() {
       setMovieLibrary(false);
   };
 
+  const handleOk = () => {
+    if (ok) {
+      if (tvLibrary) {
+        showLatestTv();
+      } else if (movieLibrary) {
+        showLatestMovies();
+      }
+      setOk(false);
+    }
+  };
   return (
     <>
       {open && (
@@ -265,7 +281,7 @@ function MediaModal() {
                 Cancel
               </button>
               <button
-                onClick={ok && showLatestMovies}
+                onClick={handleOk}
                 className={`p-2 rounded-md ${
                   ok ? 'bg-gray-900' : 'bg-red-700'
                 }`}
