@@ -1,5 +1,5 @@
 import { useRecoilState } from 'recoil';
-import { modalState, homeMovieState } from '../atoms/modalAtom';
+import { modalState, homeMovieState, homeTvState } from '../atoms/modalAtom';
 
 import { AiOutlineCloseCircle, AiOutlinePlus } from 'react-icons/ai';
 import { VscListSelection } from 'react-icons/vsc';
@@ -9,10 +9,12 @@ import { MdMonitor } from 'react-icons/md';
 import { HiOutlineMusicNote } from 'react-icons/hi';
 import { useRef, useState } from 'react';
 import MovieFiles from './props/MovieFiles';
+import TvFiles from './props/TvFiles';
 
 function MediaModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
+  const [latestTv, setLatestTv] = useRecoilState(homeTvState);
   const [typeSection, setTypeSection] = useState(true);
   const [folderLoadSection, setFolderLoadSection] = useState(false);
   const [advancedSection, setAdvancedSection] = useState(false);
@@ -38,6 +40,11 @@ function MediaModal() {
     handleClose();
   };
 
+  const showLatestTv = () => {
+    setLatestTv(true);
+    handleClose();
+  };
+
   const addFolderUrl = (e) => {
     const reader = new FileReader();
 
@@ -53,9 +60,8 @@ function MediaModal() {
       if (files[i].type.includes('video')) {
         // regex files name without all characters after the year
         const name = files[i].name.match(
-          /^(?!\d\d?[ex]\d\d?)(?:\[(?:[-\w\s]+)*\] )?(.*?)[-_. ]?(?:[\{\(\[]?(?:dvdrip|[-._\b]ita|[-._\b]eng|xvid| cd\d|dvdscr|\w{1,5}rip|divx|\d+p|\d{4}).*?)?\.([\w]{2,3})$/i
+          /^(?!\d\d?[ex]\d\d?)(?:\[(?:[-\w\s]+)*\] )?(.*?)[-_. ]?(?:[\{\(\[]?(?:dvdrip|[-._\b]ita|[-._\b]h264|x264|hdtv|hdtv-lol|web|proper|internal|[-._\b]eng|xvid| cd\d|dvdscr|\w{1,5}rip|divx|\d+p|\d{4}).*?)?\.([\w]{2,3})$/i
         )[1];
-        // regex replace . with ' '
         name = name.replace(/\./g, ' ');
         if (movieLibrary) {
           const getMovieData = async () => {
@@ -100,17 +106,116 @@ function MediaModal() {
           };
           getMovieData();
         }
+        if (tvLibrary) {
+          const getTvData = async () => {
+            if (files[i].type.includes('video')) {
+              // remove all after episode name
+              let name2 = name.match(
+                /^(.+?)[-. ]{0,3}s?(\d?\d)[ex](\d\d)[-. ]{0,3}(.*?)[-. ]?(?:.+)?$/gim
+              );
+
+              let episode = files[i].name.match(
+                /([Ss]?)([0-9]{1,2})([xXeE\.\-]?)([0-9]{1,2})/
+              );
+
+              let nameTv2 = files[i].name.match(
+                /^(.+?)[-. ]{0,3}s?(\d?\d)[ex](\d\d)[-. ]{0,3}(.*?)[-. ]?(?:(?=pulcione|eng|ita|\w+Mux|\w+dl|\d+p|XviD|NovaRip).+)?\.([\w]{2,3})$/gim
+              );
+              // console.log(episode + 'epi');
+              // console.log(' tv ' + episode[2]);
+              // episode = episode[0];
+
+              console.log(name2 + 'test');
+              console.log(name + ' name ');
+              console.log(nameTv2 + ' nameTv1 ');
+
+              name2 = JSON.stringify(name2);
+              // JSON.stringify(name);
+              episode.map((epi) => {
+                console.log(epi + ' epi');
+              });
+              // episode = JSON.stringify(episode[0]);
+
+              console.log(' tv ' + episode);
+
+              // toString(name2);
+              // toString(episode);
+              // console.log(typeof name);
+
+              if (name2 !== null) {
+                console.log(typeof episode);
+                console.log(typeof name2);
+                // name2.replace(episode[0], '');
+                // regex remove non-alphanumeric characters keep spaces]
+                name2 = name2.replace(/[^\w\s]/gi, '');
+                // name2 = name2.replace(/[^a-zA-Z0-9]/g, '');
+                const response = await fetch(
+                  `https://api.themoviedb.org/3/search/tv?api_key=120f1a60fbfcc0d0f3e9775e7816cde3&query=${name2}`
+                ).catch((err) => console.log(err));
+
+                const data = await response.json();
+                const tmdbId = data.results[0]?.id;
+                console.log(tmdbId);
+                console.log(name2 + ' name2 inside');
+                console.log(episode[0] + ' epi inside');
+
+                tmdbId &&
+                  TvFiles.push({
+                    name: name2,
+                    episode: episode,
+                    id: i,
+                    tmdbId,
+                    backdrop_path: data.results[0]?.backdrop_path,
+                    lang: data.results[0]?.original_language,
+                    popularity: data.results[0]?.popularity,
+                    voteAverage: data.results[0]?.vote_average,
+                    voteCount: data.results[0]?.vote_count,
+                    tmdbPoster: data.results[0]?.poster_path,
+                    tmdbTitle: data.results[0]?.name,
+                    tmdbOverview: data.results[0]?.overview,
+                    tmdbReleaseDate: data.results[0]?.first_air_date,
+                    tmdbRating: data.results[0]?.vote_average,
+                    tmdbGenre: data.results[0]?.genre_ids,
+                    fileName: files[i].name,
+                    ObjUrl: URL.createObjectURL(files[i]),
+                    folderPath: files[i].webkitRelativePath,
+                    folderPath2: files[i].webkitdirectory,
+                    rootPath: files[i].path
+                  });
+              }
+            }
+          };
+          getTvData();
+        }
       }
     }
     setOk(true);
   };
 
-  const handleMenuSection = () => {
+  const handleMovieMedia = () => {
     !movieLibrary && setTypeSection(false),
       setFolderLoadSection(true),
-      setMovieLibrary(true);
+      setMovieLibrary(true),
+      setTvLibrary(false);
   };
 
+  const handleTvMedia = () => {
+    !tvLibrary && setTypeSection(false),
+      setFolderLoadSection(true),
+      setTvLibrary(true),
+      setMovieLibrary(false);
+  };
+
+  const handleOk = () => {
+    if (ok) {
+      if (tvLibrary) {
+        showLatestTv();
+      } else if (movieLibrary) {
+        showLatestMovies();
+      }
+      setOk(false);
+    }
+  };
   return (
     <>
       {open && (
@@ -170,7 +275,7 @@ function MediaModal() {
                   <div className='flex pb-4 space-y-8 space-x-16 text-gray-400'>
                     <label
                       htmlFor='movies'
-                      onClick={handleMenuSection}
+                      onClick={handleMovieMedia}
                       className={`flex flex-col items-center justify-end space-y-2 cursor-pointer ${
                         movieLibrary && 'text-[#CC7B19] font-semibold'
                       }`}
@@ -196,6 +301,7 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='tv'
+                      onClick={handleTvMedia}
                       className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
                         tvLibrary && 'text-[#CC7B19] font-semibold'
                       }`}
@@ -256,7 +362,7 @@ function MediaModal() {
                 Cancel
               </button>
               <button
-                onClick={ok && showLatestMovies}
+                onClick={handleOk}
                 className={`p-2 rounded-md ${
                   ok ? 'bg-gray-900' : 'bg-red-700'
                 }`}

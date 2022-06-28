@@ -12,6 +12,7 @@ import {
 } from '../atoms/modalAtom';
 import SliderComp from './SliderComp';
 import MovieFiles from './props/MovieFiles';
+import TvFiles from './props/TvFiles';
 
 function Feed() {
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
@@ -24,6 +25,19 @@ function Feed() {
 
   return (
     <section className='pt-3 px-3 mr-3 rounded-md text-2xl text-gray-300'>
+      {(latestMovie || latestTv) && (
+        <div className='flex items-center justify-between'>
+          <h2>{`${homeMenu ? 'Home' : movieMenu ? 'Movies' : 'TV Shows'}`}</h2>
+
+          <SliderComp
+            defaultValue={slider}
+            step={25}
+            min={0}
+            max={100}
+            onChange={(value) => setSlider(value)}
+          />
+        </div>
+      )}
       {homeMenu && (
         <section>
           <div
@@ -32,20 +46,7 @@ function Feed() {
                 ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
                 : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
             } mb-7`}
-          >
-            {(latestMovie || latestTv) && (
-              <div className='flex items-center justify-between'>
-                <h2>Home</h2>
-                <SliderComp
-                  defaultValue={slider}
-                  step={25}
-                  min={0}
-                  max={100}
-                  onChange={(value) => setSlider(value)}
-                />
-              </div>
-            )}
-          </div>
+          ></div>
           <div
             className={`${
               menuSize
@@ -66,44 +67,71 @@ function Feed() {
                 </p>
               </div>
             )}
-            {latestMovie && (
-              <div>
-                <h3>Latest Movies</h3>
-                <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide'>
-                  {MovieFiles.map((movie) => (
-                    <MediaCard
-                      key={movie.id}
-                      id={movie.id} // to remove
-                      name={movie.name}
-                      tmdbId={movie.tmdbId}
-                      adult={movie.adult}
-                      backdrop={movie.backdrop_path}
-                      lang={movie.original_language}
-                      popularity={movie.popularity}
-                      voteAverage={movie.vote_average}
-                      voteCount={movie.vote_count}
-                      tmdbPoster={movie.tmdbPoster}
-                      tmdbTitle={movie.tmdbTitle}
-                      tmdbOverview={movie.tmdbOverview}
-                      tmdbReleaseDate={movie.tmdbReleaseDate}
-                      tmdbRating={movie.tmdbRating}
-                      tmdbGenre={movie.tmdbGenre}
-                      fileName={movie.fileName}
-                      objurl={movie.ObjUrl}
-                      folderPath={movie.folderPath}
-                      folderPath2={movie.folderPath2}
-                      rootPath={movie.rootPath}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            {latestTv && (
-              <div className='pt-9'>
-                <h3>Latest TV Shows</h3>
-                <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
-                  {/* <MediaCard /> */}
-                </div>
+            {(latestMovie || latestTv) && (
+              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain'>
+                {latestMovie && (
+                  <div>
+                    <h3>Latest Movies</h3>
+                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
+                      {MovieFiles.map((movie) => (
+                        <MediaCard
+                          key={movie.id}
+                          id={movie.id} // to remove
+                          name={movie.name}
+                          tmdbId={movie.tmdbId}
+                          adult={movie.adult}
+                          backdrop={movie.backdrop_path}
+                          lang={movie.original_language}
+                          popularity={movie.popularity}
+                          voteAverage={movie.vote_average}
+                          voteCount={movie.vote_count}
+                          tmdbPoster={movie.tmdbPoster}
+                          tmdbTitle={movie.tmdbTitle}
+                          tmdbOverview={movie.tmdbOverview}
+                          tmdbReleaseDate={movie.tmdbReleaseDate}
+                          tmdbRating={movie.tmdbRating}
+                          tmdbGenre={movie.tmdbGenre}
+                          fileName={movie.fileName}
+                          objurl={movie.ObjUrl}
+                          folderPath={movie.folderPath}
+                          folderPath2={movie.folderPath2}
+                          rootPath={movie.rootPath}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {latestTv && (
+                  <div className='pt-9'>
+                    <h3>Latest TV Shows</h3>
+                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
+                      {TvFiles.map((tv) => (
+                        <MediaCard
+                          key={tv.id}
+                          id={tv.id} // to remove
+                          name={tv.name}
+                          tmdbId={tv.tmdbId}
+                          backdrop={tv.backdrop_path}
+                          lang={tv.original_language}
+                          popularity={tv.popularity}
+                          voteAverage={tv.vote_average}
+                          voteCount={tv.vote_count}
+                          tmdbPoster={tv.tmdbPoster}
+                          tmdbTitle={tv.tmdbTitle}
+                          tmdbOverview={tv.tmdbOverview}
+                          tmdbReleaseDate={tv.tmdbReleaseDate}
+                          tmdbRating={tv.tmdbRating}
+                          tmdbGenre={tv.tmdbGenre}
+                          fileName={tv.fileName}
+                          objurl={tv.ObjUrl}
+                          folderPath={tv.folderPath}
+                          folderPath2={tv.folderPath2}
+                          rootPath={tv.rootPath}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -113,53 +141,70 @@ function Feed() {
       {/* Movie menu */}
       {movieMenu && (
         <section>
-          <div className=''>
-            <div className='flex items-center justify-between pr-24'>
-              <h3>Movies</h3>
-              <SliderComp
-                defaultValue={slider}
-                step={25}
-                min={0}
-                max={100}
-                onChange={(value) => setSlider(value)}
-              />
-            </div>
-            <div className=''>
-              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
-                {MovieFiles.map((movie) => (
-                  <div className='pr-7' key={movie.id}>
-                    <MediaCard
-                      id={movie.id} // to remove
-                      name={movie.name}
-                      tmdbId={movie.tmdbId}
-                      adult={movie.adult}
-                      backdrop={movie.backdrop_path}
-                      lang={movie.original_language}
-                      popularity={movie.popularity}
-                      voteAverage={movie.vote_average}
-                      voteCount={movie.vote_count}
-                      tmdbPoster={movie.tmdbPoster}
-                      tmdbTitle={movie.tmdbTitle}
-                      tmdbOverview={movie.tmdbOverview}
-                      tmdbReleaseDate={movie.tmdbReleaseDate}
-                      tmdbRating={movie.tmdbRating}
-                      tmdbGenre={movie.tmdbGenre}
-                      fileName={movie.fileName}
-                      objurl={movie.ObjUrl}
-                      folderPath={movie.folderPath}
-                      folderPath2={movie.folderPath2}
-                      rootPath={movie.rootPath}
-                    />
-                  </div>
-                ))}
+          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+            {MovieFiles.map((movie) => (
+              <div className='pr-7' key={movie.id}>
+                <MediaCard
+                  id={movie.id} // to remove
+                  name={movie.name}
+                  tmdbId={movie.tmdbId}
+                  adult={movie.adult}
+                  backdrop={movie.backdrop_path}
+                  lang={movie.original_language}
+                  popularity={movie.popularity}
+                  voteAverage={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  tmdbPoster={movie.tmdbPoster}
+                  tmdbTitle={movie.tmdbTitle}
+                  tmdbOverview={movie.tmdbOverview}
+                  tmdbReleaseDate={movie.tmdbReleaseDate}
+                  tmdbRating={movie.tmdbRating}
+                  tmdbGenre={movie.tmdbGenre}
+                  fileName={movie.fileName}
+                  objurl={movie.ObjUrl}
+                  folderPath={movie.folderPath}
+                  folderPath2={movie.folderPath2}
+                  rootPath={movie.rootPath}
+                />
               </div>
-            </div>
+            ))}
           </div>
         </section>
       )}
 
       {/* TV menu */}
-      {tvMenu && <section></section>}
+      {tvMenu && (
+        <section>
+          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+            {TvFiles.map((tv) => (
+              <div className='pr-7' key={tv.id}>
+                <MediaCard
+                  id={tv.id} // to remove
+                  name={tv.name}
+                  tmdbId={tv.tmdbId}
+                  adult={tv.adult}
+                  backdrop={tv.backdrop_path}
+                  lang={tv.original_language}
+                  popularity={tv.popularity}
+                  voteAverage={tv.vote_average}
+                  voteCount={tv.vote_count}
+                  tmdbPoster={tv.tmdbPoster}
+                  tmdbTitle={tv.tmdbTitle}
+                  tmdbOverview={tv.tmdbOverview}
+                  tmdbReleaseDate={tv.tmdbReleaseDate}
+                  tmdbRating={tv.tmdbRating}
+                  tmdbGenre={tv.tmdbGenre}
+                  fileName={tv.fileName}
+                  objurl={tv.ObjUrl}
+                  folderPath={tv.folderPath}
+                  folderPath2={tv.folderPath2}
+                  rootPath={tv.rootPath}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }
