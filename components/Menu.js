@@ -38,7 +38,7 @@ function Menu() {
 
   return (
     <section
-      className={`relative space-y-5 mb-3 mx-3 rounded-md pt-3 px-3 min-h-[80vh] transition-all ease-in-out delay-200 ${
+      className={`relative space-y-5 m-3 rounded-md pt-3 px-3 min-h-[80vh] transition-all ease-in-out delay-200 ${
         image && 'opacity-80'
       } ${
         !menuSize &&

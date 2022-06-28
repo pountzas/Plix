@@ -16,9 +16,9 @@ function Header() {
   };
 
   return (
-    <header>
+    <header className='pt-3 px-3'>
       <div
-        className={`bg-[#232B35] m-3 rounded-md p-3 text-white font-semibold flex items-center justify-between
+        className={`bg-[#232B35] rounded-md h-16 p-3 text-white font-semibold flex items-center justify-between
             ${!session && 'w-[97vw]'} ${image && 'opacity-75'}`}
       >
         <div className='flex justify-start items-center'>
