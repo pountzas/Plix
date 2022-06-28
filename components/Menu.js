@@ -36,13 +36,19 @@ function Menu() {
     setTvMenu(false);
   };
 
+  const menuTv = () => {
+    setHomeMenu(false);
+    setMovieMenu(false);
+    setTvMenu(true);
+  };
+
   return (
     <section
       className={`relative space-y-5 m-3 rounded-md pt-3 px-3 min-h-[80vh] transition-all ease-in-out delay-200 ${
         image && 'opacity-80'
       } ${
         !menuSize &&
-        ' bg-gradient-to-b from-[#232B35] to-transparent !space-y-3 min-w-[180px]'
+        ' bg-gradient-to-b from-[#232B35] to-transparent !space-y-3 min-w-[180px] h-[500px]'
       }  `}
     >
       <div
@@ -62,7 +68,10 @@ function Menu() {
         </div>
       )}
       {latestTv && (
-        <div className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'>
+        <div
+          onClick={menuTv}
+          className='flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl'
+        >
           <MdMonitor className={`text-2xl mr-4 ${!menuSize && 'mr-8'}`} />
           {!menuSize && <p>TV Shows</p>}
         </div>
