@@ -105,10 +105,18 @@ function MediaModal() {
     setOk(true);
   };
 
-  const handleMenuSection = () => {
+  const handleMovieMedia = () => {
     !movieLibrary && setTypeSection(false),
       setFolderLoadSection(true),
-      setMovieLibrary(true);
+      setMovieLibrary(true),
+      setTvLibrary(false);
+  };
+
+  const handleTvMedia = () => {
+    !tvLibrary && setTypeSection(false),
+      setFolderLoadSection(true),
+      setTvLibrary(true),
+      setMovieLibrary(false);
   };
 
   return (
@@ -170,7 +178,7 @@ function MediaModal() {
                   <div className='flex pb-4 space-y-8 space-x-16 text-gray-400'>
                     <label
                       htmlFor='movies'
-                      onClick={handleMenuSection}
+                      onClick={handleMovieMedia}
                       className={`flex flex-col items-center justify-end space-y-2 cursor-pointer ${
                         movieLibrary && 'text-[#CC7B19] font-semibold'
                       }`}
@@ -196,6 +204,7 @@ function MediaModal() {
                     />
                     <label
                       htmlFor='tv'
+                      onClick={handleTvMedia}
                       className={`flex flex-col items-center justify-center space-y-2 cursor-pointer ${
                         tvLibrary && 'text-[#CC7B19] font-semibold'
                       }`}
