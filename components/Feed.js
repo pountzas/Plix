@@ -96,6 +96,7 @@ function Feed() {
                           folderPath={movie.folderPath}
                           folderPath2={movie.folderPath2}
                           rootPath={movie.rootPath}
+                          watched={movie.watched}
                         />
                       ))}
                     </div>

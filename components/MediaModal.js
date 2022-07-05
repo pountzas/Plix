@@ -97,7 +97,8 @@ function MediaModal() {
                     ObjUrl: URL.createObjectURL(files[i]),
                     folderPath: files[i].webkitRelativePath,
                     folderPath2: files[i].webkitdirectory,
-                    rootPath: files[i].path
+                    rootPath: files[i].path,
+                    watched: false
                   })
                 : console.log(
                     name + ' not found ' + files[i].webkitRelativePath
