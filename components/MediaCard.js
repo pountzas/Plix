@@ -6,6 +6,8 @@ import { mediaItemState, sliderState } from '../atoms/modalAtom';
 import { BsPlayCircleFill, BsFillPencilFill, BsCircle } from 'react-icons/bs';
 import { HiDotsVertical } from 'react-icons/hi';
 import SliderProps from './props/SliderProps';
+import { MediaCardOptions } from './MediaCardOptions';
+import { useState } from 'react';
 
 function MediaCard({
   id,
@@ -27,11 +29,12 @@ function MediaCard({
   objurl,
   folderPath,
   folderPath2,
-  rootPath
+  rootPath,
+  watched
 }) {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [slider, setSlider] = useRecoilState(sliderState);
-
+  const [disable, setDisable] = useState(false);
   const handlePlayer = () => {};
 
   const sendMediaValue = () => {
@@ -55,44 +58,58 @@ function MediaCard({
       objurl,
       folderPath,
       folderPath2,
-      rootPath
+      rootPath,
+      watched
     };
   };
 
   const handleMediaCardClick = () => {
-    setMediaItem(true);
-    sendMediaValue();
+    !disable && setMediaItem(true), sendMediaValue();
   };
 
+  const enablePlay = () => {
+    setDisable(false);
+  };
+
+  const disablePlay = () => {
+    setDisable(true);
+  };
+
+  const pressDots = () => {};
   const press = () => {};
 
   return (
     <div onClick={handleMediaCardClick} className='min-w-max'>
-      <div className='pb-2 group'>
+      <div className='group pb-2'>
         <div className='text-5xl'>
           <div
-            className='opacity-0 group-hover:opacity-100 flex shadow-sm'
+            className='flex opacity-0 shadow-sm group-hover:opacity-100'
             onClick={handlePlayer}
           >
-            <BsPlayCircleFill
-              onClick={press}
-              className={`${SliderProps[slider]['play']} relative transition-all z-10 p-[1px] text-gray-900 opacity-80 bg-gray-300 hover:opacity-100 hover:p-0 hover:text-[#CC7B19] hover:bg-gray-900 rounded-full`}
-            />
-            <HiDotsVertical
-              onClick={press}
-              className={`${SliderProps[slider]['options']} hover:text-[#CC7B19] relative z-10 text-gray-300`}
-            />
-            <BsFillPencilFill
-              onClick={press}
-              className={`${SliderProps[slider]['edit']} hover:text-[#CC7B19] relative z-10 text-gray-30`}
-            />
-            <BsCircle
-              onClick={press}
-              className={`${SliderProps[slider]['later']} hover:text-[#CC7B19] relative z-10 text-gray-300`}
-            />
+            <div>
+              <BsPlayCircleFill
+                onClick={press}
+                className={`${SliderProps[slider]['play']} relative z-10 rounded-full bg-gray-300 p-[1px] text-gray-900 opacity-80 transition-all hover:bg-gray-900 hover:p-0 hover:text-[#CC7B19] hover:opacity-100`}
+              />
+            </div>
+            <MediaCardOptions />
+            <div>
+              <BsFillPencilFill
+                onClick={press}
+                onMouseEnter={disablePlay}
+                onMouseLeave={enablePlay}
+                className={`${SliderProps[slider]['edit']} text-gray-30 relative z-10 hover:text-[#CC7B19]`}
+              />
+            </div>
+            <div>
+              <BsCircle
+                onClick={press}
+                className={`${SliderProps[slider]['later']} relative z-10 text-gray-300 hover:text-[#CC7B19]`}
+              />
+            </div>
           </div>
         </div>
-        <div className={`outline-[#CC7B19] group-hover:outline rounded-md`}>
+        <div className={`rounded-md outline-[#CC7B19] group-hover:outline`}>
           <Image
             className='rounded-md'
             src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
@@ -104,11 +121,11 @@ function MediaCard({
         </div>
       </div>
       <h3
-        className={`cursor-pointer font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[slider]['title']}`}
+        className={`cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold ${SliderProps[slider]['title']}`}
       >
         {tmdbTitle}
       </h3>
-      <h3 className='cursor-pointer text-sm text-gray-400 font-semibold'>
+      <h3 className='cursor-pointer text-sm font-semibold text-gray-400'>
         {tmdbReleaseDate}
       </h3>
     </div>
