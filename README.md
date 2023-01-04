@@ -6,8 +6,6 @@ This is **Plix** a clone project of [Plex](https://app.plex.tv/desktop/#!/) a de
 
 <iframe width="640" height="480" src='https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a' frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-// [video presentation](https://www.loom.com/share/94bf6a2376c646969b5225dd73a5f20a)
-
 
 ## Information
 
