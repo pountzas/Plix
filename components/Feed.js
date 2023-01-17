@@ -24,7 +24,7 @@ function Feed() {
   const [slider, setSlider] = useRecoilState(sliderState);
 
   return (
-    <section className='pt-3 px-3 mr-3 rounded-md text-2xl text-gray-300'>
+    <section className='pt-3 px-3 mr-3 rounded-md text-2xl text-gray-300 w-full'>
       {(latestMovie || latestTv) && (
         <div className='flex items-center justify-between'>
           <h2>{`${homeMenu ? 'Home' : movieMenu ? 'Movies' : 'TV Shows'}`}</h2>
@@ -41,18 +41,16 @@ function Feed() {
       {homeMenu && (
         <section>
           <div
-            className={`${
-              menuSize
-                ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
-                : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-            } mb-7`}
+            className={`${menuSize
+              ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
+              : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
+              } mb-7`}
           ></div>
           <div
-            className={`${
-              menuSize
-                ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
-                : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-            } `}
+            className={`${menuSize
+              ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
+              : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
+              } `}
           >
             {!latestMovie && !latestTv && (
               <div className='flex flex-col justify-center items-center pt-20'>
@@ -68,11 +66,11 @@ function Feed() {
               </div>
             )}
             {(latestMovie || latestTv) && (
-              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain'>
+              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain w-full'>
                 {latestMovie && (
                   <div>
                     <h3>Latest Movies</h3>
-                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
+                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain '>
                       {MovieFiles.map((movie) => (
                         <MediaCard
                           key={movie.id}
@@ -141,7 +139,7 @@ function Feed() {
       {/* Movie menu */}
       {movieMenu && (
         <section>
-          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1'>
             {MovieFiles.map((movie) => (
               <div className='pr-7' key={movie.id}>
                 <MediaCard

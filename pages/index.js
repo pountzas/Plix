@@ -33,13 +33,12 @@ export default function Home() {
       className={`relative bg-gradient-to-bl from-[#2A3440] to-[#323C45] min-w-[100vw] min-h-[100vh]`}
     >
       <div
-        className={`absolute min-w-full ${
-          movieMenu
-            ? !image
-              ? `max-h-[90vh] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
-              : `min-h-screen `
+        className={`absolute min-w-full ${movieMenu
+          ? !image
+            ? `max-h-[90vh] bg-gradient-to-bl from-[#2A3440] to-[#323C45]`
             : `min-h-screen `
-        }`}
+          : `min-h-screen `
+          }`}
       >
         {image && (
           <div>
@@ -56,7 +55,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      <div className='z-2 absolute'>
+      <div className='z-2 absolute w-full'>
         <Head>
           <title>Plix</title>
           <meta name='Plix' content='next app' />

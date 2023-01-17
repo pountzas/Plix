@@ -7,7 +7,7 @@ import { mediaItemState } from '../atoms/modalAtom';
 function Dashboard() {
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   return (
-    <div className='flex'>
+    <div className='flex w-full'>
       <Menu />
       {!mediaItem ? <Feed /> : <MediaItem />}
       {/* <Feed /> */}
