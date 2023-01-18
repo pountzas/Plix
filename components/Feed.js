@@ -78,7 +78,7 @@ function Feed() {
                           name={movie.name}
                           tmdbId={movie.tmdbId}
                           adult={movie.adult}
-                          backdrop={movie.backdrop_path}
+                          backdrop_path={movie.backdrop_path}
                           lang={movie.original_language}
                           popularity={movie.popularity}
                           voteAverage={movie.vote_average}
@@ -90,7 +90,7 @@ function Feed() {
                           tmdbRating={movie.tmdbRating}
                           tmdbGenre={movie.tmdbGenre}
                           fileName={movie.fileName}
-                          objurl={movie.ObjUrl}
+                          ObjUrl={movie.ObjUrl}
                           folderPath={movie.folderPath}
                           folderPath2={movie.folderPath2}
                           rootPath={movie.rootPath}
@@ -109,7 +109,7 @@ function Feed() {
                           id={tv.id} // to remove
                           name={tv.name}
                           tmdbId={tv.tmdbId}
-                          backdrop={tv.backdrop_path}
+                          backdrop_path={tv.backdrop_path}
                           lang={tv.original_language}
                           popularity={tv.popularity}
                           voteAverage={tv.vote_average}
@@ -121,7 +121,7 @@ function Feed() {
                           tmdbRating={tv.tmdbRating}
                           tmdbGenre={tv.tmdbGenre}
                           fileName={tv.fileName}
-                          objurl={tv.ObjUrl}
+                          ObjUrl={tv.ObjUrl}
                           folderPath={tv.folderPath}
                           folderPath2={tv.folderPath2}
                           rootPath={tv.rootPath}
@@ -147,7 +147,7 @@ function Feed() {
                   name={movie.name}
                   tmdbId={movie.tmdbId}
                   adult={movie.adult}
-                  backdrop={movie.backdrop_path}
+                  backdrop_path={movie.backdrop_path}
                   lang={movie.original_language}
                   popularity={movie.popularity}
                   voteAverage={movie.vote_average}
@@ -159,7 +159,7 @@ function Feed() {
                   tmdbRating={movie.tmdbRating}
                   tmdbGenre={movie.tmdbGenre}
                   fileName={movie.fileName}
-                  objurl={movie.ObjUrl}
+                  ObjUrl={movie.ObjUrl}
                   folderPath={movie.folderPath}
                   folderPath2={movie.folderPath2}
                   rootPath={movie.rootPath}
@@ -181,7 +181,7 @@ function Feed() {
                   name={tv.name}
                   tmdbId={tv.tmdbId}
                   adult={tv.adult}
-                  backdrop={tv.backdrop_path}
+                  backdrop_path={tv.backdrop_path}
                   lang={tv.original_language}
                   popularity={tv.popularity}
                   voteAverage={tv.vote_average}
@@ -193,7 +193,7 @@ function Feed() {
                   tmdbRating={tv.tmdbRating}
                   tmdbGenre={tv.tmdbGenre}
                   fileName={tv.fileName}
-                  objurl={tv.ObjUrl}
+                  ObjUrl={tv.ObjUrl}
                   folderPath={tv.folderPath}
                   folderPath2={tv.folderPath2}
                   rootPath={tv.rootPath}

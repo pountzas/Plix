@@ -12,7 +12,7 @@ function MediaCard({
   name,
   tmdbId,
   adult,
-  backdrop,
+  backdrop_path,
   lang,
   popularity,
   voteAverage,
@@ -24,7 +24,7 @@ function MediaCard({
   tmdbRating,
   tmdbGenre,
   fileName,
-  objurl,
+  ObjUrl,
   folderPath,
   folderPath2,
   rootPath
@@ -32,7 +32,7 @@ function MediaCard({
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
   const [slider, setSlider] = useRecoilState(sliderState);
 
-  const handlePlayer = () => {};
+  const handlePlayer = () => { };
 
   const sendMediaValue = () => {
     MediaItemProps = {
@@ -40,7 +40,7 @@ function MediaCard({
       name,
       tmdbId,
       adult,
-      backdrop,
+      backdrop_path,
       lang,
       popularity,
       voteAverage,
@@ -52,7 +52,7 @@ function MediaCard({
       tmdbRating,
       tmdbGenre,
       fileName,
-      objurl,
+      ObjUrl,
       folderPath,
       folderPath2,
       rootPath
@@ -60,11 +60,11 @@ function MediaCard({
   };
 
   const handleMediaCardClick = () => {
-    setMediaItem(true);
     sendMediaValue();
+    setMediaItem(true);
   };
 
-  const press = () => {};
+  const press = () => { };
 
   return (
     <div onClick={handleMediaCardClick} className='min-w-max'>

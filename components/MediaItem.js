@@ -43,9 +43,8 @@ function MediaItem() {
   }, []);
 
   useEffect(() => {
-    setBgImage(MediaItemProps.backdrop);
+    setBgImage(MediaItemProps.backdrop_path);
     setImage(true);
-    console.log('background image' + MediaItemProps.backdrop);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -131,7 +130,7 @@ function MediaItem() {
                 }
               }
             }}
-            url={MediaItemProps.objurl}
+            url={MediaItemProps.ObjUrl}
             controls
             pip={true}
             width='640px'
@@ -202,11 +201,10 @@ function MediaItem() {
           <div className='pt-8'>
             <div className='text-gray-200'>Cast</div>
             <div
-              className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${
-                menuSize
-                  ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[92vw]'
-                  : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
-              }`}
+              className={`flex items-start overflow-hidden overflow-x-scroll scrollbar-hide object-contain space-x-10 pt-4 ${menuSize
+                ? 'max-w-[79vw] xl:max-w-[92vw] 2xl:max-w-[92vw]'
+                : 'max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]'
+                }`}
             >
               {MediaCredits.map((actor) => (
                 <div
