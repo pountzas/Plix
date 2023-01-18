@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 import { useRecoilState } from 'recoil';
-import { menuSizeState, imageState, mediaItemState } from '../atoms/modalAtom';
+import { menuSizeState, imageState, mediaItemState, bgImageUrl } from '../atoms/modalAtom';
 
 import MovieFiles from './props/MovieFiles';
 import SearchResults from './props/SearchResults';
@@ -18,6 +18,7 @@ function Header() {
 
   const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
   const [mediaItem, setMediaItem] = useRecoilState(mediaItemState);
+  const [bgImage, setBgImage] = useRecoilState(bgImageUrl);
   const [image, setImage] = useRecoilState(imageState);
 
   const [searchValue, setSearchValue] = useState('');
@@ -32,14 +33,14 @@ function Header() {
     });
     setMediaItem(true);
     MediaItemProps = media[0];
-    // console.log('a', media);
     setSearchValue('');
     SearchResults = [];
+    setBgImage(media[0].backdrop_path);
     setImage(true);
   };
 
   const handleSearch = (event) => {
-    setSearchValue(event.target.value.length > 0 ? event.target.value : null);
+    setSearchValue(event.target.value.length > 0 && event.target.value);
     const results = MovieFiles.filter((movie) => {
       return movie.name.toLowerCase().includes(searchValue?.toLowerCase());
     });
