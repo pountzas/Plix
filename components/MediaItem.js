@@ -38,7 +38,7 @@ function MediaItem() {
       setCast(true);
       setMenuSize(menuSize);
       setCrew(true);
-    }, 1500);
+    }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -118,7 +118,7 @@ function MediaItem() {
         )}
       </div>
       <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[75vh] scrollbar-hide object-contain'>
-        <div className='lg:flex items-center lg:space-x-8'>
+        <div className='items-center lg:flex lg:space-x-8'>
           <ReactPlayer
             config={{
               file: {
@@ -150,7 +150,7 @@ function MediaItem() {
             {/* movie info */}
             {crew && (
               <div className='flex space-x-4'>
-                <div className='text-gray-400 font-semibold'>
+                <div className='font-semibold text-gray-400'>
                   <p>DIRECTED BY</p>
                   <p>WRITTEN BY</p>
                   <p>STUDIO</p>
@@ -208,7 +208,7 @@ function MediaItem() {
             >
               {MediaCredits.map((actor) => (
                 <div
-                  className='flex flex-col items-center justify-center space-x-1 text-xs border-1 rounded-full'
+                  className='flex flex-col items-center justify-center space-x-1 text-xs rounded-full border-1'
                   key={actor.key}
                 >
                   <div className='flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full '>
@@ -235,6 +235,6 @@ function MediaItem() {
       </div>
     </div>
   );
-}
+};
 
 export default MediaItem;
