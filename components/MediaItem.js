@@ -34,17 +34,13 @@ function MediaItem() {
 
   useEffect(() => {
     getMediaDetails();
-    setTimeout(() => {
-      setCast(true);
-      setMenuSize(menuSize);
-      setCrew(true);
-    }, 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
+    setMenuSize(menuSize);
     setBgImage(MediaItemProps.backdrop_path);
     setImage(true);
+    setTimeout(() => {
+      setCast(true);
+      setCrew(true);
+    }, 500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
