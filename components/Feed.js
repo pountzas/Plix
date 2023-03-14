@@ -39,7 +39,7 @@ function Feed() {
         </div>
       )}
       {homeMenu && (
-        <section>
+        <section className='w-full'>
           <div
             className={`${menuSize
               ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
@@ -68,9 +68,9 @@ function Feed() {
             {(latestMovie || latestTv) && (
               <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain w-full'>
                 {latestMovie && (
-                  <div>
+                  <div className='w-full'>
                     <h3>Latest Movies</h3>
-                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain '>
+                    <div className='pl-3 flex overflow-hidden space-x-7 object-contain w-full overflow-x-scroll scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin pb-4'>
                       {MovieFiles.map((movie) => (
                         <MediaCard
                           key={movie.id}
@@ -102,7 +102,7 @@ function Feed() {
                 {latestTv && (
                   <div className='pt-9'>
                     <h3>Latest TV Shows</h3>
-                    <div className='pl-3 flex overflow-hidden space-x-7 overflow-x-scroll scrollbar-hide object-contain'>
+                    <div className='pl-3 flex overflow-hidden space-x-7 object-contain w-full overflow-x-scroll scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin pb-4'>
                       {TvFiles.map((tv) => (
                         <MediaCard
                           key={tv.id}
