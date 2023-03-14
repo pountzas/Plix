@@ -10,7 +10,6 @@ function Dashboard() {
     <div className='flex w-full'>
       <Menu />
       {!mediaItem ? <Feed /> : <MediaItem />}
-      {/* <Feed /> */}
     </div>
   );
 }
