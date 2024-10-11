@@ -24,7 +24,7 @@ function Feed() {
   const [slider, setSlider] = useRecoilState(sliderState);
 
   return (
-    <section className='pt-3 px-3 mr-3 rounded-md text-2xl text-gray-300 w-full'>
+    <section className='w-full px-3 pt-3 mr-3 text-2xl text-gray-300 rounded-md'>
       {(latestMovie || latestTv) && (
         <div className='flex items-center justify-between'>
           <h2>{`${homeMenu ? 'Home' : movieMenu ? 'Movies' : 'TV Shows'}`}</h2>
@@ -53,14 +53,14 @@ function Feed() {
               } `}
           >
             {!latestMovie && !latestTv && (
-              <div className='flex flex-col justify-center items-center pt-20'>
+              <div className='flex flex-col items-center justify-center pt-20'>
                 <Image
                   src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
                   alt='logo'
                   height={200}
                   width={600}
                 />
-                <p className='font-thin italic text-gray-200 pt-20'>
+                <p className='pt-20 italic font-thin text-gray-200'>
                   Add Media from menu bar on the left.
                 </p>
               </div>
@@ -70,7 +70,7 @@ function Feed() {
                 {latestMovie && (
                   <div className='w-full'>
                     <h3>Latest Movies</h3>
-                    <div className='pl-3 flex overflow-hidden space-x-7 object-contain w-full overflow-x-scroll scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin pb-4'>
+                    <div className='flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin'>
                       {MovieFiles.map((movie) => (
                         <MediaCard
                           key={movie.id}
@@ -102,7 +102,7 @@ function Feed() {
                 {latestTv && (
                   <div className='pt-9'>
                     <h3>Latest TV Shows</h3>
-                    <div className='pl-3 flex overflow-hidden space-x-7 object-contain w-full overflow-x-scroll scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin pb-4'>
+                    <div className='flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin'>
                       {TvFiles.map((tv) => (
                         <MediaCard
                           key={tv.id}
