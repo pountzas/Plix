@@ -71,7 +71,8 @@ function MediaModal() {
               ).catch((err) => console.log(err));
 
               const data = await response.json();
-              const tmdbId = data.results[0]?.id;
+              console.log(data);
+              const tmdbId = data?.results[0]?.id;
 
               tmdbId
                 ? MovieFiles.push({
