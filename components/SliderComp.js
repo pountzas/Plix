@@ -1,6 +1,6 @@
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import 'rc-tooltip/assets/bootstrap.css';
+// import 'rc-tooltip/assets/bootstrap.css';
 import { useRecoilState } from 'recoil';
 import { imageState } from '../atoms/modalAtom';
 import { MdViewComfy } from 'react-icons/md';
@@ -11,7 +11,7 @@ function SliderComp({ defaultValue, step, onClick, onChange, min, max }) {
 
   return (
     <div>
-      <div className='flex items-center space-x-2 object-contain'>
+      <div className='flex items-center object-contain space-x-2'>
         <div className='w-[100px] m-[15px] text-gray-500'>
           <Slider
             min={min}

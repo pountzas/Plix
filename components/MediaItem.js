@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import ReactPlayer from 'react-player';
+import ReactPlayer from 'react-player/lazy';
 import { useRecoilState } from 'recoil';
 import {
   mediaItemState,
