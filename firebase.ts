@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp } from 'firebase/app'
+import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -14,12 +14,12 @@ const firebaseConfig = {
   storageBucket: 'plix-aaef3.appspot.com',
   messagingSenderId: '568145031745',
   appId: '1:568145031745:web:18600fe9328523da040cc0',
-};
+}
 
 // Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 
-const db = getFirestore();
-const storage = getStorage();
+const db = getFirestore()
+const storage = getStorage()
 
-export { app, db, storage };
+export { app, db, storage }

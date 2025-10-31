@@ -1,80 +1,79 @@
-import MediaCard from './MediaCard';
-import Image from 'next/image';
-import { useRecoilState } from 'recoil';
-import {
-  menuSizeState,
-  homeMovieState,
-  homeTvState,
-  homeMenuState,
-  movieMenuState,
-  tvMenuState,
-  sliderState
-} from '../atoms/modalAtom';
-import SliderComp from './SliderComp';
-import MovieFiles from './props/MovieFiles';
-import TvFiles from './props/TvFiles';
+import MediaCard from "./MediaCard";
+import Image from "next/image";
+import { useUiStore } from "../stores/uiStore";
+import { useMediaStore } from "../stores/mediaStore";
+import { useNavigationStore } from "../stores/navigationStore";
+import { useVisualStore } from "../stores/visualStore";
+import SliderComp from "./SliderComp";
+import MovieFiles from "./props/MovieFiles";
+import TvFiles from "./props/TvFiles";
 
 function Feed() {
-  const [menuSize, setMenuSize] = useRecoilState(menuSizeState);
-  const [latestMovie, setLatestMovie] = useRecoilState(homeMovieState);
-  const [latestTv, setLatestTv] = useRecoilState(homeTvState);
-  const [homeMenu, setHomeMenu] = useRecoilState(homeMenuState);
-  const [movieMenu, setMovieMenu] = useRecoilState(movieMenuState);
-  const [tvMenu, setTvMenu] = useRecoilState(tvMenuState);
-  const [slider, setSlider] = useRecoilState(sliderState);
+  const menuSize = useUiStore((state) => state.menuSize);
+  const latestMovie = useMediaStore((state) => state.homeMovieLoaded);
+  const latestTv = useMediaStore((state) => state.homeTvLoaded);
+  const homeMenu = useNavigationStore((state) => state.homeMenuActive);
+  const movieMenu = useNavigationStore((state) => state.movieMenuActive);
+  const tvMenu = useNavigationStore((state) => state.tvMenuActive);
+  const slider = useVisualStore((state) => state.sliderValue);
+  const setSliderValue = useVisualStore((state) => state.setSliderValue);
 
   return (
-    <section className='w-full px-3 pt-3 mr-3 text-2xl text-gray-300 rounded-md'>
+    <section className="w-full px-3 pt-3 mr-3 text-2xl text-gray-300 rounded-md">
       {(latestMovie || latestTv) && (
-        <div className='flex items-center justify-between'>
-          <h2>{`${homeMenu ? 'Home' : movieMenu ? 'Movies' : 'TV Shows'}`}</h2>
+        <div className="flex items-center justify-between">
+          <h2>{`${homeMenu ? "Home" : movieMenu ? "Movies" : "TV Shows"}`}</h2>
 
           <SliderComp
             defaultValue={slider}
             step={25}
             min={0}
             max={100}
-            onChange={(value) => setSlider(value)}
+            onChange={(value) =>
+              setSliderValue(typeof value === "number" ? value : value[0])
+            }
           />
         </div>
       )}
       {homeMenu && (
-        <section className='w-full'>
+        <section className="w-full">
           <div
-            className={`${menuSize
-              ? 'w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
-              : 'w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-              } mb-7`}
+            className={`${
+              menuSize
+                ? "w-[73vw] sm:w-[78vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]"
+                : "w-[51vw] sm:w-[60vw] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]"
+            } mb-7`}
           ></div>
           <div
-            className={`${menuSize
-              ? 'w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]'
-              : 'w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]'
-              } `}
+            className={`${
+              menuSize
+                ? "w-[73vw] md:w-[81vw] lg:w-[86vw] xl:w-[90vw]"
+                : "w-[30vh] md:w-[66vw] lg:w-[74vw] xl:w-[80vw] 2xl:w-[83vw] 3xl:w-[88vw]"
+            } `}
           >
             {!latestMovie && !latestTv && (
-              <div className='flex flex-col items-center justify-center pt-20'>
+              <div className="flex flex-col items-center justify-center pt-20">
                 <Image
-                  src='https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png'
-                  alt='logo'
+                  src="https://res.cloudinary.com/dcwuuolk8/image/upload/v1650308268/Plix/plix-logo-w_yrxkmt.png"
+                  alt="logo"
                   height={200}
                   width={600}
                 />
-                <p className='pt-20 italic font-thin text-gray-200'>
+                <p className="pt-20 italic font-thin text-gray-200">
                   Add Media from menu bar on the left.
                 </p>
               </div>
             )}
             {(latestMovie || latestTv) && (
-              <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain w-full'>
+              <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[77vh] scrollbar-hide object-contain w-full">
                 {latestMovie && (
-                  <div className='w-full'>
+                  <div className="w-full">
                     <h3>Latest Movies</h3>
-                    <div className='flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin'>
+                    <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
                       {MovieFiles.map((movie) => (
                         <MediaCard
                           key={movie.id}
-                          id={movie.id} // to remove
+                          id={movie.id}
                           name={movie.name}
                           tmdbId={movie.tmdbId}
                           adult={movie.adult}
@@ -100,15 +99,16 @@ function Feed() {
                   </div>
                 )}
                 {latestTv && (
-                  <div className='pt-9'>
+                  <div className="pt-9">
                     <h3>Latest TV Shows</h3>
-                    <div className='flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin'>
+                    <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
                       {TvFiles.map((tv) => (
                         <MediaCard
                           key={tv.id}
-                          id={tv.id} // to remove
+                          id={tv.id}
                           name={tv.name}
                           tmdbId={tv.tmdbId}
+                          adult={tv.adult}
                           backdrop_path={tv.backdrop_path}
                           lang={tv.original_language}
                           popularity={tv.popularity}
@@ -139,11 +139,11 @@ function Feed() {
       {/* Movie menu */}
       {movieMenu && (
         <section>
-          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1'>
+          <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1">
             {MovieFiles.map((movie) => (
-              <div className='pr-7' key={movie.id}>
+              <div className="pr-7" key={movie.id}>
                 <MediaCard
-                  id={movie.id} // to remove
+                  id={movie.id}
                   name={movie.name}
                   tmdbId={movie.tmdbId}
                   adult={movie.adult}
@@ -173,11 +173,11 @@ function Feed() {
       {/* TV menu */}
       {tvMenu && (
         <section>
-          <div className='flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain'>
+          <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain">
             {TvFiles.map((tv) => (
-              <div className='pr-7' key={tv.id}>
+              <div className="pr-7" key={tv.id}>
                 <MediaCard
-                  id={tv.id} // to remove
+                  id={tv.id}
                   name={tv.name}
                   tmdbId={tv.tmdbId}
                   adult={tv.adult}

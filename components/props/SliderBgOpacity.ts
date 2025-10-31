@@ -1,4 +1,4 @@
-const SliderBgOpacity = {
+const SliderBgOpacity: Record<number, string> = {
   0: 'hidden',
   1: 'opacity-[0.1]',
   2: 'opacity-[0.2]',
@@ -10,6 +10,6 @@ const SliderBgOpacity = {
   8: 'opacity-[0.8]',
   9: 'opacity-[0.9]',
   10: 'opacity-[1]'
-};
+}
 
-export default SliderBgOpacity;
+export default SliderBgOpacity
