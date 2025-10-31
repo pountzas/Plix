@@ -44,10 +44,10 @@ export default function Home() {
               className={`z-0 ${imageOpacityStyles} min-w-full min-h-screen`}
               src={`https://www.themoviedb.org/t/p/original${backgroundImageUrl}`}
               alt=""
-              layout="fill"
-              objectFit="cover"
+              fill
+              style={{ objectFit: "cover" }}
               loading="lazy"
-              placeholder={`blur`}
+              placeholder="blur"
               blurDataURL={`https://www.themoviedb.org/t/p/w220_and_h330_face${backgroundImageUrl}`}
             />
           </div>
