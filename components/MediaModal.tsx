@@ -1,3 +1,4 @@
+import { Activity } from "react";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 
@@ -304,7 +305,7 @@ function MediaModal() {
 
   return (
     <>
-      {modalOpen && (
+      <Activity mode={modalOpen ? "visible" : "hidden"}>
         <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto text-center justify-items-center backdrop-blur-md">
           <div className="flex flex-col justify-self-center justify-between  bg-[#2D3742] text-white border-gray-900 border-2 min-w-[600px] min-h-[300px] max-w-[800px] max-h-[500px] rounded-lg">
             {/* modal header  */}
@@ -490,7 +491,7 @@ function MediaModal() {
             &#8203;
           </span>
         </div>
-      )}
+      </Activity>
     </>
   );
 }

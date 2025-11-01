@@ -1,3 +1,4 @@
+import { Activity } from "react";
 import { CgHome } from "react-icons/cg";
 import { BsFilm } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";
@@ -55,7 +56,9 @@ function Menu() {
         className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
       >
         <CgHome className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
-        {!menuSize && <p>Home</p>}
+        <Activity mode={menuSize ? "hidden" : "visible"}>
+          <p>Home</p>
+        </Activity>
       </div>
       {(latestMovie || persistedMovies.length > 0) && (
         <div
@@ -63,14 +66,14 @@ function Menu() {
           className="flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl"
         >
           <BsFilm className={` mr-4 ${!menuSize && "mr-8"}`} />
-          {!menuSize && (
+          <Activity mode={menuSize ? "hidden" : "visible"}>
             <p className="whitespace-nowrap">
               Movies{" "}
               <span className="text-gray-500 text-sm">
                 ({persistedMovies.length})
               </span>
             </p>
-          )}
+          </Activity>
         </div>
       )}
       {(latestTv || persistedTvShows.length > 0) && (
@@ -79,7 +82,9 @@ function Menu() {
           className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
         >
           <MdMonitor className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
-          {!menuSize && <p>TV Shows ({persistedTvShows.length})</p>}
+          <Activity mode={menuSize ? "hidden" : "visible"}>
+            <p>TV Shows ({persistedTvShows.length})</p>
+          </Activity>
         </div>
       )}
 
@@ -88,7 +93,9 @@ function Menu() {
         className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
       >
         <AiFillFolderAdd className={` mr-4 ${!menuSize && "mr-8"}`} />
-        {!menuSize && <p>Add Media</p>}
+        <Activity mode={menuSize ? "hidden" : "visible"}>
+          <p>Add Media</p>
+        </Activity>
       </div>
     </section>
   );
