@@ -49,30 +49,38 @@ export class ApiError extends Error {
  *
  * @param url - The URL to fetch
  * @param options - Fetch options
+ * @param config - Optional configuration override
  * @returns Promise resolving to the JSON response
  */
 export const fetchWithCacheSignal = cache(async (
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  config: { timeout?: number } = {}
 ): Promise<any> => {
+  // Get cacheSignal for automatic cleanup on cache expiration
+  const cacheAbortSignal = cacheSignal();
+
+  // Create AbortController for timeout handling
+  const controller = new AbortController();
+  const timeoutMs = config.timeout ?? defaultConfig.timeout;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  // Combine all abort signals: user-provided, cacheSignal, and timeout
+  const signals = [controller.signal];
+  if (cacheAbortSignal) signals.push(cacheAbortSignal);
+  if (options.signal) signals.push(options.signal);
+
+  const combinedSignal = AbortSignal.any(signals);
+
   try {
-    // Get cacheSignal for automatic cleanup on cache expiration
-    const cacheAbortSignal = cacheSignal();
-
-    // Create AbortController for timeout handling
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), defaultConfig.timeout);
-
     const response = await fetch(url, {
       ...options,
-      signal: cacheAbortSignal || controller.signal, // Use cacheSignal if available, fallback to timeout controller
+      signal: combinedSignal, // Use combined signal for all cancellation sources
       headers: {
         ...defaultConfig.headers,
         ...options.headers,
       },
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new ApiError(
@@ -96,12 +104,24 @@ export const fetchWithCacheSignal = cache(async (
 
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        throw new Error(`Request timeout for ${url}`);
+        // Determine the cause of the abort
+        if (controller.signal.aborted) {
+          throw new Error(`Request timeout after ${timeoutMs}ms for ${url}`);
+        } else if (cacheAbortSignal?.aborted) {
+          throw new Error(`Request cancelled due to cache expiration for ${url}`);
+        } else if (options.signal?.aborted) {
+          throw new Error(`Request cancelled by user signal for ${url}`);
+        } else {
+          throw new Error(`Request cancelled for ${url}`);
+        }
       }
       throw new Error(`Network error for ${url}: ${error.message}`);
     }
 
     throw new Error(`Unknown error for ${url}`);
+  } finally {
+    // Always clear the timeout to prevent memory leaks
+    clearTimeout(timeoutId);
   }
 });
 
@@ -213,7 +233,7 @@ export class ApiClient {
       requestOptions.body = JSON.stringify(data);
     }
 
-    return fetchWithCacheSignal(url, requestOptions);
+    return fetchWithCacheSignal(url, requestOptions, { timeout: this.config.timeout });
   }
 
   /**
