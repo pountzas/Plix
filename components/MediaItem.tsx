@@ -18,9 +18,16 @@ import { getMovieCredits } from "../utils/tmdbApi";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 
 // Actor image component with fallback handling - defined outside MediaItem to prevent state resets
-const ActorImage = ({ actor, sliderValue }: { actor: any; sliderValue: number }) => {
+const ActorImage = ({
+  actor,
+  sliderValue,
+}: {
+  actor: any;
+  sliderValue: number;
+}) => {
   const [imageError, setImageError] = useState(false);
-  const hasValidProfile = actor.profile_path && actor.profile_path.trim() !== "";
+  const hasValidProfile =
+    actor.profile_path && actor.profile_path.trim() !== "";
   const imageSrc = hasValidProfile
     ? `https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`
     : null;
@@ -134,7 +141,6 @@ function MediaItem() {
     setBackgroundImageUrl("");
     setImageVisible(false);
   };
-
 
   return (
     <div>
