@@ -5,7 +5,12 @@ import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 import { useState } from "react";
 
-import { BsPlayCircleFill, BsFillPencilFill, BsCircle, BsImage } from "react-icons/bs";
+import {
+  BsPlayCircleFill,
+  BsFillPencilFill,
+  BsCircle,
+  BsImage,
+} from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
 import SliderProps from "./props/SliderProps";
 

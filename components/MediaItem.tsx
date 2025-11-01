@@ -12,6 +12,7 @@ import Writers from "./props/Writers";
 import SliderProps from "./props/SliderProps";
 
 import { FaBackward } from "react-icons/fa";
+import { BsImage } from "react-icons/bs";
 import SliderComp from "./SliderComp";
 import { getMovieCredits } from "../utils/tmdbApi";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
@@ -93,6 +94,45 @@ function MediaItem() {
     setCastVisible(false);
     setBackgroundImageUrl("");
     setImageVisible(false);
+  };
+
+  // Actor image component with fallback handling
+  const ActorImage = ({ actor }: { actor: any }) => {
+    const [imageError, setImageError] = useState(false);
+    const hasValidProfile = actor.profile_path && actor.profile_path.trim() !== "";
+    const imageSrc = hasValidProfile
+      ? `https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`
+      : null;
+
+    const handleImageError = () => {
+      setImageError(true);
+    };
+
+    const size = parseInt(SliderProps[sliderValue]["width"]);
+
+    if (imageSrc && !imageError) {
+      return (
+        <Image
+          className="rounded-full shadow-xl"
+          src={imageSrc}
+          alt={actor.name}
+          width={size}
+          height={size}
+          loading="lazy"
+          quality={75}
+          onError={handleImageError}
+        />
+      );
+    }
+
+    return (
+      <div
+        className="rounded-full bg-gray-700 flex items-center justify-center border-2 border-gray-600"
+        style={{ width: size, height: size }}
+      >
+        <BsImage className="text-gray-400 text-2xl" />
+      </div>
+    );
   };
 
   return (
@@ -223,15 +263,7 @@ function MediaItem() {
                   key={actor.key}
                 >
                   <div className="flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full ">
-                    <Image
-                      className="rounded-full shadow-xl"
-                      src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
-                      alt=""
-                      width={parseInt(SliderProps[sliderValue]["width"])}
-                      height={parseInt(SliderProps[sliderValue]["height"])}
-                      loading="lazy"
-                      quality={75}
-                    />
+                    <ActorImage actor={actor} />
                   </div>
                   <div className="flex flex-col items-center text-center justify-center w-[100px] pt-1">
                     <div className="text-gray-200">{actor.name}</div>
