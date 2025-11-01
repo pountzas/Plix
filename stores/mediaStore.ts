@@ -1,7 +1,5 @@
 import { create } from 'zustand'
 import type { PersistedMovieFile, PersistedTvFile } from '../components/props/PersistedData'
-import type MovieFile from '../components/props/MovieFiles'
-import type TvFile from '../components/props/TvFiles'
 
 interface MediaState {
   // UI state
@@ -56,7 +54,7 @@ interface MediaActions {
 
 type MediaStore = MediaState & MediaActions
 
-export const useMediaStore = create<MediaStore>((set, get) => ({
+export const useMediaStore = create<MediaStore>((set) => ({
   // Initial state
   mediaItemActive: false,
   homeMovieLoaded: false,

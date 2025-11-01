@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import { useSession, signIn as nextAuthSignIn, signOut as nextAuthSignOut } from 'next-auth/react'
 import { auth } from '../firebase'
 import {
-  signInWithCredential,
-  GoogleAuthProvider,
   onAuthStateChanged,
   signOut as firebaseSignOut,
   User as FirebaseUser
@@ -50,9 +48,12 @@ export function useFirebaseAuth() {
         try {
           // Try to sign in to Firebase using NextAuth session
           // This is a simplified approach - in production you'd want more robust token handling
-          const credential = GoogleAuthProvider.credential(session.accessToken)
-          await signInWithCredential(auth, credential)
-          console.log('useFirebaseAuth - Successfully signed into Firebase')
+          // Note: NextAuth v4 doesn't expose accessToken directly in session object
+          // This is a placeholder for proper Firebase-NextAuth integration
+          console.log('useFirebaseAuth - Firebase sync placeholder (accessToken not available in session)')
+          // const credential = GoogleAuthProvider.credential(session.accessToken)
+          // await signInWithCredential(auth, credential)
+          // console.log('useFirebaseAuth - Successfully signed into Firebase')
         } catch (error) {
           console.error('useFirebaseAuth - Failed to sync with Firebase:', error)
           // If Firebase auth fails, we'll work with what we have
