@@ -139,8 +139,8 @@ export const fetchWithCacheSignal = cache(
 export const cachedGet = cache(
   async (url: string, options: RequestInit = {}): Promise<any> => {
     return fetchWithCacheSignal(url, {
-      method: "GET",
       ...options,
+      method: "GET", // Override method to ensure it's always GET
     });
   }
 );
@@ -156,9 +156,9 @@ export const cachedGet = cache(
 export const cachedPost = cache(
   async (url: string, data: any, options: RequestInit = {}): Promise<any> => {
     return fetchWithCacheSignal(url, {
-      method: "POST",
-      body: JSON.stringify(data),
       ...options,
+      method: "POST", // Override method to ensure it's always POST
+      body: JSON.stringify(data), // Override body to ensure data parameter is used
     });
   }
 );
@@ -174,9 +174,9 @@ export const cachedPost = cache(
 export const cachedPut = cache(
   async (url: string, data: any, options: RequestInit = {}): Promise<any> => {
     return fetchWithCacheSignal(url, {
-      method: "PUT",
-      body: JSON.stringify(data),
       ...options,
+      method: "PUT", // Override method to ensure it's always PUT
+      body: JSON.stringify(data), // Override body to ensure data parameter is used
     });
   }
 );
@@ -191,8 +191,8 @@ export const cachedPut = cache(
 export const cachedDelete = cache(
   async (url: string, options: RequestInit = {}): Promise<any> => {
     return fetchWithCacheSignal(url, {
-      method: "DELETE",
       ...options,
+      method: "DELETE", // Override method to ensure it's always DELETE
     });
   }
 );
