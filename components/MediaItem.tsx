@@ -13,6 +13,8 @@ import SliderProps from "./props/SliderProps";
 
 import { FaBackward } from "react-icons/fa";
 import SliderComp from "./SliderComp";
+import { getMovieCredits } from "../utils/tmdbApi";
+import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 
 function MediaItem() {
   const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
@@ -31,6 +33,7 @@ function MediaItem() {
     (state) => state.setBackgroundOpacity
   );
   const [crew, setCrew] = useState(false);
+  const { handleApiError } = useApiErrorHandler();
 
   useEffect(() => {
     getMediaDetails();
@@ -46,35 +49,36 @@ function MediaItem() {
 
   const getMediaDetails = async () => {
     if (MediaItemProps.tmdbId) {
-      const mediaDetails = await fetch(
-        `https://api.themoviedb.org/3/movie/${MediaItemProps.tmdbId}/credits?api_key=120f1a60fbfcc0d0f3e9775e7816cde3`
-      );
-      const mediaData = await mediaDetails.json();
-      mediaData.cast?.map((cast: any) => {
-        MediaCredits.push({
-          key: cast.order,
-          name: cast.name,
-          character: cast.character,
-          profile_path: cast.profile_path,
-          dep: cast.known_for_department,
+      try {
+        const mediaData = await getMovieCredits(MediaItemProps.tmdbId);
+        mediaData.cast?.map((cast: any) => {
+          MediaCredits.push({
+            key: cast.order,
+            name: cast.name,
+            character: cast.character,
+            profile_path: cast.profile_path,
+            dep: cast.known_for_department,
+          });
         });
-      });
-      mediaData.crew?.map((crew: any) => {
-        if (crew.job === "Director") {
-          MediaCrew.push({
-            key: crew.id,
-            name: crew.name,
-            dep: crew.job,
-          });
-        }
-        if (crew.job === "Writer") {
-          Writers.push({
-            key: crew.id,
-            name: crew.name,
-            dep: crew.job,
-          });
-        }
-      });
+        mediaData.crew?.map((crew: any) => {
+          if (crew.job === "Director") {
+            MediaCrew.push({
+              key: crew.id,
+              name: crew.name,
+              dep: crew.job,
+            });
+          }
+          if (crew.job === "Writer") {
+            Writers.push({
+              key: crew.id,
+              name: crew.name,
+              dep: crew.job,
+            });
+          }
+        });
+      } catch (error) {
+        handleApiError(error);
+      }
     }
   };
 
