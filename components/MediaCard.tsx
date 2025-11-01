@@ -3,8 +3,9 @@ import Image from "next/image";
 import MediaItemProps from "./props/MediaItemProps";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
+import { useState } from "react";
 
-import { BsPlayCircleFill, BsFillPencilFill, BsCircle } from "react-icons/bs";
+import { BsPlayCircleFill, BsFillPencilFill, BsCircle, BsImage } from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
 import SliderProps from "./props/SliderProps";
 
@@ -56,6 +57,20 @@ function MediaCard({
   const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
   const sliderValue = useVisualStore((state) => state.sliderValue);
 
+  // Image fallback state
+  const [imageError, setImageError] = useState(false);
+
+  // Check if we have a valid poster path
+  const hasValidPoster = tmdbPoster && tmdbPoster.trim() !== "";
+  const imageSrc = hasValidPoster
+    ? `https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`
+    : null;
+
+  // Handle image loading error
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   const handlePlayer = () => {};
 
   const sendMediaValue = () => {
@@ -90,6 +105,21 @@ function MediaCard({
 
   const press = () => {};
 
+  // Fallback UI for when image is not available or fails to load
+  const ImageFallback = () => {
+    const height = parseInt(SliderProps[sliderValue]["height"]);
+    const width = parseInt(SliderProps[sliderValue]["width"]);
+
+    return (
+      <div
+        className="rounded-md bg-gray-800 flex items-center justify-center border-2 border-gray-700"
+        style={{ height, width }}
+      >
+        <BsImage className="text-gray-500 text-4xl opacity-50" />
+      </div>
+    );
+  };
+
   return (
     <div onClick={handleMediaCardClick} className="min-w-max">
       <div className="pb-2 group">
@@ -117,14 +147,19 @@ function MediaCard({
           </div>
         </div>
         <div className={`outline-[#CC7B19] group-hover:outline rounded-md`}>
-          <Image
-            className="rounded-md"
-            src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
-            alt="movie poster"
-            loading="lazy"
-            height={parseInt(SliderProps[sliderValue]["height"])}
-            width={parseInt(SliderProps[sliderValue]["width"])}
-          />
+          {imageSrc && !imageError ? (
+            <Image
+              className="rounded-md"
+              src={imageSrc}
+              alt={`${tmdbTitle} poster`}
+              loading="lazy"
+              height={parseInt(SliderProps[sliderValue]["height"])}
+              width={parseInt(SliderProps[sliderValue]["width"])}
+              onError={handleImageError}
+            />
+          ) : (
+            <ImageFallback />
+          )}
         </div>
       </div>
       <h3
