@@ -12,6 +12,7 @@ import MovieFiles from "./props/MovieFiles";
 import TvFiles from "./props/TvFiles";
 import { searchMovies, searchTvShows } from "../utils/tmdbApi";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
+import { useMediaPersistence } from "../hooks/useMediaPersistence";
 
 function MediaModal() {
   const modalOpen = useUiStore((state) => state.modalOpen);
@@ -28,7 +29,10 @@ function MediaModal() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedCount, setProcessedCount] = useState(0);
   const [totalFiles, setTotalFiles] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
   const { handleApiError } = useApiErrorHandler();
+  const { saveMoviesToCollection, saveTvShowsToCollection, isAuthenticated } =
+    useMediaPersistence();
 
   const folderPickerRef = useRef<HTMLInputElement>(null);
 
@@ -57,8 +61,13 @@ function MediaModal() {
 
     if (files) {
       setIsProcessing(true);
+      setIsSaving(false);
       setTotalFiles(files.length);
       setProcessedCount(0);
+
+      // Arrays to collect processed media for batch saving
+      const processedMovies: any[] = [];
+      const processedTvShows: any[] = [];
 
       for (let i = 0; i < files.length; i++) {
         setProcessedCount(i + 1);
@@ -78,7 +87,7 @@ function MediaModal() {
                 const tmdbId = data?.results[0]?.id;
 
                 if (tmdbId) {
-                  MovieFiles.push({
+                  const movieFile = {
                     name,
                     id: i,
                     tmdbId,
@@ -102,7 +111,12 @@ function MediaModal() {
                     folderPath: files[i].webkitRelativePath,
                     folderPath2: (files[i] as any).webkitdirectory,
                     rootPath: (files[i] as any).path,
-                  });
+                  };
+
+                  // Add to local array for immediate UI feedback
+                  MovieFiles.push(movieFile);
+                  // Collect for batch saving to Firebase
+                  processedMovies.push(movieFile);
                 } else {
                   console.log(
                     name + " not found " + files[i].webkitRelativePath
@@ -158,7 +172,7 @@ function MediaModal() {
                     const tmdbId = data.results[0]?.id;
 
                     if (tmdbId) {
-                      TvFiles.push({
+                      const tvFile = {
                         name: processedName,
                         episode: episode,
                         id: i,
@@ -179,7 +193,12 @@ function MediaModal() {
                         folderPath: files[i].webkitRelativePath,
                         folderPath2: (files[i] as any).webkitdirectory,
                         rootPath: (files[i] as any).path,
-                      });
+                      };
+
+                      // Add to local array for immediate UI feedback
+                      TvFiles.push(tvFile);
+                      // Collect for batch saving to Firebase
+                      processedTvShows.push(tvFile);
                     }
                   } catch (error) {
                     handleApiError(error);
@@ -188,6 +207,35 @@ function MediaModal() {
               }
             }
           }
+        }
+      }
+
+      // Save processed media to Firebase if user is authenticated
+      if (
+        isAuthenticated &&
+        (processedMovies.length > 0 || processedTvShows.length > 0)
+      ) {
+        setIsSaving(true);
+        try {
+          // Save movies and TV shows in parallel
+          const savePromises = [];
+          if (processedMovies.length > 0) {
+            savePromises.push(saveMoviesToCollection(processedMovies));
+          }
+          if (processedTvShows.length > 0) {
+            savePromises.push(saveTvShowsToCollection(processedTvShows));
+          }
+
+          await Promise.all(savePromises);
+          console.log(
+            `Saved ${processedMovies.length} movies and ${processedTvShows.length} TV shows to collection`
+          );
+        } catch (error) {
+          console.error("Error saving media to collection:", error);
+          // Note: Local arrays already updated, so UI will show the media
+          // but user will see a persistence error in the store
+        } finally {
+          setIsSaving(false);
         }
       }
 
@@ -348,9 +396,11 @@ function MediaModal() {
                     <button
                       onClick={() => folderPickerRef.current?.click()}
                       className="p-2 bg-gray-600 rounded-lg"
-                      disabled={isProcessing}
+                      disabled={isProcessing || isSaving}
                     >
-                      {isProcessing
+                      {isSaving
+                        ? "SAVING TO COLLECTION..."
+                        : isProcessing
                         ? "PROCESSING..."
                         : "BROWSE FOR MEDIA FOLDER"}
                     </button>

@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app'
 import { useUiStore } from '../stores/uiStore'
 import ApiKeyErrorModal from '../components/ApiKeyErrorModal'
 import RateLimitErrorModal from '../components/RateLimitErrorModal'
+import { PersistenceStatus } from '../components/PersistenceStatus'
 import { useApiErrorHandler } from '../hooks/useApiErrorHandler'
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps & { pageProps: { session?: any } }) {
@@ -26,6 +27,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps & {
         isOpen={rateLimitErrorModal}
         onClose={() => setRateLimitErrorModal(false)}
       />
+      <PersistenceStatus />
     </SessionProvider>
   )
 }

@@ -228,7 +228,7 @@ function MediaItem() {
                       src={`https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`}
                       alt=""
                       width={parseInt(SliderProps[sliderValue]["width"])}
-                      height={parseInt(SliderProps[sliderValue]["width"])}
+                      height={parseInt(SliderProps[sliderValue]["height"])}
                       loading="lazy"
                       quality={75}
                     />
