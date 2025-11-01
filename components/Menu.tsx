@@ -12,6 +12,8 @@ function Menu() {
   const menuSize = useUiStore((state) => state.menuSize);
   const latestMovie = useMediaStore((state) => state.homeMovieLoaded);
   const latestTv = useMediaStore((state) => state.homeTvLoaded);
+  const persistedMovies = useMediaStore((state) => state.persistedMovies);
+  const persistedTvShows = useMediaStore((state) => state.persistedTvShows);
   const setHomeMenuActive = useNavigationStore(
     (state) => state.setHomeMenuActive
   );
@@ -55,22 +57,29 @@ function Menu() {
         <CgHome className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
         {!menuSize && <p>Home</p>}
       </div>
-      {latestMovie && (
+      {(latestMovie || persistedMovies.length > 0) && (
         <div
           onClick={menuMovie}
           className="flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl"
         >
           <BsFilm className={` mr-4 ${!menuSize && "mr-8"}`} />
-          {!menuSize && <p>Movies</p>}
+          {!menuSize && (
+            <p className="whitespace-nowrap">
+              Movies{" "}
+              <span className="text-gray-500 text-sm">
+                ({persistedMovies.length})
+              </span>
+            </p>
+          )}
         </div>
       )}
-      {latestTv && (
+      {(latestTv || persistedTvShows.length > 0) && (
         <div
           onClick={menuTv}
           className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
         >
           <MdMonitor className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
-          {!menuSize && <p>TV Shows</p>}
+          {!menuSize && <p>TV Shows ({persistedTvShows.length})</p>}
         </div>
       )}
 

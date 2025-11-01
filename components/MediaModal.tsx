@@ -8,6 +8,7 @@ import { BsFilm, BsGearFill } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";
 import { HiOutlineMusicNote } from "react-icons/hi";
 import { useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import MovieFiles from "./props/MovieFiles";
 import TvFiles from "./props/TvFiles";
 import { searchMovies, searchTvShows } from "../utils/tmdbApi";
@@ -15,6 +16,7 @@ import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
 
 function MediaModal() {
+  const { data: session } = useSession();
   const modalOpen = useUiStore((state) => state.modalOpen);
   const setModalOpen = useUiStore((state) => state.setModalOpen);
   const setHomeMovieLoaded = useMediaStore((state) => state.setHomeMovieLoaded);
@@ -230,6 +232,37 @@ function MediaModal() {
           console.log(
             `Saved ${processedMovies.length} movies and ${processedTvShows.length} TV shows to collection`
           );
+
+          // Update persisted data in store
+          if (processedMovies.length > 0) {
+            const { setPersistedMovies, persistedMovies } =
+              useMediaStore.getState();
+            const updatedMovies = [
+              ...persistedMovies,
+              ...processedMovies.map((movie) => ({
+                ...movie,
+                userId: (session?.user as any)?.uid || "",
+                addedAt: new Date(),
+                lastModified: new Date(),
+              })),
+            ];
+            setPersistedMovies(updatedMovies);
+          }
+
+          if (processedTvShows.length > 0) {
+            const { setPersistedTvShows, persistedTvShows } =
+              useMediaStore.getState();
+            const updatedTvShows = [
+              ...persistedTvShows,
+              ...processedTvShows.map((tvShow) => ({
+                ...tvShow,
+                userId: (session?.user as any)?.uid || "",
+                addedAt: new Date(),
+                lastModified: new Date(),
+              })),
+            ];
+            setPersistedTvShows(updatedTvShows);
+          }
         } catch (error) {
           console.error("Error saving media to collection:", error);
           // Note: Local arrays already updated, so UI will show the media

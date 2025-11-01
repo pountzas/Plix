@@ -9,6 +9,8 @@ import {
   createPersistedMovieFile,
   createPersistedTvFile,
 } from "../utils/dataPersistence";
+import MovieFiles from "../components/props/MovieFiles";
+import TvFiles from "../components/props/TvFiles";
 
 // Local type definitions for media files
 interface MovieFile {
@@ -121,6 +123,9 @@ export function useMediaPersistence() {
           const movies = await loadUserMovies(userId);
           console.log("Loaded movies:", movies.length);
           setPersistedMovies(movies);
+          // Also populate local arrays for backward compatibility
+          MovieFiles.length = 0; // Clear existing
+          movies.forEach((movie) => MovieFiles.push(movie));
           setIsLoadingMovies(false);
 
           // Load TV shows
@@ -129,6 +134,9 @@ export function useMediaPersistence() {
           const tvShows = await loadUserTvShows(userId);
           console.log("Loaded TV shows:", tvShows.length);
           setPersistedTvShows(tvShows);
+          // Also populate local arrays for backward compatibility
+          TvFiles.length = 0; // Clear existing
+          tvShows.forEach((tvShow) => TvFiles.push(tvShow));
           setIsLoadingTvShows(false);
 
           setLastSynced(new Date());
