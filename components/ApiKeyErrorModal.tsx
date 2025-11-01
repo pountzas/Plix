@@ -1,3 +1,4 @@
+import { Activity } from 'react'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { MdError } from 'react-icons/md'
 
@@ -7,10 +8,9 @@ interface ApiKeyErrorModalProps {
 }
 
 function ApiKeyErrorModal({ isOpen, onClose }: ApiKeyErrorModalProps) {
-  if (!isOpen) return null
-
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center overflow-y-auto text-center justify-items-center backdrop-blur-md'>
+    <Activity mode={isOpen ? "visible" : "hidden"}>
+      <div className='fixed inset-0 z-50 flex items-center justify-center overflow-y-auto text-center justify-items-center backdrop-blur-md'>
       <div className='flex flex-col justify-self-center justify-between bg-[#2D3742] text-white border-red-500 border-2 min-w-[500px] max-w-[600px] rounded-lg shadow-2xl'>
         {/* modal header */}
         <div className='flex items-center justify-between px-4 pt-4 pb-3 text-red-400 bg-red-900/20'>
@@ -68,6 +68,7 @@ function ApiKeyErrorModal({ isOpen, onClose }: ApiKeyErrorModalProps) {
         &#8203;
       </span>
     </div>
+    </Activity>
   )
 }
 
