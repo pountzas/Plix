@@ -1,17 +1,25 @@
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useCallback, useRef, useEffect, useState } from "react";
 
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 
 import MovieFiles from "./props/MovieFiles";
-import SearchResults from "./props/SearchResults";
 import MediaItemProps from "./props/MediaItemProps";
 
 import { VscMenu } from "react-icons/vsc";
 import { FiActivity, FiTool, FiCast, FiSearch } from "react-icons/fi";
 import { BsPersonCircle } from "react-icons/bs";
+
+interface SearchResult {
+  id: number;
+  name: string;
+  tmdbPoster: string;
+  tmdbTitle: string;
+  backdrop_path: string;
+}
 
 function Header() {
   const { data: session } = useSession();
@@ -25,28 +33,64 @@ function Header() {
   const setImageVisible = useVisualStore((state) => state.setImageVisible);
   const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
 
+  // Local state for search results to trigger re-renders
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
   const handleMenuSize = () => {
     setMenuSize(!menuSize);
   };
 
   const openMedia = (mediaId: number) => {
-    const media = SearchResults.filter((movie) => {
+    const media = searchResults.filter((movie) => {
       return movie.id === mediaId;
     });
     setMediaItemActive(true);
     Object.assign(MediaItemProps, media[0]);
-    SearchResults.length = 0;
+    setSearchResults([]); // Clear search results using state
     setBackgroundImageUrl(media[0]?.backdrop_path || "");
     setImageVisible(true);
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+  // Debounced search implementation to prevent excessive filtering on every keystroke
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const performSearch = useCallback((searchValue: string) => {
+    if (searchValue.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
     const results = MovieFiles.filter((movie) => {
-      return movie.name.toLowerCase().includes(value.toLowerCase());
+      return movie.name.toLowerCase().includes(searchValue.toLowerCase());
     });
-    SearchResults.splice(0, SearchResults.length, ...results.slice(0, 10));
-  };
+    setSearchResults(results.slice(0, 10));
+  }, []);
+
+  const handleSearch = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
+      // Clear existing timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      // Set new debounced timeout (300ms delay)
+      searchTimeoutRef.current = setTimeout(() => {
+        performSearch(value);
+      }, 300);
+    },
+    [performSearch]
+  );
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header className="px-3 pt-3 w-full">
@@ -76,24 +120,26 @@ function Header() {
               name="search"
               id=""
             />
-            <ul className="absolute z-30 w-full mt-2 border border-gray-800 rounded top-8 left-20">
-              {SearchResults.map((result) => (
-                <li
-                  onClick={() => openMedia(result.id)}
-                  key={result.id}
-                  className="cursor-pointer flex items-center space-x-4 hover:bg-[#232B35] bg-[#333A44] rounded py-1 px-4 font-semibold text-gray-200"
-                >
-                  <Image
-                    src={`https://www.themoviedb.org/t/p/w220_and_h330_face${result.tmdbPoster}`}
-                    alt={result.tmdbTitle}
-                    height={50}
-                    width={32}
-                  />
+            {searchResults.length > 0 && (
+              <ul className="absolute z-30 w-full mt-2 border border-gray-800 rounded top-8 left-20">
+                {searchResults.map((result) => (
+                  <li
+                    onClick={() => openMedia(result.id)}
+                    key={result.id}
+                    className="cursor-pointer flex items-center space-x-4 hover:bg-[#232B35] bg-[#333A44] rounded py-1 px-4 font-semibold text-gray-200"
+                  >
+                    <Image
+                      src={`https://www.themoviedb.org/t/p/w220_and_h330_face${result.tmdbPoster}`}
+                      alt={result.tmdbTitle}
+                      height={50}
+                      width={32}
+                    />
 
-                  <div>{result.name}</div>
-                </li>
-              ))}
-            </ul>
+                    <div>{result.name}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
         <div className="flex items-center justify-start space-x-4">

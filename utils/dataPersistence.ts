@@ -4,17 +4,13 @@ import {
   setDoc,
   getDoc,
   updateDoc,
-  arrayUnion,
   serverTimestamp,
-  query,
-  where,
   getDocs,
   writeBatch
 } from 'firebase/firestore'
 import { db } from '../firebase'
 import type { PersistedMovieFile, PersistedTvFile } from '../components/props/PersistedData'
-import type MovieFile from '../components/props/MovieFiles'
-import type TvFile from '../components/props/TvFiles'
+import type { MovieFile, TvFile } from '../components/props/types'
 
 /**
  * Validate and clean MovieFile data for Firestore compatibility
