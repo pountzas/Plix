@@ -1,5 +1,5 @@
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = "f3506b1fca10bfffc63386b0f991c241";
+const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 // Rate limiting: TMDB allows ~50 requests per second, but we'll be conservative
 let lastRequestTime = 0;

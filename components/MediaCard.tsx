@@ -1,34 +1,34 @@
-import Image from 'next/image'
+import Image from "next/image";
 // @ts-ignore - MediaItemProps is a global state object
-import MediaItemProps from './props/MediaItemProps'
-import { useMediaStore } from '../stores/mediaStore'
-import { useVisualStore } from '../stores/visualStore'
+import MediaItemProps from "./props/MediaItemProps";
+import { useMediaStore } from "../stores/mediaStore";
+import { useVisualStore } from "../stores/visualStore";
 
-import { BsPlayCircleFill, BsFillPencilFill, BsCircle } from 'react-icons/bs'
-import { HiDotsVertical } from 'react-icons/hi'
-import SliderProps from './props/SliderProps'
+import { BsPlayCircleFill, BsFillPencilFill, BsCircle } from "react-icons/bs";
+import { HiDotsVertical } from "react-icons/hi";
+import SliderProps from "./props/SliderProps";
 
 interface MediaCardProps {
-  id: number
-  name: string
-  tmdbId: number
-  adult?: boolean
-  backdrop_path: string
-  lang: string
-  popularity: number
-  voteAverage: number
-  voteCount: number
-  tmdbPoster: string
-  tmdbTitle: string
-  tmdbOverview: string
-  tmdbReleaseDate: string
-  tmdbRating: number
-  tmdbGenre: string[]
-  fileName: string
-  ObjUrl: string
-  folderPath: string
-  folderPath2: string
-  rootPath: string
+  id: number;
+  name: string;
+  tmdbId: number;
+  adult?: boolean;
+  backdrop_path: string;
+  lang: string;
+  popularity: number;
+  voteAverage: number;
+  voteCount: number;
+  tmdbPoster: string;
+  tmdbTitle: string;
+  tmdbOverview: string;
+  tmdbReleaseDate: string;
+  tmdbRating: number;
+  tmdbGenre: string[];
+  fileName: string;
+  ObjUrl: string;
+  folderPath: string;
+  folderPath2: string;
+  rootPath: string;
 }
 
 function MediaCard({
@@ -51,12 +51,12 @@ function MediaCard({
   ObjUrl,
   folderPath,
   folderPath2,
-  rootPath
+  rootPath,
 }: MediaCardProps) {
-  const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive)
-  const sliderValue = useVisualStore((state) => state.sliderValue)
+  const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
+  const sliderValue = useVisualStore((state) => state.sliderValue);
 
-  const handlePlayer = () => { }
+  const handlePlayer = () => {};
 
   const sendMediaValue = () => {
     Object.assign(MediaItemProps, {
@@ -79,64 +79,64 @@ function MediaCard({
       ObjUrl,
       folderPath,
       folderPath2,
-      rootPath
-    })
-  }
+      rootPath,
+    });
+  };
 
   const handleMediaCardClick = () => {
-    sendMediaValue()
-    setMediaItemActive(true)
-  }
+    sendMediaValue();
+    setMediaItemActive(true);
+  };
 
-  const press = () => { }
+  const press = () => {};
 
   return (
-    <div onClick={handleMediaCardClick} className='min-w-max'>
-      <div className='pb-2 group'>
-        <div className='text-5xl'>
+    <div onClick={handleMediaCardClick} className="min-w-max">
+      <div className="pb-2 group">
+        <div className="text-5xl">
           <div
-            className='opacity-0 group-hover:opacity-100 flex shadow-sm'
+            className="opacity-0 group-hover:opacity-100 flex shadow-sm"
             onClick={handlePlayer}
           >
             <BsPlayCircleFill
               onClick={press}
-              className={`${SliderProps[sliderValue]['play']} relative transition-all z-10 p-[1px] text-gray-900 opacity-80 bg-gray-300 hover:opacity-100 hover:p-0 hover:text-[#CC7B19] hover:bg-gray-900 rounded-full`}
+              className={`${SliderProps[sliderValue]["play"]} relative transition-all z-10 p-[1px] text-gray-900 opacity-80 bg-gray-300 hover:opacity-100 hover:p-0 hover:text-[#CC7B19] hover:bg-gray-900 rounded-full`}
             />
             <HiDotsVertical
               onClick={press}
-              className={`${SliderProps[sliderValue]['options']} hover:text-[#CC7B19] relative z-10 text-gray-300`}
+              className={`${SliderProps[sliderValue]["options"]} hover:text-[#CC7B19] relative z-10 text-gray-300`}
             />
             <BsFillPencilFill
               onClick={press}
-              className={`${SliderProps[sliderValue]['edit']} hover:text-[#CC7B19] relative z-10 text-gray-30`}
+              className={`${SliderProps[sliderValue]["edit"]} hover:text-[#CC7B19] relative z-10 text-gray-30`}
             />
             <BsCircle
               onClick={press}
-              className={`${SliderProps[sliderValue]['later']} hover:text-[#CC7B19] relative z-10 text-gray-300`}
+              className={`${SliderProps[sliderValue]["later"]} hover:text-[#CC7B19] relative z-10 text-gray-300`}
             />
           </div>
         </div>
         <div className={`outline-[#CC7B19] group-hover:outline rounded-md`}>
           <Image
-            className='rounded-md'
+            className="rounded-md"
             src={`https://www.themoviedb.org/t/p/w220_and_h330_face${tmdbPoster}`}
-            alt='movie poster'
-            loading='lazy'
-            height={parseInt(SliderProps[sliderValue]['height'])}
-            width={parseInt(SliderProps[sliderValue]['width'])}
+            alt="movie poster"
+            loading="lazy"
+            height={parseInt(SliderProps[sliderValue]["height"])}
+            width={parseInt(SliderProps[sliderValue]["width"])}
           />
         </div>
       </div>
       <h3
-        className={`cursor-pointer font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[sliderValue]['title']}`}
+        className={`cursor-pointer font-semibold text-sm overflow-hidden whitespace-nowrap text-ellipsis ${SliderProps[sliderValue]["title"]}`}
       >
         {tmdbTitle}
       </h3>
-      <h3 className='cursor-pointer text-sm text-gray-400 font-semibold'>
+      <h3 className="cursor-pointer text-sm text-gray-400 font-semibold">
         {tmdbReleaseDate}
       </h3>
     </div>
-  )
+  );
 }
 
-export default MediaCard
+export default MediaCard;
