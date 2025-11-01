@@ -99,7 +99,8 @@ function MediaItem() {
   // Actor image component with fallback handling
   const ActorImage = ({ actor }: { actor: any }) => {
     const [imageError, setImageError] = useState(false);
-    const hasValidProfile = actor.profile_path && actor.profile_path.trim() !== "";
+    const hasValidProfile =
+      actor.profile_path && actor.profile_path.trim() !== "";
     const imageSrc = hasValidProfile
       ? `https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`
       : null;
