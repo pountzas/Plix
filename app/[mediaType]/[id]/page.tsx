@@ -5,10 +5,11 @@ import { useEffect, useState, use } from "react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BsArrowLeft, BsPlayCircleFill } from "react-icons/bs";
+import { BsArrowLeft, BsPlayCircleFill, BsImage } from "react-icons/bs";
 import ReactPlayer from "react-player";
 import Layout from "../../../components/Layout";
 import { cachedTmdbDetails } from "../../../utils/apiUtils";
+import { getMovieCredits, getTvCredits } from "../../../utils/tmdbApi";
 
 interface MediaDetails {
   id: number;
@@ -35,6 +36,25 @@ interface MediaDetails {
   rootPath?: string;
 }
 
+interface CastMember {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+  known_for_department: string;
+}
+
+interface CreditsData {
+  cast: CastMember[];
+  crew: Array<{
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+  }>;
+}
+
 interface MediaDetailPageProps {
   params: Promise<{
     mediaType: string;
@@ -48,6 +68,50 @@ interface MediaDetailPageProps {
   }>;
 }
 
+// Actor image component with fallback handling
+const ActorImage = ({
+  actor,
+  size = 80,
+}: {
+  actor: CastMember;
+  size?: number;
+}) => {
+  const [imageError, setImageError] = useState(false);
+  const hasValidProfile =
+    actor.profile_path && actor.profile_path.trim() !== "";
+  const imageSrc = hasValidProfile
+    ? `https://www.themoviedb.org/t/p/w220_and_h330_face${actor.profile_path}`
+    : null;
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  if (imageSrc && !imageError) {
+    return (
+      <Image
+        className="rounded-full shadow-xl object-cover"
+        src={imageSrc}
+        alt={actor.name}
+        width={size}
+        height={size}
+        loading="lazy"
+        quality={75}
+        onError={handleImageError}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="rounded-full bg-gray-700 flex items-center justify-center border-2 border-gray-600"
+      style={{ width: size, height: size }}
+    >
+      <BsImage className="text-gray-400 text-xl" />
+    </div>
+  );
+};
+
 export default function MediaDetailPage({
   params,
   searchParams,
@@ -57,6 +121,7 @@ export default function MediaDetailPage({
   const resolvedSearchParams = use(searchParams);
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
+  const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -87,10 +152,14 @@ export default function MediaDetailPage({
         setLoading(true);
         setError(null);
 
-        const details = await cachedTmdbDetails(
-          parseInt(id),
-          mediaType as "movie" | "tv"
-        );
+        // Fetch media details and credits in parallel
+        const [details, creditsData] = await Promise.all([
+          cachedTmdbDetails(parseInt(id), mediaType as "movie" | "tv"),
+          mediaType === "movie"
+            ? getMovieCredits(parseInt(id))
+            : getTvCredits(parseInt(id)),
+        ]);
+
         // Include local file properties from search params
         setMediaDetails({
           ...details,
@@ -99,6 +168,9 @@ export default function MediaDetailPage({
           folderPath: resolvedSearchParams.folderPath,
           rootPath: resolvedSearchParams.rootPath,
         });
+
+        // Set credits data
+        setCredits(creditsData);
       } catch (err) {
         console.error("Error fetching media details:", err);
         setError("Failed to load media details. Please try again.");
@@ -235,7 +307,7 @@ export default function MediaDetailPage({
             </div>
 
             {/* Details */}
-            <div className="flex-1 px-4">
+            <div className="flex-1 px-4 flex flex-col justify-between">
               {/* Title and Play Button */}
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -266,78 +338,107 @@ export default function MediaDetailPage({
                 </div>
               </div>
 
-              {/* Metadata */}
-              <div className="flex flex-wrap gap-4 mb-6 text-sm">
-                <div className="bg-gray-800 px-3 py-1 rounded">
-                  <span className="text-[#CC7B19] font-semibold">
-                    {Math.round(mediaDetails.vote_average * 10) / 10}
-                  </span>
-                  <span className="text-gray-400">
-                    /10 ({mediaDetails.vote_count} votes)
-                  </span>
+              <div>
+                {/* Metadata */}
+                <div className="flex flex-wrap space-x-4 mb-6 text-sm pb-4">
+                  <div className="bg-gray-800 px-3 py-1 rounded">
+                    <span className="text-[#CC7B19] font-semibold">
+                      {Math.round(mediaDetails.vote_average * 10) / 10}
+                    </span>
+                    <span className="text-gray-400">
+                      /10 ({mediaDetails.vote_count} votes)
+                    </span>
+                  </div>
+                  {releaseDate && (
+                    <div className="bg-gray-800 px-3 py-1 rounded">
+                      {new Date(releaseDate).getFullYear()}
+                    </div>
+                  )}
+                  {mediaDetails.runtime && (
+                    <div className="bg-gray-800 px-3 py-1 rounded">
+                      {mediaDetails.runtime} min
+                    </div>
+                  )}
+                  {mediaDetails.number_of_seasons && (
+                    <div className="bg-gray-800 px-3 py-1 rounded">
+                      {mediaDetails.number_of_seasons} season
+                      {mediaDetails.number_of_seasons !== 1 ? "s" : ""}
+                    </div>
+                  )}
+                  {mediaDetails.number_of_episodes && (
+                    <div className="bg-gray-800 px-3 py-1 rounded">
+                      {mediaDetails.number_of_episodes} episode
+                      {mediaDetails.number_of_episodes !== 1 ? "s" : ""}
+                    </div>
+                  )}
+                  <div className="bg-gray-800 px-3 py-1 rounded">
+                    {mediaDetails.status}
+                  </div>
                 </div>
-                {releaseDate && (
-                  <div className="bg-gray-800 px-3 py-1 rounded">
-                    {new Date(releaseDate).getFullYear()}
-                  </div>
-                )}
-                {mediaDetails.runtime && (
-                  <div className="bg-gray-800 px-3 py-1 rounded">
-                    {mediaDetails.runtime} min
-                  </div>
-                )}
-                {mediaDetails.number_of_seasons && (
-                  <div className="bg-gray-800 px-3 py-1 rounded">
-                    {mediaDetails.number_of_seasons} season
-                    {mediaDetails.number_of_seasons !== 1 ? "s" : ""}
-                  </div>
-                )}
-                {mediaDetails.number_of_episodes && (
-                  <div className="bg-gray-800 px-3 py-1 rounded">
-                    {mediaDetails.number_of_episodes} episode
-                    {mediaDetails.number_of_episodes !== 1 ? "s" : ""}
-                  </div>
-                )}
-                <div className="bg-gray-800 px-3 py-1 rounded">
-                  {mediaDetails.status}
+
+                {/* Genres */}
+                <div className="flex flex-wrap space-x-2 mb-6">
+                  {mediaDetails.genres.map((genre) => (
+                    <span
+                      key={genre.id}
+                      className="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {genre.name}
+                    </span>
+                  ))}
                 </div>
-              </div>
 
-              {/* Genres */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {mediaDetails.genres.map((genre) => (
-                  <span
-                    key={genre.id}
-                    className="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm"
-                  >
-                    {genre.name}
-                  </span>
-                ))}
-              </div>
-
-              {/* Overview */}
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-3">Overview</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  {mediaDetails.overview}
-                </p>
-              </div>
-
-              {/* Additional Info */}
-              {mediaDetails.homepage && (
-                <div className="mb-4">
-                  <a
-                    href={mediaDetails.homepage}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#CC7B19] hover:text-[#B86E17] transition-colors"
-                  >
-                    Official Website →
-                  </a>
+                {/* Overview */}
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold mb-3">Overview</h2>
+                  <p className="text-gray-300 leading-relaxed">
+                    {mediaDetails.overview}
+                  </p>
                 </div>
-              )}
+
+                {/* Additional Info */}
+                {mediaDetails.homepage && (
+                  <div className="mb-4">
+                    <a
+                      href={mediaDetails.homepage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#CC7B19] hover:text-[#B86E17] transition-colors"
+                    >
+                      Official Website →
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Cast Section */}
+          {credits?.cast && credits.cast.length > 0 && (
+            <div className="px-4">
+              <h2 className="text-2xl font-bold mb-2">Cast</h2>
+              <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
+                {credits.cast.slice(0, 20).map((actor) => (
+                  <div
+                    key={actor.id}
+                    className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64"
+                  >
+                    <div className="flex items-center justify-center p-2 bg-gray-800 hover:bg-[#CC7B19] rounded-full transition-colors">
+                      <ActorImage actor={actor} size={100} />
+                    </div>
+                    <div className="flex flex-col items-center text-center space-y-1 px-2 h-20 overflow-hidden">
+                      <div className="text-gray-200 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                        {actor.name}
+                      </div>
+                      <div className="text-gray-400 text-xs leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                        {actor.character}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </Layout>
