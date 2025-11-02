@@ -1,0 +1,23 @@
+{
+  "name": "Git Workflow",
+  "description": "Defines branch model and workflow practices",
+  "enabled": true,
+  "version": "1.0.0",
+  "rules": [
+    "git-workflow.mdc"
+  ],
+  "dependencies": [],
+  "configuration": {
+    "base_branch": "dev",
+    "feature_branch_prefix": "feat/",
+    "bugfix_branch_prefix": "fix/",
+    "chore_branch_prefix": "chore/",
+    "require_pr_reviews": true,
+    "squash_merge": true,
+    "delete_branches_after_merge": true
+  },
+  "enforcement": {
+    "branch_protection": true,
+    "pr_templates": true
+  }
+}

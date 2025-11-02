@@ -1,0 +1,67 @@
+---
+description: Git workflow for this repository
+alwaysApply: true
+---
+# Git Workflow
+
+## Branch Model
+- Base branch: `dev`.
+- Per-task branches: `feat/{task_id}` for features, `fix/{task_id}` for bugfixes, `chore/{task_id}` for chores.
+- All work branches off `dev` and merges back into `dev` via PR.
+
+## Start a Task
+1. Ensure local `dev` is up to date:
+   - `git switch dev`
+   - `git pull`
+2. Create a branch from `dev`:
+   - `git switch -c feat/{task_id}`
+
+## Commit Conventions
+- Use Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `perf:`
+- Reference the task id in the subject or body, e.g. `feat: add Clerk Google auth (small-feature::clerk-google-auth-v1)`
+- Keep commits small and atomic.
+
+## Pull Requests
+- Target: `dev`.
+- Title begins with `{task_id}` and a brief summary.
+- Description includes:
+  - Acceptance criteria
+  - Evidence (screenshots, recordings, command outputs)
+  - Notable decisions or tradeoffs
+- Require green checks: typecheck, lint, build/tests.
+- Prefer squash & merge; delete branch after merge.
+
+## Syncing with Dev
+- Rebase or merge from `dev` regularly to reduce conflicts.
+- Resolve conflicts locally; rerun checks before pushing.
+
+## After Acceptance
+- Push branch and open PR into `dev`.
+- Ensure all checks pass; request review.
+- After merge, delete the feature branch.
+
+## Critical Requirements - Industry Standards
+
+### ❌ PROHIBITED: Never Commit to Dev Directly
+- **MANDATORY**: Create feature branch BEFORE any code changes
+- **NEVER** commit or push directly to `dev` branch
+- **ALWAYS** work on `feat/{task_id}` branches only
+
+### ✅ Required Workflow
+1. **Sync**: `git switch dev && git pull`
+2. **Branch**: `git switch -c feat/{task_id}` (BEFORE any work)
+3. **Work**: Make changes on feature branch
+4. **Push**: `git push -u origin feat/{task_id}`
+5. **PR**: Create PR targeting `dev`
+6. **Merge**: Squash & merge via PR
+
+### Why Feature Branches?
+- **Isolation**: Safe development without affecting main codebase
+- **Review**: Proper code review process
+- **Collaboration**: Multiple developers work simultaneously
+- **Revert**: Easy to revert entire features
+- **Backup**: Work safely backed up to remote
+
+## Notes
+- Avoid pushing directly to `dev`.
+- Keep branches focused on a single task.

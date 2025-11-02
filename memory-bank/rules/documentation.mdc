@@ -1,0 +1,210 @@
+---
+alwaysApply: true
+---
+
+## Documentation Mechanism Rules
+
+### Core Documentation Principles
+
+1. **Automated Generation**: All component documentation is automatically generated from code analysis
+2. **Living Documentation**: Documentation stays synchronized with code changes
+3. **Quality Assurance**: Documentation completeness and accuracy are validated
+4. **Confluence Ready**: Documentation format is optimized for enterprise knowledge bases
+
+### Documentation Standards
+
+#### Component Documentation Requirements
+- **Complete API Reference**: All props, types, and interfaces documented
+- **Usage Examples**: Basic and advanced implementation patterns
+- **Accessibility Notes**: WCAG compliance and screen reader support
+- **Performance Guidelines**: Optimization tips and benchmarks
+- **Integration Patterns**: How components work with others
+- **Browser Support**: Compatibility information
+- **Testing Examples**: Unit test patterns and coverage
+
+#### Quality Gates
+- [ ] Documentation exists for all exported components
+- [ ] Props table matches TypeScript interfaces exactly
+- [ ] Usage examples are functional and accurate
+- [ ] Internal references and links are valid
+- [ ] Documentation follows consistent formatting
+
+### Automated Documentation Workflow
+
+#### Pre-commit Documentation Checks
+```bash
+# Run before committing component changes
+npm run docs:validate
+
+# Auto-generate docs for modified components
+npm run docs:generate
+```
+
+#### CI/CD Integration
+```yaml
+# .github/workflows/docs.yml
+name: Documentation
+on:
+  push:
+    paths:
+      - 'components/**'
+      - 'memory-bank/mechanisms/documentation/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm run docs:generate
+      - run: npm run docs:validate
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs: update component documentation"
+```
+
+### Documentation Categories
+
+#### Layout Components (`docs/components/layout/`)
+- Header, Sidebar, Panel, Grid, ContentArea
+- Focus: Responsive behavior and semantic HTML
+
+#### UI Components (`docs/components/ui/`)
+- Buttons, forms, theme toggle, utilities
+- Focus: Accessibility and interaction patterns
+
+#### Data Visualization (`docs/components/data-viz/`)
+- Charts, KPIs, progress indicators, timeline
+- Focus: Data formatting and responsive display
+
+#### Device Components (`docs/components/devices/`)
+- Smart home controls, scenes, automation
+- Focus: IoT integration and real-time updates
+
+### Template System
+
+#### Component Template Structure
+```markdown
+# {{componentName}} Component
+
+{{componentDescription}}
+
+## Overview
+{{componentOverview}}
+
+## Props
+| Prop | Type | Required | Default | Description |
+{{propsTable}}
+
+## Usage
+### Basic Usage
+{{basicUsage}}
+
+### Advanced Usage
+{{advancedUsage}}
+
+## Features
+{{featuresList}}
+
+## Accessibility
+{{accessibilityInfo}}
+
+## Performance
+{{performanceInfo}}
+```
+
+### Integration with Development Workflow
+
+#### Component Creation
+```bash
+# Create new component
+# Add JSDoc comments for description
+# Run documentation generation
+npm run docs:generate
+
+# Verify documentation
+npm run docs:validate
+```
+
+#### Component Modification
+```bash
+# Modify component props or behavior
+# Documentation auto-updates on next generation
+npm run docs:generate
+```
+
+#### Code Review Checklist
+- [ ] Component has comprehensive JSDoc comments
+- [ ] Props are properly typed and documented
+- [ ] Usage examples are included in comments
+- [ ] Accessibility features are documented
+- [ ] Performance considerations are noted
+
+### Future Confluence Integration
+
+#### Space Organization
+```
+COOKGPT Component Library
+├── 📁 Layout Components
+├── 📁 UI Components
+├── 📁 Data Visualization
+├── 📁 Device Components
+└── 📁 Design System
+```
+
+#### Sync Configuration
+```json
+{
+  "confluence_integration": {
+    "enabled": true,
+    "endpoint": "https://company.atlassian.net/wiki/rest/api",
+    "space_key": "COOKGPT",
+    "parent_page": "Component Library",
+    "sync_schedule": "daily",
+    "create_missing_pages": true,
+    "update_existing_pages": true
+  }
+}
+```
+
+### Performance & Maintenance
+
+#### Generation Performance
+- Target: < 30 seconds for full library (30+ components)
+- Incremental: Only changed components processed
+- Memory: < 50MB during generation
+
+#### Quality Monitoring
+- Coverage: 100% of exported components documented
+- Accuracy: Props match TypeScript definitions
+- Freshness: Documentation updated with each component change
+- Validation: Automated quality checks
+
+#### Maintenance Tasks
+- [ ] Review and update documentation templates quarterly
+- [ ] Monitor generation performance and optimize as needed
+- [ ] Update Confluence integration when available
+- [ ] Audit documentation completeness annually
+
+### Learning & Evolution
+
+#### Usage Analytics
+- Track which documentation pages are accessed most
+- Identify components needing better documentation
+- Measure documentation impact on development velocity
+
+#### Template Evolution
+- Analyze successful documentation patterns
+- Update templates based on developer feedback
+- Add new sections for emerging best practices
+
+#### Quality Improvements
+- Implement AI-powered content suggestions
+- Add automated link validation
+- Enhance cross-reference detection
+- Improve example code validation
+
+---
+
+**Rule Version**: 1.0.0
+**Last Updated**: 2025-10-22
+**Mechanism**: documentation

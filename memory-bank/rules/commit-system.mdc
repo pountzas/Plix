@@ -1,0 +1,315 @@
+---
+description: Git Commit System
+alwaysApply: false
+---
+# Git Commit System
+
+## Purpose
+Execute git commits with proper staging, conventional commit messages, and complete verification workflow. Ensures every commit is clean, tested, and properly documented.
+
+## Critical Requirements
+- **ALWAYS** stage files selectively - never use `git add .`
+- **MANDATORY** verification before each commit (build, test, lint)
+- **REQUIRED** conventional commit message format
+- **🚨 NEVER COMMIT DIRECTLY TO DEV BRANCH 🚨**
+- **ALWAYS** work on feature branches only
+- **MANDATORY** pull request workflow for dev branch merges
+
+## Commit Workflow
+
+### 1. Pre-Commit Verification
+Before staging any files, ensure:
+```bash
+# Run all checks
+npm run build        # TypeScript compilation
+npm test            # Run test suite
+npm run lint        # ESLint verification
+
+# Check git status
+git status --porcelain  # See what files changed
+```
+
+### 2. Selective Staging
+Stage files logically grouped by change:
+```bash
+# Stage specific files only
+git add path/to/component.tsx
+git add path/to/component.test.tsx
+git add path/to/styles.css
+
+# Never use these:
+# git add .          # ❌ Adds everything
+# git add -A         # ❌ Adds everything
+# git add --all      # ❌ Adds everything
+```
+
+### 3. Review Staged Changes
+Always review before committing:
+```bash
+# See what will be committed
+git diff --staged
+
+# See file list only
+git diff --staged --name-only
+```
+
+### 4. Conventional Commit Message
+Follow exact format with proper type and scope:
+```bash
+# Format: type(scope): description
+git commit -m "feat(dashboard): add role-based metrics cards
+
+- Add doctor metrics: appointments, patients, success rate
+- Add patient metrics: appointments, health score
+- Implement responsive grid layout
+- Add trend indicators with icons
+
+Closes #task-123"
+
+# Common types:
+# feat:     New feature
+# fix:      Bug fix
+# refactor: Code restructuring
+# test:     Testing related
+# docs:     Documentation
+# chore:    Maintenance (deps, config)
+# perf:     Performance improvement
+```
+
+### 5. Post-Commit Verification
+After committing, verify:
+```bash
+# Check commit was created
+git log --oneline -1
+
+# Ensure no uncommitted changes remain
+git status
+
+# Push to feature branch
+git push origin feat/task-id
+```
+
+## Staging Strategies
+
+### Component Development
+```bash
+# Stage component and its test together
+git add components/ui/NewComponent.tsx
+git add __tests__/unit/NewComponent.test.tsx
+git commit -m "feat(ui): implement NewComponent with full test coverage"
+```
+
+### API Route Changes
+```bash
+# Stage route and related files
+git add app/api/new-endpoint/route.ts
+git add lib/api/new-endpoint.ts
+git commit -m "feat(api): add new-endpoint with validation"
+```
+
+### Database Migrations
+```bash
+# Stage migration and related code
+git add database/migrations/002_new_feature.sql
+git add lib/database/migrations.ts
+git commit -m "feat(db): add new_feature migration with rollback"
+```
+
+### Configuration Updates
+```bash
+# Stage config changes separately
+git add next.config.ts
+git commit -m "chore(config): update Next.js config for new feature"
+```
+
+## Commit Message Guidelines
+
+### Structure
+```
+type(scope): imperative description
+
+[Optional body explaining what and why]
+
+[Optional footer with breaking changes or references]
+```
+
+### Examples by Type
+
+#### Features
+```bash
+feat(auth): implement Clerk Google OAuth integration
+feat(dashboard): add role-based interface with metrics cards
+feat(api): add patient export functionality with CSV support
+```
+
+#### Bug Fixes
+```bash
+fix(auth): resolve hydration mismatch in ClerkProvider
+fix(calendar): prevent double-booking conflicts
+fix(api): handle empty office IDs in patient queries
+```
+
+#### Refactoring
+```bash
+refactor(layout): extract responsive sidebar component
+refactor(api): consolidate patient validation logic
+refactor(state): migrate to Zustand for global state management
+```
+
+#### Testing
+```bash
+test(dashboard): add comprehensive layout integration tests
+test(api): implement patient management API test suite
+test(auth): add Clerk authentication flow tests
+```
+
+#### Documentation
+```bash
+docs(api): update patient management endpoint documentation
+docs(setup): add development environment setup guide
+docs(workflow): document commit system and verification process
+```
+
+#### Maintenance
+```bash
+chore(deps): update next-themes to v0.4.0
+chore(config): add TypeScript strict mode configuration
+chore(ci): update GitHub Actions workflow for Node 20
+```
+
+### Scope Guidelines
+- **components**: UI components (`Button`, `Modal`)
+- **pages**: Page components (`Dashboard`, `Settings`)
+- **api**: API routes and server logic
+- **db**: Database migrations and queries
+- **auth**: Authentication and authorization
+- **config**: Configuration files
+- **test**: Testing infrastructure
+- **docs**: Documentation
+- **deps**: Dependencies and packages
+
+## Verification Checklist
+
+### Pre-Commit ✅
+- [ ] `npm run build` passes
+- [ ] `npm test` passes (or `npm run test:unit` for faster checks)
+- [ ] `npm run lint` passes
+- [ ] No console errors in affected components
+- [ ] Only logical file grouping staged
+- [ ] Commit message follows conventional format
+
+### Post-Commit ✅
+- [ ] Commit appears in `git log`
+- [ ] No uncommitted changes remain
+- [ ] Branch is feature branch (not dev/main)
+- [ ] Push to remote succeeds
+- [ ] CI/CD checks pass (if applicable)
+
+## Error Recovery
+
+### Mistake in Commit Message
+```bash
+# Amend last commit message
+git commit --amend -m "fix: correct commit message"
+```
+
+### Wrong Files Staged
+```bash
+# Unstage specific file
+git reset HEAD path/to/file.tsx
+
+# Unstage all files
+git reset HEAD
+```
+
+### Committed to Wrong Branch
+```bash
+# Create correct branch from commit
+git checkout -b feat/correct-branch-name
+git cherry-pick <commit-hash>
+
+# Delete wrong commit from wrong branch
+git checkout wrong-branch
+git reset --hard HEAD~1
+```
+
+### Need to Undo Commit
+```bash
+# Soft reset (keeps changes staged)
+git reset --soft HEAD~1
+
+# Hard reset (loses changes - DANGER!)
+git reset --hard HEAD~1
+```
+
+## Integration with Task System
+
+### Task-Based Commits
+Each commit should reference the current task:
+```bash
+feat(dashboard): implement role-based metrics cards
+
+Part of small-feature::dashboard-redesign-v1
+- Added doctor metrics: total appointments, patients, success rate
+- Added patient metrics: upcoming appointments, health score
+- Implemented responsive card layout with trend indicators
+```
+
+### Task Completion Commits
+When completing a task:
+```bash
+feat(dashboard): complete role-based dashboard implementation
+
+Completes small-feature::dashboard-redesign-v1
+- ✅ Role-based rendering (doctor/patient views)
+- ✅ Professional metrics cards with trend indicators
+- ✅ Personalized welcome messages
+- ✅ Activity feed and quick actions
+- ✅ Responsive grid layouts
+- ✅ All acceptance criteria met
+
+Evidence: Dashboard shows different content based on user role
+Metrics cards display with proper formatting and responsiveness
+```
+
+## Performance Considerations
+
+### Large File Handling
+For files >500KB, consider:
+```bash
+# Add large assets separately
+git add -A --renormalize
+git commit -m "feat(assets): add large media files"
+```
+
+### Binary File Handling
+```bash
+# Ensure proper .gitattributes for binary files
+git add --renormalize binary-file.jpg
+git commit -m "chore(assets): add binary asset with proper handling"
+```
+
+## Automation Integration
+
+### Pre-commit Hooks
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint
+npm run typecheck
+npm run test:unit
+```
+
+### Commitizen Setup
+```bash
+# Install and configure
+npm install -g commitizen
+npm install --save-dev @commitlint/cli @commitlint/config-conventional
+
+# Use instead of git commit
+git cz
+```
+
+This commit system ensures every commit is verified, properly documented, and contributes to a clean, traceable development history.

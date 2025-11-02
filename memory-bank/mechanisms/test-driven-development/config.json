@@ -1,0 +1,25 @@
+{
+  "name": "Test Driven Development",
+  "description": "Enforces TDD practices with RED-GREEN-REFACTOR cycle",
+  "enabled": true,
+  "version": "1.0.0",
+  "rules": [
+    "test-driven-development.mdc"
+  ],
+  "dependencies": [],
+  "configuration": {
+    "require_tests_first": true,
+    "minimum_coverage": 80,
+    "enforce_red_green_refactor": true,
+    "allow_spike_exceptions": true,
+    "testing_framework": "jest",
+    "coverage_tool": "jest",
+    "integration_testing": "jest",
+    "e2e_testing": "playwright"
+  },
+  "enforcement": {
+    "pre_commit_hook": true,
+    "ci_checks": true,
+    "pr_requirements": true
+  }
+}

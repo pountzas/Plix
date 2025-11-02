@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "description": "Memory Bank Integration - Rules loaded from memory-bank/config.json",
+  "memory_bank": {
+    "path": "./memory-bank/",
+    "config_file": "./memory-bank/config.json",
+    "enabled": true
+  },
+  "legacy_patterns": [
+    {
+      "name": "git-workflow",
+      "description": "Git workflow patterns (now managed via memory-bank)",
+      "deprecated": true,
+      "replacement": "memory-bank/mechanisms/git-workflow/"
+    },
+    {
+      "name": "verification-and-push",
+      "description": "Verification and push workflow (now managed via memory-bank)",
+      "deprecated": true,
+      "replacement": "memory-bank/mechanisms/verification-and-push/"
+    },
+    {
+      "name": "test-driven-development",
+      "description": "TDD practices (now managed via memory-bank)",
+      "deprecated": true,
+      "replacement": "memory-bank/mechanisms/test-driven-development/"
+    },
+    {
+      "name": "commit-system",
+      "description": "Commit system (now managed via memory-bank)",
+      "deprecated": true,
+      "replacement": "memory-bank/mechanisms/commit-system/"
+    }
+  ],
+  "migration_notes": [
+    "Rules are now stored in memory-bank/rules/",
+    "Mechanisms are configured via memory-bank/config.json",
+    "Enable/disable mechanisms by editing memory-bank/config.json",
+    "Learning data is exportable via memory-bank/exports/",
+    "Cross-branch memory is available in memory-bank/cross-branch-memory/"
+  ]
+}
