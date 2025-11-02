@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
+import { useSession } from "next-auth/react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -117,6 +118,7 @@ export default function MediaDetailPage({
   searchParams,
 }: MediaDetailPageProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const { mediaType, id } = use(params);
   const resolvedSearchParams = use(searchParams);
 
@@ -124,6 +126,11 @@ export default function MediaDetailPage({
   const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Handle clicking on cast member names to navigate to person profile
+  const handleCastMemberClick = (personId: number) => {
+    router.push(`/person/${personId}`);
+  };
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -448,13 +455,14 @@ export default function MediaDetailPage({
               {credits.cast.slice(0, 20).map((actor) => (
                 <div
                   key={actor.id}
-                  className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64"
+                  className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64 cursor-pointer group"
+                  onClick={() => handleCastMemberClick(actor.id)}
                 >
-                  <div className="flex items-center justify-center p-2 bg-gray-800 hover:bg-[#CC7B19] rounded-full transition-colors">
+                  <div className="flex items-center justify-center p-2 bg-gray-800 group-hover:bg-[#CC7B19] rounded-full transition-colors">
                     <ActorImage actor={actor} size={100} />
                   </div>
                   <div className="flex flex-col items-center text-center space-y-1 px-2 h-20 overflow-hidden">
-                    <div className="text-gray-200 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                    <div className="text-gray-200 group-hover:text-blue-400 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full transition-colors">
                       {actor.name}
                     </div>
                     <div className="text-gray-400 text-xs leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">

@@ -8,6 +8,7 @@ import { useVisualStore } from "../stores/visualStore";
 
 import MediaItemProps from "./props/MediaItemProps";
 import MediaCredits from "./props/MediaCredits";
+import { MediaCredit } from "./props/MediaCredits";
 import MediaCrew from "./props/MediaCrew";
 import Writers from "./props/Writers";
 import SliderProps from "./props/SliderProps";
@@ -82,6 +83,7 @@ function MediaItem() {
     (state) => state.setBackgroundOpacity
   );
   const [crew, setCrew] = useState(false);
+  const [castCredits, setCastCredits] = useState<MediaCredit[]>([]);
   const { handleApiError } = useApiErrorHandler();
 
   // Handle clicking on cast member names to navigate to person profile
@@ -108,23 +110,21 @@ function MediaItem() {
       setCastVisible(true);
       setCrew(true);
     }, 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [menuSize]);
 
   const getMediaDetails = async () => {
     if (MediaItemProps.tmdbId) {
       try {
         const mediaData = await getMovieCredits(MediaItemProps.tmdbId);
-        mediaData.cast?.map((cast: any) => {
-          MediaCredits.push({
-            key: cast.order,
-            id: cast.id, // TMDB person ID
-            name: cast.name,
-            character: cast.character,
-            profile_path: cast.profile_path,
-            dep: cast.known_for_department,
-          });
-        });
+        const castData = mediaData.cast?.map((cast: any) => ({
+          key: cast.order,
+          id: cast.id, // TMDB person ID
+          name: cast.name,
+          character: cast.character,
+          profile_path: cast.profile_path,
+          dep: cast.known_for_department,
+        })) || [];
+        setCastCredits(castData);
         mediaData.crew?.map((crew: any) => {
           if (crew.job === "Director") {
             MediaCrew.push({
@@ -302,21 +302,21 @@ function MediaItem() {
                   : "max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]"
               }`}
             >
-              {MediaCredits.map((actor) => (
+              {castCredits.map((actor) => (
                 <div
-                  className="flex flex-col items-center justify-center space-x-1 text-xs rounded-full border-1"
+                  className="flex flex-col items-center justify-center space-x-1 text-xs rounded-full border-1 cursor-pointer group"
                   key={actor.key}
+                  onClick={() => handleCastMemberClick(actor.id)}
+                  data-actor-id={actor.id}
+                  data-actor-name={actor.name}
                 >
-                  <div className="flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full ">
+                  <div className="flex items-center justify-center p-[2px] bg-gray-800 group-hover:bg-[#CC7B19] rounded-full transition-colors">
                     <ActorImage actor={actor} sliderValue={sliderValue} />
                   </div>
                   <div className="flex flex-col items-center text-center justify-center w-[100px] pt-1">
-                    <button
-                      onClick={() => handleCastMemberClick(actor.id)}
-                      className="text-gray-200 hover:text-blue-400 transition-colors cursor-pointer text-sm"
-                    >
+                    <div className="text-gray-200 group-hover:text-blue-400 transition-colors text-sm">
                       {actor.name}
-                    </button>
+                    </div>
                     <div className="text-gray-400 text-xs">
                       {actor.character}
                     </div>
