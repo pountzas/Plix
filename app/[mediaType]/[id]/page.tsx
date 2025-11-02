@@ -276,12 +276,12 @@ export default function MediaDetailPage({
         </div>
       </Activity>
 
-      <main className="relative z-10 h-[calc(100vh-128px)] overflow-y-auto">
-        <div className="px-8 py-6 bg-gray-900/90">
+      <main className="relative z-10 overflow-y-auto h-[calc(100vh-30px)] space-y-4">
+        <div className="px-8 py-3 bg-gray-900/90">
           {/* Back Button */}
           <Link
             href="/"
-            className="px-4 pb-4 flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-6 mt-4"
+            className="px-4 pb-4 flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-6"
           >
             <BsArrowLeft className="text-xl" />
             Back
@@ -294,13 +294,13 @@ export default function MediaDetailPage({
                 <Image
                   src={posterUrl}
                   alt={`${title} poster`}
-                  width={300}
-                  height={450}
+                  width={250}
+                  height={375}
                   className="rounded-lg shadow-lg"
                   priority
                 />
               ) : (
-                <div className="w-[300px] h-[450px] bg-gray-800 rounded-lg flex items-center justify-center">
+                <div className="w-[200px] h-[300px] bg-gray-800 rounded-lg flex items-center justify-center">
                   <span className="text-gray-400">No poster available</span>
                 </div>
               )}
@@ -323,12 +323,38 @@ export default function MediaDetailPage({
                   {mediaDetails?.ObjUrl || mediaDetails?.fileName ? (
                     <ReactPlayer
                       src={mediaDetails.ObjUrl || mediaDetails.fileName}
-                      controls={false}
-                      width="100%"
-                      height="100%"
+                      controls={true}
+                      width="480px"
+                      height="270px"
                       playing={true}
                       muted={true}
                       loop={true}
+                      onError={(error: any) => {
+                        console.error("ReactPlayer thumbnail error:", error);
+                        console.error("Error type:", typeof error);
+                        console.error("Error keys:", Object.keys(error || {}));
+                        console.error(
+                          "Thumbnail src:",
+                          mediaDetails.ObjUrl || mediaDetails.fileName
+                        );
+                        console.error(
+                          "Can play src:",
+                          ReactPlayer.canPlay?.(
+                            mediaDetails.ObjUrl || mediaDetails.fileName || ""
+                          )
+                        );
+                        // Try to create a video element to test the URL directly
+                        if (mediaDetails.ObjUrl || mediaDetails.fileName) {
+                          const testVideo = document.createElement("video");
+                          testVideo.onloadeddata = () =>
+                            console.log("Video loaded successfully");
+                          testVideo.onerror = (e) =>
+                            console.error("Direct video error:", e);
+                          testVideo.src =
+                            mediaDetails.ObjUrl || mediaDetails.fileName || "";
+                        }
+                      }}
+                      onReady={() => console.log("Thumbnail ReactPlayer ready")}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
@@ -412,34 +438,34 @@ export default function MediaDetailPage({
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Cast Section */}
-          {credits?.cast && credits.cast.length > 0 && (
-            <div className="px-4">
-              <h2 className="text-2xl font-bold mb-2">Cast</h2>
-              <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
-                {credits.cast.slice(0, 20).map((actor) => (
-                  <div
-                    key={actor.id}
-                    className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64"
-                  >
-                    <div className="flex items-center justify-center p-2 bg-gray-800 hover:bg-[#CC7B19] rounded-full transition-colors">
-                      <ActorImage actor={actor} size={100} />
+        {/* Cast Section */}
+        {credits?.cast && credits.cast.length > 0 && (
+          <div className="px-2">
+            {/* <h2 className="text-2xl font-bold mb-2">Cast</h2> */}
+            <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
+              {credits.cast.slice(0, 20).map((actor) => (
+                <div
+                  key={actor.id}
+                  className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64"
+                >
+                  <div className="flex items-center justify-center p-2 bg-gray-800 hover:bg-[#CC7B19] rounded-full transition-colors">
+                    <ActorImage actor={actor} size={100} />
+                  </div>
+                  <div className="flex flex-col items-center text-center space-y-1 px-2 h-20 overflow-hidden">
+                    <div className="text-gray-200 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                      {actor.name}
                     </div>
-                    <div className="flex flex-col items-center text-center space-y-1 px-2 h-20 overflow-hidden">
-                      <div className="text-gray-200 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
-                        {actor.name}
-                      </div>
-                      <div className="text-gray-400 text-xs leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
-                        {actor.character}
-                      </div>
+                    <div className="text-gray-400 text-xs leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                      {actor.character}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </Layout>
   );
