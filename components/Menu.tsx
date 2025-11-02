@@ -18,8 +18,12 @@ function Menu() {
   const menuSize = useUiStore((state) => state.menuSize);
   const persistedMovies = useMediaStore((state) => state.persistedMovies);
   const persistedTvShows = useMediaStore((state) => state.persistedTvShows);
-  const removePersistedMovie = useMediaStore((state) => state.removePersistedMovie);
-  const removePersistedTvShow = useMediaStore((state) => state.removePersistedTvShow);
+  const removePersistedMovie = useMediaStore(
+    (state) => state.removePersistedMovie
+  );
+  const removePersistedTvShow = useMediaStore(
+    (state) => state.removePersistedTvShow
+  );
   const imageVisible = useVisualStore((state) => state.imageVisible);
 
   // Hover state for delete icons
@@ -41,12 +45,12 @@ function Menu() {
 
   const deleteAllMovies = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent navigation
-    persistedMovies.forEach(movie => removePersistedMovie(movie.tmdbId));
+    persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
   };
 
   const deleteAllTvShows = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent navigation
-    persistedTvShows.forEach(tvShow => removePersistedTvShow(tvShow.tmdbId));
+    persistedTvShows.forEach((tvShow) => removePersistedTvShow(tvShow.tmdbId));
   };
 
   return (
@@ -86,8 +90,8 @@ function Menu() {
           <MdDelete
             onClick={deleteAllMovies}
             className={`absolute right-2 text-red-400 hover:text-red-300 cursor-pointer transition-opacity duration-200 ${
-              hoveredMovies ? 'opacity-100' : 'opacity-0'
-            } ${menuSize ? 'text-lg' : 'text-xl'}`}
+              hoveredMovies ? "opacity-100" : "opacity-0"
+            } ${menuSize ? "text-lg" : "text-xl"}`}
           />
         </div>
       )}
@@ -105,8 +109,8 @@ function Menu() {
           <MdDelete
             onClick={deleteAllTvShows}
             className={`absolute right-2 text-red-400 hover:text-red-300 cursor-pointer transition-opacity duration-200 ${
-              hoveredTvShows ? 'opacity-100' : 'opacity-0'
-            } ${menuSize ? 'text-lg' : 'text-xl'}`}
+              hoveredTvShows ? "opacity-100" : "opacity-0"
+            } ${menuSize ? "text-lg" : "text-xl"}`}
           />
         </div>
       )}
