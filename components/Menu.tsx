@@ -1,50 +1,37 @@
 import { Activity } from "react";
+import { useRouter } from "next/router";
 import { CgHome } from "react-icons/cg";
 import { BsFilm } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";
 import { AiFillFolderAdd } from "react-icons/ai";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
-import { useNavigationStore } from "../stores/navigationStore";
 import { useVisualStore } from "../stores/visualStore";
 
 function Menu() {
+  const router = useRouter();
   const setModalOpen = useUiStore((state) => state.setModalOpen);
   const menuSize = useUiStore((state) => state.menuSize);
-  const latestMovie = useMediaStore((state) => state.homeMovieLoaded);
-  const latestTv = useMediaStore((state) => state.homeTvLoaded);
   const persistedMovies = useMediaStore((state) => state.persistedMovies);
   const persistedTvShows = useMediaStore((state) => state.persistedTvShows);
-  const setHomeMenuActive = useNavigationStore(
-    (state) => state.setHomeMenuActive
-  );
-  const setMovieMenuActive = useNavigationStore(
-    (state) => state.setMovieMenuActive
-  );
-  const setTvMenuActive = useNavigationStore((state) => state.setTvMenuActive);
   const imageVisible = useVisualStore((state) => state.imageVisible);
 
   const menuHome = () => {
-    setHomeMenuActive(true);
-    setMovieMenuActive(false);
-    setTvMenuActive(false);
+    // Navigate to home page
+    router.push("/");
   };
 
   const menuMovie = () => {
-    setHomeMenuActive(false);
-    setMovieMenuActive(true);
-    setTvMenuActive(false);
+    router.push("/movies");
   };
 
   const menuTv = () => {
-    setHomeMenuActive(false);
-    setMovieMenuActive(false);
-    setTvMenuActive(true);
+    router.push("/tv");
   };
 
   return (
     <section
-      className={`relative space-y-5 m-3 rounded-md pt-3 px-3 min-h-[80vh] transition-all ease-in-out delay-200 ${
+      className={`relative space-y-5 m-3 rounded-md pt-3 px-3 min-h-[80vh] w-[200px] transition-all ease-in-out delay-200 ${
         imageVisible && "opacity-80"
       } ${
         !menuSize &&
@@ -60,7 +47,7 @@ function Menu() {
           <p>Home</p>
         </Activity>
       </div>
-      {(latestMovie || persistedMovies.length > 0) && (
+      {persistedMovies.length > 0 && (
         <div
           onClick={menuMovie}
           className="flex flex-nowrap cursor-pointer items-center pl-[2px] text-gray-300 text-xl"
@@ -76,7 +63,7 @@ function Menu() {
           </Activity>
         </div>
       )}
-      {(latestTv || persistedTvShows.length > 0) && (
+      {persistedTvShows.length > 0 && (
         <div
           onClick={menuTv}
           className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
@@ -87,6 +74,19 @@ function Menu() {
           </Activity>
         </div>
       )}
+
+      {/* Music menu - for future implementation */}
+      {/* {persistedMusic.length > 0 && (
+        <div
+          onClick={menuMusic}
+          className="flex flex-nowrap cursor-pointer items-center text-gray-300 text-xl"
+        >
+          <MdMusicNote className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
+          <Activity mode={menuSize ? "hidden" : "visible"}>
+            <p>Music ({persistedMusic.length})</p>
+          </Activity>
+        </div>
+      )} */}
 
       <div
         onClick={() => setModalOpen(true)}

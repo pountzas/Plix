@@ -1,7 +1,7 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 // @ts-ignore - MediaItemProps is a global state object
 import MediaItemProps from "./props/MediaItemProps";
-import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 import { useState } from "react";
 
@@ -18,6 +18,7 @@ interface MediaCardProps {
   id: number;
   name: string;
   tmdbId: number;
+  mediaType: "movie" | "tv";
   adult?: boolean;
   backdrop_path: string;
   lang: string;
@@ -38,28 +39,29 @@ interface MediaCardProps {
 }
 
 function MediaCard({
-  id,
-  name,
+  id: _id,
+  name: _name,
   tmdbId,
-  adult,
-  backdrop_path,
-  lang,
-  popularity,
-  voteAverage,
-  voteCount,
+  mediaType,
+  adult: _adult,
+  backdrop_path: _backdrop_path,
+  lang: _lang,
+  popularity: _popularity,
+  voteAverage: _voteAverage,
+  voteCount: _voteCount,
   tmdbPoster,
   tmdbTitle,
-  tmdbOverview,
+  tmdbOverview: _tmdbOverview,
   tmdbReleaseDate,
-  tmdbRating,
-  tmdbGenre,
-  fileName,
-  ObjUrl,
-  folderPath,
-  folderPath2,
-  rootPath,
+  tmdbRating: _tmdbRating,
+  tmdbGenre: _tmdbGenre,
+  fileName: _fileName,
+  ObjUrl: _ObjUrl,
+  folderPath: _folderPath,
+  folderPath2: _folderPath2,
+  rootPath: _rootPath,
 }: MediaCardProps) {
-  const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
+  const router = useRouter();
   const sliderValue = useVisualStore((state) => state.sliderValue);
 
   // Image fallback state
@@ -78,34 +80,17 @@ function MediaCard({
 
   const handlePlayer = () => {};
 
-  const sendMediaValue = () => {
-    Object.assign(MediaItemProps, {
-      id,
-      name,
-      tmdbId,
-      adult,
-      backdrop_path,
-      lang,
-      popularity,
-      voteAverage,
-      voteCount,
-      tmdbPoster,
-      tmdbTitle,
-      tmdbOverview,
-      tmdbReleaseDate,
-      tmdbRating,
-      tmdbGenre,
-      fileName,
-      ObjUrl,
-      folderPath,
-      folderPath2,
-      rootPath,
-    });
-  };
-
   const handleMediaCardClick = () => {
-    sendMediaValue();
-    setMediaItemActive(true);
+    // Navigate to dynamic media detail page with additional data
+    router.push({
+      pathname: `/${mediaType}/${tmdbId}`,
+      query: {
+        ObjUrl: _ObjUrl,
+        fileName: _fileName,
+        folderPath: _folderPath,
+        rootPath: _rootPath,
+      },
+    });
   };
 
   const press = () => {};

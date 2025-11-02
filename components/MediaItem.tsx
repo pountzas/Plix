@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import ReactPlayer from "react-player/lazy";
+import ReactPlayer from "react-player";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
@@ -177,21 +177,11 @@ function MediaItem() {
       <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[75vh] scrollbar-hide object-contain">
         <div className="items-center lg:flex lg:space-x-8">
           <ReactPlayer
-            config={{
-              file: {
-                attributes: {
-                  controlsList: "nodownload",
-                  volume: 1,
-                  controls: true,
-                  color: "#fff",
-                },
-              },
-            }}
-            url={MediaItemProps.ObjUrl}
+            src={MediaItemProps.ObjUrl}
             controls
-            pip={true}
             width="640px"
             height="400px"
+            volume={1}
           />
           <div className="lg:max-w-[40vw] space-y-4">
             <div className="text-3xl text-gray-100">

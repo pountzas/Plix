@@ -1,28 +1,31 @@
 import MediaCard from "./MediaCard";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
-import { useNavigationStore } from "../stores/navigationStore";
 import { useVisualStore } from "../stores/visualStore";
 import SliderComp from "./SliderComp";
 
 function Feed() {
+  const router = useRouter();
   const menuSize = useUiStore((state) => state.menuSize);
   const latestMovie = useMediaStore((state) => state.homeMovieLoaded);
   const latestTv = useMediaStore((state) => state.homeTvLoaded);
   const persistedMovies = useMediaStore((state) => state.persistedMovies);
   const persistedTvShows = useMediaStore((state) => state.persistedTvShows);
-  const homeMenu = useNavigationStore((state) => state.homeMenuActive);
-  const movieMenu = useNavigationStore((state) => state.movieMenuActive);
-  const tvMenu = useNavigationStore((state) => state.tvMenuActive);
   const slider = useVisualStore((state) => state.sliderValue);
   const setSliderValue = useVisualStore((state) => state.setSliderValue);
+
+  // Determine content type based on current route
+  const isHomePage = router.pathname === "/";
+  const isMoviesPage = router.pathname === "/movies";
+  const isTVPage = router.pathname === "/tv";
 
   return (
     <section className="w-full px-3 pt-3 mr-3 text-2xl text-gray-300 rounded-md">
       {((latestMovie || latestTv) || (persistedMovies.length > 0 || persistedTvShows.length > 0)) && (
         <div className="flex items-center justify-between">
-          <h2>{`${homeMenu ? "Home" : movieMenu ? "Movies" : "TV Shows"}`}</h2>
+          <h2>{`${isHomePage ? "Home" : isMoviesPage ? "Movies" : isTVPage ? "TV Shows" : "Library"}`}</h2>
 
           <SliderComp
             defaultValue={slider}
@@ -35,7 +38,7 @@ function Feed() {
           />
         </div>
       )}
-      {homeMenu && (
+      {isHomePage && (
         <section className="w-full">
           <div
             className={`${
@@ -76,6 +79,7 @@ function Feed() {
                           id={movie.id}
                           name={movie.name}
                           tmdbId={movie.tmdbId}
+                          mediaType="movie"
                           adult={movie.adult}
                           backdrop_path={movie.backdrop_path}
                           lang={movie.original_language}
@@ -108,6 +112,7 @@ function Feed() {
                           id={tv.id}
                           name={tv.name}
                           tmdbId={tv.tmdbId}
+                          mediaType="tv"
                           adult={tv.adult}
                           backdrop_path={tv.backdrop_path}
                           lang={tv.original_language}
@@ -137,7 +142,7 @@ function Feed() {
       )}
 
       {/* Movie menu */}
-      {movieMenu && (
+      {isMoviesPage && (
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1">
             {persistedMovies.map((movie) => (
@@ -146,6 +151,7 @@ function Feed() {
                   id={movie.id}
                   name={movie.name}
                   tmdbId={movie.tmdbId}
+                  mediaType="movie"
                   adult={movie.adult}
                   backdrop_path={movie.backdrop_path}
                   lang={movie.original_language}
@@ -171,7 +177,7 @@ function Feed() {
       )}
 
       {/* TV menu */}
-      {tvMenu && (
+      {isTVPage && (
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain">
             {persistedTvShows.map((tv) => (
@@ -180,6 +186,7 @@ function Feed() {
                   id={tv.id}
                   name={tv.name}
                   tmdbId={tv.tmdbId}
+                  mediaType="tv"
                   adult={tv.adult}
                   backdrop_path={tv.backdrop_path}
                   lang={tv.original_language}

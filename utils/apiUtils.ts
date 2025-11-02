@@ -15,6 +15,7 @@ interface ApiConfig {
   timeout?: number;
   retries?: number;
   headers?: Record<string, string>;
+  params?: Record<string, string>;
 }
 
 /**
@@ -27,6 +28,7 @@ const defaultConfig: Required<ApiConfig> = {
   headers: {
     "Content-Type": "application/json",
   },
+  params: {},
 };
 
 /**
@@ -216,7 +218,18 @@ export class ApiClient {
     data?: any,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.config.baseURL}${endpoint}`;
+    // Build URL with base URL and endpoint
+    let url = `${this.config.baseURL}${endpoint}`;
+
+    // Add default query parameters
+    const urlObj = new URL(url);
+    Object.entries(this.config.params).forEach(([key, value]) => {
+      if (value) {
+        urlObj.searchParams.set(key, value);
+      }
+    });
+
+    url = urlObj.toString();
 
     const requestOptions: RequestInit = {
       method,
@@ -282,10 +295,19 @@ export const createApiClient = (config: ApiConfig = {}) => {
 
 // Example: TMDB API client with cacheSignal
 export const createTmdbApiClient = () => {
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "TMDB API key not found. Please check your .env.local file."
+    );
+  }
+
   return createApiClient({
     baseURL: "https://api.themoviedb.org/3",
+    params: {
+      api_key: apiKey,
+    },
     headers: {
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
       "Content-Type": "application/json;charset=utf-8",
     },
   });
