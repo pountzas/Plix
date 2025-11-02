@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "./Header";
 import Menu from "./Menu";
 import MediaModal from "./MediaModal";

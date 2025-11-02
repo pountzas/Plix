@@ -1,8 +1,8 @@
 import Head from "next/head";
-import Layout from "../components/Layout";
-import Feed from "../components/Feed";
+import Layout from "../../components/Layout";
+import Feed from "../../components/Feed";
 
-export default function TVShows() {
+export default function TV() {
   return (
     <Layout>
       <Head>

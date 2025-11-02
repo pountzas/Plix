@@ -1,13 +1,14 @@
-import '../styles/globals.css'
+'use client'
+
 import { SessionProvider } from 'next-auth/react'
-import type { AppProps } from 'next/app'
 import { useUiStore } from '../stores/uiStore'
 import ApiKeyErrorModal from '../components/ApiKeyErrorModal'
 import RateLimitErrorModal from '../components/RateLimitErrorModal'
 import { PersistenceStatus } from '../components/PersistenceStatus'
 import { useApiErrorHandler } from '../hooks/useApiErrorHandler'
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps & { pageProps: { session?: any } }) {
+// Client component wrapper for Zustand hooks and global components
+function ClientProviders({ children }: { children: React.ReactNode }) {
   const apiKeyErrorModal = useUiStore((state) => state.apiKeyErrorModal)
   const setApiKeyErrorModal = useUiStore((state) => state.setApiKeyErrorModal)
   const rateLimitErrorModal = useUiStore((state) => state.rateLimitErrorModal)
@@ -17,8 +18,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps & {
   useApiErrorHandler()
 
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
+    <>
+      {children}
       <ApiKeyErrorModal
         isOpen={apiKeyErrorModal}
         onClose={() => setApiKeyErrorModal(false)}
@@ -28,8 +29,16 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps & {
         onClose={() => setRateLimitErrorModal(false)}
       />
       <PersistenceStatus />
-    </SessionProvider>
+    </>
   )
 }
 
-export default MyApp
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <ClientProviders>
+        {children}
+      </ClientProviders>
+    </SessionProvider>
+  )
+}

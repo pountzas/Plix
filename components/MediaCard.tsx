@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 // @ts-ignore - MediaItemProps is a global state object
 import MediaItemProps from "./props/MediaItemProps";
 import { useVisualStore } from "../stores/visualStore";
@@ -82,15 +84,19 @@ function MediaCard({
 
   const handleMediaCardClick = () => {
     // Navigate to dynamic media detail page with additional data
-    router.push({
-      pathname: `/${mediaType}/${tmdbId}`,
-      query: {
-        ObjUrl: _ObjUrl,
-        fileName: _fileName,
-        folderPath: _folderPath,
-        rootPath: _rootPath,
-      },
+    if (!mediaType || !tmdbId || !["movie", "tv"].includes(mediaType)) {
+      console.error("Invalid navigation parameters:", { mediaType, tmdbId });
+      return;
+    }
+
+    const params = new URLSearchParams({
+      ObjUrl: _ObjUrl || "",
+      fileName: _fileName || "",
+      folderPath: _folderPath || "",
+      rootPath: _rootPath || "",
     });
+    const url = `/${mediaType}/${tmdbId}?${params.toString()}`;
+    router.push(url);
   };
 
   const press = () => {};

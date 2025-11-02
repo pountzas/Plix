@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react'
 import { useUiStore } from '../stores/uiStore'
 import { ApiKeyError } from '../utils/tmdbApi'

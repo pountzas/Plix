@@ -1,3 +1,5 @@
+'use client'
+
 import { Activity } from "react";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";

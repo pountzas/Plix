@@ -1,6 +1,8 @@
+'use client'
+
 import { getProviders, signIn } from "next-auth/react";
-import { GetServerSideProps } from "next";
-import Header from "../../components/Header";
+import { useEffect, useState } from "react";
+import Header from "../../../components/Header";
 import Image from "next/image";
 
 interface Provider {
@@ -11,11 +13,17 @@ interface Provider {
   callbackUrl: string;
 }
 
-interface SignInProps {
-  providers: Record<string, Provider>;
-}
+export default function SignIn() {
+  const [providers, setProviders] = useState<Record<string, Provider> | null>(null);
 
-export default function SignIn({ providers }: SignInProps) {
+  useEffect(() => {
+    const fetchProviders = async () => {
+      const res = await getProviders();
+      setProviders(res);
+    };
+    fetchProviders();
+  }, []);
+
   return (
     <section className="bg-gray-800 min-h-[100vh]">
       <Header />
@@ -29,7 +37,7 @@ export default function SignIn({ providers }: SignInProps) {
         <p className="font-xs italic text-gray-200 pt-20">
           This is not a real App, it is built for educational purposes only.
         </p>
-        {Object.values(providers).map((provider) => (
+        {providers && Object.values(providers).map((provider) => (
           <div
             className="flex flex-col items-center space-y-3 pt-5"
             key={provider.name}
@@ -46,14 +54,3 @@ export default function SignIn({ providers }: SignInProps) {
     </section>
   );
 }
-
-// Server side render
-export const getServerSideProps: GetServerSideProps = async (_context) => {
-  const providers = await getProviders();
-
-  return {
-    props: {
-      providers,
-    },
-  };
-};

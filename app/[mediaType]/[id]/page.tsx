@@ -1,12 +1,14 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect, useState, use } from "react";
 import { Activity } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { BsArrowLeft, BsPlayCircleFill } from "react-icons/bs";
 import ReactPlayer from "react-player";
-import Layout from "../../components/Layout";
-import { useUiStore } from "../../stores/uiStore";
-import { cachedTmdbDetails } from "../../utils/apiUtils";
+import Layout from "../../../components/Layout";
+import { cachedTmdbDetails } from "../../../utils/apiUtils";
 
 interface MediaDetails {
   id: number;
@@ -33,20 +35,52 @@ interface MediaDetails {
   rootPath?: string;
 }
 
-export default function MediaDetailPage() {
+interface MediaDetailPageProps {
+  params: Promise<{
+    mediaType: string;
+    id: string;
+  }>;
+  searchParams: Promise<{
+    ObjUrl?: string;
+    fileName?: string;
+    folderPath?: string;
+    rootPath?: string;
+  }>;
+}
+
+export default function MediaDetailPage({
+  params,
+  searchParams,
+}: MediaDetailPageProps) {
   const router = useRouter();
-  const { mediaType, id, ObjUrl, fileName, folderPath, rootPath } =
-    router.query;
-  const menuSize = useUiStore((state) => state.menuSize);
+  const { mediaType, id } = use(params);
+  const resolvedSearchParams = use(searchParams);
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!mediaType || !id || Array.isArray(mediaType) || Array.isArray(id)) {
+    // Validate required parameters
+    if (!mediaType || !id) {
+      setValidationError(
+        `Missing required parameters: mediaType=${mediaType}, id=${id}`
+      );
+      setLoading(false);
       return;
     }
+
+    if (!["movie", "tv"].includes(mediaType)) {
+      setValidationError(
+        `Invalid media type: ${mediaType}. Expected 'movie' or 'tv'`
+      );
+      setLoading(false);
+      return;
+    }
+
+    // Clear any previous validation errors
+    setValidationError(null);
 
     const fetchMediaDetails = async () => {
       try {
@@ -57,13 +91,13 @@ export default function MediaDetailPage() {
           parseInt(id),
           mediaType as "movie" | "tv"
         );
-        // Include local file properties from query parameters
+        // Include local file properties from search params
         setMediaDetails({
           ...details,
-          ObjUrl: Array.isArray(ObjUrl) ? ObjUrl[0] : ObjUrl,
-          fileName: Array.isArray(fileName) ? fileName[0] : fileName,
-          folderPath: Array.isArray(folderPath) ? folderPath[0] : folderPath,
-          rootPath: Array.isArray(rootPath) ? rootPath[0] : rootPath,
+          ObjUrl: resolvedSearchParams.ObjUrl,
+          fileName: resolvedSearchParams.fileName,
+          folderPath: resolvedSearchParams.folderPath,
+          rootPath: resolvedSearchParams.rootPath,
         });
       } catch (err) {
         console.error("Error fetching media details:", err);
@@ -74,7 +108,7 @@ export default function MediaDetailPage() {
     };
 
     fetchMediaDetails();
-  }, [mediaType, id]);
+  }, [mediaType, id, searchParams, router]);
 
   // Calculate backdrop URL early for use in loading/error states
   const backdropUrl = mediaDetails?.backdrop_path
@@ -85,6 +119,24 @@ export default function MediaDetailPage() {
   const handleBackClick = () => {
     router.back();
   };
+
+  // Show validation error if parameters are invalid
+  if (validationError) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Route Error</h1>
+          <p className="mb-4">{validationError}</p>
+          <button
+            onClick={() => router.push("/")}
+            className="bg-[#CC7B19] text-white px-4 py-2 rounded hover:bg-[#B86E17] transition-colors"
+          >
+            Go Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -152,23 +204,20 @@ export default function MediaDetailPage() {
         </div>
       </Activity>
 
-      <main
-        className={`transition-all duration-300 relative z-10 h-screen overflow-y-auto`}
-      >
-        {/* Content */}
-        <div className="px-8 py-6 ">
+      <main className="relative z-10 h-[calc(100vh-128px)] overflow-y-auto">
+        <div className="px-8 py-6 bg-gray-900/90">
           {/* Back Button */}
-          <button
-            onClick={handleBackClick}
-            className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-6 mt-4"
+          <Link
+            href="/"
+            className="px-4 pb-4 flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-6 mt-4"
           >
             <BsArrowLeft className="text-xl" />
             Back
-          </button>
+          </Link>
 
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex gap-8">
             {/* Poster */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 px-4">
               {posterUrl ? (
                 <Image
                   src={posterUrl}
@@ -186,7 +235,7 @@ export default function MediaDetailPage() {
             </div>
 
             {/* Details */}
-            <div className="flex-1">
+            <div className="flex-1 px-4">
               {/* Title and Play Button */}
               <div className="flex items-start justify-between mb-4">
                 <div>

@@ -1,13 +1,14 @@
+'use client'
+
 import MediaCard from "./MediaCard";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 import SliderComp from "./SliderComp";
 
 function Feed() {
-  const router = useRouter();
   const menuSize = useUiStore((state) => state.menuSize);
   const latestMovie = useMediaStore((state) => state.homeMovieLoaded);
   const latestTv = useMediaStore((state) => state.homeTvLoaded);
@@ -15,11 +16,12 @@ function Feed() {
   const persistedTvShows = useMediaStore((state) => state.persistedTvShows);
   const slider = useVisualStore((state) => state.sliderValue);
   const setSliderValue = useVisualStore((state) => state.setSliderValue);
+  const pathname = usePathname();
 
   // Determine content type based on current route
-  const isHomePage = router.pathname === "/";
-  const isMoviesPage = router.pathname === "/movies";
-  const isTVPage = router.pathname === "/tv";
+  const isHomePage = pathname === "/";
+  const isMoviesPage = pathname === "/movies";
+  const isTVPage = pathname === "/tv";
 
   return (
     <section className="w-full px-3 pt-3 mr-3 text-2xl text-gray-300 rounded-md">

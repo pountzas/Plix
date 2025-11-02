@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useMediaStore } from "../stores/mediaStore";

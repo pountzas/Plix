@@ -1,5 +1,7 @@
+"use client";
+
 import { Activity } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { CgHome } from "react-icons/cg";
 import { BsFilm } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";
