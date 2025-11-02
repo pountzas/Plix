@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactPlayer from "react-player";
+import { useRouter } from "next/navigation";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
@@ -64,6 +65,7 @@ const ActorImage = ({
 };
 
 function MediaItem() {
+  const router = useRouter();
   const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
   const menuSize = useUiStore((state) => state.menuSize);
   const setMenuSize = useUiStore((state) => state.setMenuSize);
@@ -81,6 +83,11 @@ function MediaItem() {
   );
   const [crew, setCrew] = useState(false);
   const { handleApiError } = useApiErrorHandler();
+
+  // Handle clicking on cast member names to navigate to person profile
+  const handleCastMemberClick = (personId: number) => {
+    router.push(`/person/${personId}`);
+  };
 
   useEffect(() => {
     getMediaDetails();
@@ -111,6 +118,7 @@ function MediaItem() {
         mediaData.cast?.map((cast: any) => {
           MediaCredits.push({
             key: cast.order,
+            id: cast.id, // TMDB person ID
             name: cast.name,
             character: cast.character,
             profile_path: cast.profile_path,
@@ -303,8 +311,13 @@ function MediaItem() {
                     <ActorImage actor={actor} sliderValue={sliderValue} />
                   </div>
                   <div className="flex flex-col items-center text-center justify-center w-[100px] pt-1">
-                    <div className="text-gray-200">{actor.name}</div>
-                    <div className="text-gray-400">{actor.character}</div>
+                    <button
+                      onClick={() => handleCastMemberClick(actor.id)}
+                      className="text-gray-200 hover:text-blue-400 transition-colors cursor-pointer text-sm"
+                    >
+                      {actor.name}
+                    </button>
+                    <div className="text-gray-400 text-xs">{actor.character}</div>
                   </div>
                 </div>
               ))}
