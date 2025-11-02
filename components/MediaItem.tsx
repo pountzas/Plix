@@ -317,7 +317,9 @@ function MediaItem() {
                     >
                       {actor.name}
                     </button>
-                    <div className="text-gray-400 text-xs">{actor.character}</div>
+                    <div className="text-gray-400 text-xs">
+                      {actor.character}
+                    </div>
                   </div>
                 </div>
               ))}
