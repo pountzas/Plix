@@ -116,14 +116,15 @@ function MediaItem() {
     if (MediaItemProps.tmdbId) {
       try {
         const mediaData = await getMovieCredits(MediaItemProps.tmdbId);
-        const castData = mediaData.cast?.map((cast: any) => ({
-          key: cast.order,
-          id: cast.id, // TMDB person ID
-          name: cast.name,
-          character: cast.character,
-          profile_path: cast.profile_path,
-          dep: cast.known_for_department,
-        })) || [];
+        const castData =
+          mediaData.cast?.map((cast: any) => ({
+            key: cast.order,
+            id: cast.id, // TMDB person ID
+            name: cast.name,
+            character: cast.character,
+            profile_path: cast.profile_path,
+            dep: cast.known_for_department,
+          })) || [];
         setCastCredits(castData);
         mediaData.crew?.map((crew: any) => {
           if (crew.job === "Director") {
