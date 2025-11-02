@@ -11,9 +11,12 @@ import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { removeMovieFromUserCollection, removeTvShowFromUserCollection } from "../utils/dataPersistence";
 
 function Menu() {
   const router = useRouter();
+  const { data: session } = useSession();
   const setModalOpen = useUiStore((state) => state.setModalOpen);
   const menuSize = useUiStore((state) => state.menuSize);
   const persistedMovies = useMediaStore((state) => state.persistedMovies);
@@ -43,14 +46,56 @@ function Menu() {
     router.push("/tv");
   };
 
-  const deleteAllMovies = (event: React.MouseEvent) => {
+  const deleteAllMovies = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent navigation
-    persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
+
+    const userId = (session?.user as any)?.uid;
+    if (!userId) {
+      console.error('No user ID available for deletion');
+      return;
+    }
+
+    try {
+      // Remove from Firebase first
+      await Promise.all(
+        persistedMovies.map(movie =>
+          removeMovieFromUserCollection(movie.tmdbId, userId)
+        )
+      );
+
+      // Then remove from local state
+      persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
+    } catch (error) {
+      console.error('Failed to delete movies from Firebase:', error);
+      // Still remove from local state as fallback
+      persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
+    }
   };
 
-  const deleteAllTvShows = (event: React.MouseEvent) => {
+  const deleteAllTvShows = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent navigation
-    persistedTvShows.forEach((tvShow) => removePersistedTvShow(tvShow.tmdbId));
+
+    const userId = (session?.user as any)?.uid;
+    if (!userId) {
+      console.error('No user ID available for deletion');
+      return;
+    }
+
+    try {
+      // Remove from Firebase first
+      await Promise.all(
+        persistedTvShows.map(tvShow =>
+          removeTvShowFromUserCollection(tvShow.tmdbId, userId)
+        )
+      );
+
+      // Then remove from local state
+      persistedTvShows.forEach((tvShow) => removePersistedTvShow(tvShow.tmdbId));
+    } catch (error) {
+      console.error('Failed to delete TV shows from Firebase:', error);
+      // Still remove from local state as fallback
+      persistedTvShows.forEach((tvShow) => removePersistedTvShow(tvShow.tmdbId));
+    }
   };
 
   return (

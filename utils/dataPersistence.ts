@@ -90,6 +90,13 @@ export async function loadUserMovies(userId: string): Promise<PersistedMovieFile
     querySnapshot.forEach((doc) => {
       console.log('Processing document:', doc.id, doc.data())
       const data = doc.data()
+
+      // Skip deleted movies
+      if (data.deleted === true) {
+        console.log('Skipping deleted movie:', doc.id)
+        return
+      }
+
       movies.push({
         ...data,
         addedAt: data.addedAt?.toDate() || new Date(),
@@ -123,6 +130,13 @@ export async function loadUserTvShows(userId: string): Promise<PersistedTvFile[]
     const tvShows: PersistedTvFile[] = []
     querySnapshot.forEach((doc) => {
       const data = doc.data()
+
+      // Skip deleted TV shows
+      if (data.deleted === true) {
+        console.log('Skipping deleted TV show:', doc.id)
+        return
+      }
+
       tvShows.push({
         ...data,
         addedAt: data.addedAt?.toDate() || new Date(),
@@ -285,9 +299,8 @@ export async function removeMovieFromUserCollection(
   try {
     const movieRef = doc(db, 'users', userId, 'movies', tmdbId.toString())
     await updateDoc(movieRef, {
+      deleted: true,
       lastModified: serverTimestamp()
-      // Note: We're not actually deleting, just marking as removed
-      // In a real app, you might want to add a 'deleted' flag or actually delete
     })
   } catch (error) {
     console.error('Error removing movie from collection:', error)
@@ -305,8 +318,8 @@ export async function removeTvShowFromUserCollection(
   try {
     const tvShowRef = doc(db, 'users', userId, 'tvshows', tmdbId.toString())
     await updateDoc(tvShowRef, {
+      deleted: true,
       lastModified: serverTimestamp()
-      // Note: We're not actually deleting, just marking as removed
     })
   } catch (error) {
     console.error('Error removing TV show from collection:', error)
