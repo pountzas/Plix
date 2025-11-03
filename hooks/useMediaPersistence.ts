@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
@@ -10,6 +10,8 @@ import {
   saveTvShowsBatchToUserCollection,
   createPersistedMovieFile,
   createPersistedTvFile,
+  restoreMovieFileUrls,
+  restoreTvShowFileUrls,
 } from "../utils/dataPersistence";
 import MovieFiles from "../components/props/MovieFiles";
 import TvFiles from "../components/props/TvFiles";
@@ -94,12 +96,6 @@ export function useMediaPersistence() {
   const userId = (session?.user as any)?.uid;
   const isAuthenticated = !!session?.user;
 
-  console.log("useMediaPersistence - Session status:", {
-    isAuthenticated,
-    userId,
-    sessionUser: session?.user,
-  });
-
   // Load user data when authenticated
   useEffect(() => {
     if (!userId || !isAuthenticated) {
@@ -123,22 +119,48 @@ export function useMediaPersistence() {
           setIsLoadingMovies(true);
           console.log("Loading movies for user:", userId);
           const movies = await loadUserMovies(userId);
-          console.log("Loaded movies:", movies.length);
-          setPersistedMovies(movies);
+          console.log("Loaded movies from Firestore:", movies.length);
+
+          // Restore file URLs from IndexedDB
+          const restoredMovies = await restoreMovieFileUrls(movies);
+          const moviesWithFiles = restoredMovies.filter(
+            (movie) => movie.ObjUrl
+          );
+          console.log(
+            `Restored ${moviesWithFiles.length} movies with files from IndexedDB`
+          );
+
+          setPersistedMovies(restoredMovies);
           // Also populate local arrays for backward compatibility
+          // Only include movies that have been successfully restored with files
           MovieFiles.length = 0; // Clear existing
-          movies.forEach((movie) => MovieFiles.push(movie));
+          restoredMovies
+            .filter((movie) => movie.ObjUrl) // Only movies with restored files
+            .forEach((movie) => MovieFiles.push(movie as MovieFile));
           setIsLoadingMovies(false);
 
           // Load TV shows
           setIsLoadingTvShows(true);
           console.log("Loading TV shows for user:", userId);
           const tvShows = await loadUserTvShows(userId);
-          console.log("Loaded TV shows:", tvShows.length);
-          setPersistedTvShows(tvShows);
+          console.log("Loaded TV shows from Firestore:", tvShows.length);
+
+          // Restore file URLs from IndexedDB
+          const restoredTvShows = await restoreTvShowFileUrls(tvShows);
+          const tvShowsWithFiles = restoredTvShows.filter(
+            (tvShow) => tvShow.ObjUrl
+          );
+          console.log(
+            `Restored ${tvShowsWithFiles.length} TV shows with files from IndexedDB`
+          );
+
+          setPersistedTvShows(restoredTvShows);
           // Also populate local arrays for backward compatibility
+          // Only include TV shows that have been successfully restored with files
           TvFiles.length = 0; // Clear existing
-          tvShows.forEach((tvShow) => TvFiles.push(tvShow));
+          restoredTvShows
+            .filter((tvShow) => tvShow.ObjUrl) // Only TV shows with restored files
+            .forEach((tvShow) => TvFiles.push(tvShow as TvFile));
           setIsLoadingTvShows(false);
 
           setLastSynced(new Date());
@@ -209,6 +231,56 @@ export function useMediaPersistence() {
     ]
   );
 
+  // Save movies to collection with original files (for IndexedDB storage)
+  const saveMoviesToCollectionWithFiles = useCallback(
+    async (
+      movieFileData: Array<{ movieFile: MovieFile; originalFile?: File }>
+    ) => {
+      if (!userId) {
+        setPersistenceError("You must be logged in to save media");
+        return false;
+      }
+
+      try {
+        setIsSavingMovies(true);
+        setPersistenceError(null);
+
+        // Extract original files for IndexedDB storage
+        const originalFiles = movieFileData
+          .map(({ originalFile }) => originalFile)
+          .filter((file): file is File => file !== undefined);
+
+        // Save to Firestore (this will also trigger IndexedDB storage)
+        await saveMoviesBatchToUserCollection(
+          movieFileData.map(({ movieFile }) => movieFile),
+          userId,
+          originalFiles.length > 0 ? originalFiles : undefined
+        );
+
+        setIsSavingMovies(false);
+        setLastSynced(new Date());
+
+        // Update local state with persisted data (will be loaded from Firestore on next refresh)
+        // The batch save function handles creating the persisted objects
+
+        return true;
+      } catch (error) {
+        console.error("Error saving movies with files:", error);
+        setPersistenceError("Failed to save movies to your collection");
+        setIsSavingMovies(false);
+        return false;
+      }
+    },
+    [
+      userId,
+      setIsSavingMovies,
+      setPersistenceError,
+      setLastSynced,
+      persistedMovies,
+      setPersistedMovies,
+    ]
+  );
+
   // Save TV shows to collection
   const saveTvShowsToCollection = useCallback(
     async (tvFiles: TvFile[]) => {
@@ -251,6 +323,54 @@ export function useMediaPersistence() {
     ]
   );
 
+  // Save TV shows to collection with original files (for IndexedDB storage)
+  const saveTvShowsToCollectionWithFiles = useCallback(
+    async (tvFileData: Array<{ tvFile: TvFile; originalFile?: File }>) => {
+      if (!userId) {
+        setPersistenceError("You must be logged in to save media");
+        return false;
+      }
+
+      try {
+        setIsSavingTvShows(true);
+        setPersistenceError(null);
+
+        // Extract original files for IndexedDB storage
+        const originalTvFiles = tvFileData
+          .map(({ originalFile }) => originalFile)
+          .filter((file): file is File => file !== undefined);
+
+        // Save to Firestore (this will also trigger IndexedDB storage)
+        await saveTvShowsBatchToUserCollection(
+          tvFileData.map(({ tvFile }) => tvFile),
+          userId,
+          originalTvFiles.length > 0 ? originalTvFiles : undefined
+        );
+
+        setIsSavingTvShows(false);
+        setLastSynced(new Date());
+
+        // Update local state with persisted data (will be loaded from Firestore on next refresh)
+        // The batch save function handles creating the persisted objects
+
+        return true;
+      } catch (error) {
+        console.error("Error saving TV shows with files:", error);
+        setPersistenceError("Failed to save TV shows to your collection");
+        setIsSavingTvShows(false);
+        return false;
+      }
+    },
+    [
+      userId,
+      setIsSavingTvShows,
+      setPersistenceError,
+      setLastSynced,
+      persistedTvShows,
+      setPersistedTvShows,
+    ]
+  );
+
   // Clear persistence error
   const clearPersistenceError = useCallback(() => {
     setPersistenceError(null);
@@ -270,7 +390,9 @@ export function useMediaPersistence() {
 
     // Actions
     saveMoviesToCollection,
+    saveMoviesToCollectionWithFiles,
     saveTvShowsToCollection,
+    saveTvShowsToCollectionWithFiles,
     clearPersistenceError,
 
     // Computed state

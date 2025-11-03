@@ -9,9 +9,13 @@ interface MediaState {
   homeMusicLoaded: boolean
   castVisible: boolean
 
-  // Persisted data
+  // Persisted data (from Firestore, no blob URLs)
   persistedMovies: PersistedMovieFile[]
   persistedTvShows: PersistedTvFile[]
+
+  // Session data (uploaded files with blob URLs)
+  sessionMovies: any[]
+  sessionTvShows: any[]
 
   // Persistence state
   isLoadingMovies: boolean
@@ -38,6 +42,12 @@ interface MediaActions {
   removePersistedMovie: (tmdbId: number) => void
   removePersistedTvShow: (tmdbId: number) => void
 
+  // Session actions (for uploaded files with blob URLs)
+  addSessionMovie: (movie: any) => void
+  addSessionTvShow: (tvShow: any) => void
+  getSessionMovie: (tmdbId: number) => any
+  getSessionTvShow: (tmdbId: number) => any
+
   // Loading states
   setIsLoadingMovies: (loading: boolean) => void
   setIsLoadingTvShows: (loading: boolean) => void
@@ -62,9 +72,13 @@ export const useMediaStore = create<MediaStore>((set) => ({
   homeMusicLoaded: false,
   castVisible: false,
 
-  // Persisted data
+  // Persisted data (from Firestore, no blob URLs)
   persistedMovies: [],
   persistedTvShows: [],
+
+  // Session data (uploaded files with blob URLs)
+  sessionMovies: [],
+  sessionTvShows: [],
 
   // Persistence state
   isLoadingMovies: false,
@@ -101,6 +115,25 @@ export const useMediaStore = create<MediaStore>((set) => ({
     persistedTvShows: state.persistedTvShows.filter(t => t.tmdbId !== tmdbId)
   })),
 
+  // Session actions
+  addSessionMovie: (movie: any) => set((state) => ({
+    sessionMovies: [...state.sessionMovies.filter(m => m.tmdbId !== movie.tmdbId), movie]
+  })),
+
+  addSessionTvShow: (tvShow: any) => set((state) => ({
+    sessionTvShows: [...state.sessionTvShows.filter(t => t.tmdbId !== tvShow.tmdbId), tvShow]
+  })),
+
+  getSessionMovie: (tmdbId: number) => {
+    const state = useMediaStore.getState();
+    return state.sessionMovies.find(m => m.tmdbId === tmdbId);
+  },
+
+  getSessionTvShow: (tmdbId: number) => {
+    const state = useMediaStore.getState();
+    return state.sessionTvShows.find(t => t.tmdbId === tmdbId);
+  },
+
   // Loading states
   setIsLoadingMovies: (loading: boolean) => set({ isLoadingMovies: loading }),
   setIsLoadingTvShows: (loading: boolean) => set({ isLoadingTvShows: loading }),
@@ -115,6 +148,8 @@ export const useMediaStore = create<MediaStore>((set) => ({
   resetPersistedData: () => set({
     persistedMovies: [],
     persistedTvShows: [],
+    sessionMovies: [],
+    sessionTvShows: [],
     persistenceError: null,
     lastSynced: null,
     isLoadingMovies: false,

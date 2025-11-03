@@ -90,7 +90,6 @@ function MediaCard({
     }
 
     const params = new URLSearchParams({
-      ObjUrl: _ObjUrl || "",
       fileName: _fileName || "",
       folderPath: _folderPath || "",
       rootPath: _rootPath || "",

@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactPlayer from "react-player";
+import { useRouter } from "next/navigation";
 import { useUiStore } from "../stores/uiStore";
 import { useMediaStore } from "../stores/mediaStore";
 import { useVisualStore } from "../stores/visualStore";
 
 import MediaItemProps from "./props/MediaItemProps";
 import MediaCredits from "./props/MediaCredits";
+import { MediaCredit } from "./props/MediaCredits";
 import MediaCrew from "./props/MediaCrew";
 import Writers from "./props/Writers";
 import SliderProps from "./props/SliderProps";
 
 import { FaBackward } from "react-icons/fa";
 import { BsImage } from "react-icons/bs";
+import { MdSubtitles, MdSubtitlesOff } from "react-icons/md";
 import SliderComp from "./SliderComp";
 import { getMovieCredits } from "../utils/tmdbApi";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
+import { useSubtitles } from "../hooks/useSubtitles";
 
 // Actor image component with fallback handling - defined outside MediaItem to prevent state resets
 const ActorImage = ({
@@ -64,6 +68,7 @@ const ActorImage = ({
 };
 
 function MediaItem() {
+  const router = useRouter();
   const setMediaItemActive = useMediaStore((state) => state.setMediaItemActive);
   const menuSize = useUiStore((state) => state.menuSize);
   const setMenuSize = useUiStore((state) => state.setMenuSize);
@@ -80,7 +85,24 @@ function MediaItem() {
     (state) => state.setBackgroundOpacity
   );
   const [crew, setCrew] = useState(false);
+  const [castCredits, setCastCredits] = useState<MediaCredit[]>([]);
   const { handleApiError } = useApiErrorHandler();
+
+  // Subtitle management
+  const {
+    subtitleTracks,
+    selectedTrack,
+    isLoading: subtitlesLoading,
+    error: subtitleError,
+    loadSubtitles,
+    selectTrack,
+    subtitlesEnabled,
+  } = useSubtitles();
+
+  // Handle clicking on cast member names to navigate to person profile
+  const handleCastMemberClick = (personId: number) => {
+    router.push(`/person/${personId}`);
+  };
 
   useEffect(() => {
     getMediaDetails();
@@ -88,35 +110,32 @@ function MediaItem() {
     setBackgroundImageUrl(MediaItemProps.backdrop_path || "");
     setImageVisible(true);
 
-    // Debug React Player compatibility
-    if (MediaItemProps.ObjUrl) {
-      console.log("MediaItem ObjUrl:", MediaItemProps.ObjUrl);
-      console.log(
-        "ReactPlayer.canPlay(ObjUrl):",
-        ReactPlayer.canPlay?.(MediaItemProps.ObjUrl)
-      );
+    // Load subtitles for the video
+    const videoPath = MediaItemProps.ObjUrl || MediaItemProps.fileName;
+    if (videoPath) {
+      loadSubtitles(videoPath);
     }
 
     setTimeout(() => {
       setCastVisible(true);
       setCrew(true);
     }, 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [menuSize, loadSubtitles]);
 
   const getMediaDetails = async () => {
     if (MediaItemProps.tmdbId) {
       try {
         const mediaData = await getMovieCredits(MediaItemProps.tmdbId);
-        mediaData.cast?.map((cast: any) => {
-          MediaCredits.push({
+        const castData =
+          mediaData.cast?.map((cast: any) => ({
             key: cast.order,
+            id: cast.id, // TMDB person ID
             name: cast.name,
             character: cast.character,
             profile_path: cast.profile_path,
             dep: cast.known_for_department,
-          });
-        });
+          })) || [];
+        setCastCredits(castData);
         mediaData.crew?.map((crew: any) => {
           if (crew.job === "Director") {
             MediaCrew.push({
@@ -159,7 +178,7 @@ function MediaItem() {
           <FaBackward className="text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl" />
         </button>
         {crew && (
-          <div>
+          <div className="flex flex-col space-y-2">
             <SliderComp
               defaultValue={sliderValue}
               step={25}
@@ -181,48 +200,128 @@ function MediaItem() {
                 )
               }
             />
+
+            {/* Subtitle Controls */}
+            <div className="flex items-center space-x-2 mt-2">
+              <button
+                onClick={() => {
+                  // Toggle subtitles - enable/disable selected track
+                  if (selectedTrack && subtitlesEnabled) {
+                    // Disable subtitles by deselecting track
+                    selectTrack(null);
+                  } else if (subtitleTracks.length > 0) {
+                    // Enable subtitles by selecting first available track
+                    selectTrack(subtitleTracks[0].id);
+                  }
+                }}
+                className={`p-2 rounded-full transition-colors ${
+                  selectedTrack && subtitlesEnabled
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-gray-600 hover:bg-gray-700 text-gray-300"
+                }`}
+                title={
+                  selectedTrack && subtitlesEnabled
+                    ? "Disable Subtitles"
+                    : "Enable Subtitles"
+                }
+              >
+                {selectedTrack && subtitlesEnabled ? (
+                  <MdSubtitles className="text-xl" />
+                ) : (
+                  <MdSubtitlesOff className="text-xl" />
+                )}
+              </button>
+
+              {subtitleTracks.length > 1 && (
+                <select
+                  value={selectedTrack || ""}
+                  onChange={(e) => selectTrack(e.target.value || null)}
+                  className="bg-gray-700 text-white px-3 py-1 rounded text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  disabled={!subtitlesEnabled}
+                >
+                  <option value="">No subtitles</option>
+                  {subtitleTracks.map((track) => (
+                    <option key={track.id} value={track.id}>
+                      {track.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {subtitlesLoading && (
+                <div className="text-xs text-gray-400">
+                  Loading subtitles...
+                </div>
+              )}
+
+              {subtitleError && (
+                <div className="text-xs text-red-400">Subtitle error</div>
+              )}
+            </div>
           </div>
         )}
       </div>
       <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[75vh] scrollbar-hide object-contain">
         <div className="items-center lg:flex lg:space-x-8">
-          <ReactPlayer
-            src={MediaItemProps.ObjUrl || MediaItemProps.fileName}
-            controls
-            width="640px"
-            height="400px"
-            volume={1}
-            onError={(error: any) => {
-              console.error("ReactPlayer error:", error);
-              console.error("Error type:", typeof error);
-              console.error("Error keys:", Object.keys(error || {}));
-              console.error("Current src:", MediaItemProps.ObjUrl);
-              console.error("Fallback src:", MediaItemProps.fileName);
-              if (MediaItemProps.ObjUrl) {
+          {MediaItemProps.ObjUrl ? (
+            <ReactPlayer
+              src={MediaItemProps.ObjUrl}
+              controls
+              width="640px"
+              height="400px"
+              volume={1}
+              onError={(error: any) => {
+                console.error("ReactPlayer error:", error);
+                console.error("Error type:", typeof error);
+                console.error("Error keys:", Object.keys(error || {}));
+                console.error("Current src:", MediaItemProps.ObjUrl);
                 console.error(
                   "Can play ObjUrl:",
-                  ReactPlayer.canPlay?.(MediaItemProps.ObjUrl)
+                  ReactPlayer.canPlay?.(MediaItemProps.ObjUrl || "")
                 );
-              }
-              if (MediaItemProps.fileName) {
-                console.error(
-                  "Can play fileName:",
-                  ReactPlayer.canPlay?.(MediaItemProps.fileName)
+                // Blob URLs should work directly
+                console.log(
+                  "Video source type:",
+                  MediaItemProps.ObjUrl?.startsWith("blob:")
+                    ? "Blob URL"
+                    : "Other URL"
                 );
-              }
-              // Try to create a video element to test the URL directly
-              if (MediaItemProps.ObjUrl || MediaItemProps.fileName) {
-                const testVideo = document.createElement("video");
-                testVideo.onloadeddata = () =>
-                  console.log("MediaItem video loaded successfully");
-                testVideo.onerror = (e) =>
-                  console.error("MediaItem direct video error:", e);
-                testVideo.src =
-                  MediaItemProps.ObjUrl || MediaItemProps.fileName || "";
-              }
-            }}
-            onReady={() => console.log("ReactPlayer ready")}
-          />
+              }}
+              onReady={() => console.log("ReactPlayer ready")}
+            >
+              {/* Subtitle tracks - React Player v3.3.3 supports native subtitle tracks */}
+              {subtitlesEnabled &&
+                selectedTrack &&
+                subtitleTracks.length > 0 &&
+                subtitleTracks
+                  .filter((track) => track.id === selectedTrack)
+                  .map((track) => (
+                    <track
+                      key={track.id}
+                      kind="subtitles"
+                      srcLang={track.language}
+                      label={track.label}
+                      src={track.src}
+                      default
+                    />
+                  ))}
+            </ReactPlayer>
+          ) : (
+            <div className="w-[640px] h-[400px] bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
+              <div className="text-center text-gray-400">
+                <BsImage className="text-6xl mx-auto mb-4" />
+                <p className="text-lg font-semibold mb-2">
+                  Video Not Available
+                </p>
+                <p className="text-sm">
+                  This video needs to be re-uploaded from your local machine.
+                </p>
+                <p className="text-xs mt-2">
+                  Videos are not stored in the cloud for privacy.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="lg:max-w-[40vw] space-y-4">
             <div className="text-3xl text-gray-100">
               {MediaItemProps.tmdbTitle}
@@ -294,17 +393,24 @@ function MediaItem() {
                   : "max-w-[77vw] xl:max-w-[83vw] 2xl:max-w-[85vw]"
               }`}
             >
-              {MediaCredits.map((actor) => (
+              {castCredits.map((actor) => (
                 <div
-                  className="flex flex-col items-center justify-center space-x-1 text-xs rounded-full border-1"
+                  className="flex flex-col items-center justify-center space-x-1 text-xs rounded-full border-1 cursor-pointer group"
                   key={actor.key}
+                  onClick={() => handleCastMemberClick(actor.id)}
+                  data-actor-id={actor.id}
+                  data-actor-name={actor.name}
                 >
-                  <div className="flex items-center justify-center p-[2px] bg-gray-800 hover:bg-[#CC7B19] rounded-full ">
+                  <div className="flex items-center justify-center p-[2px] bg-gray-800 group-hover:bg-[#CC7B19] rounded-full transition-colors">
                     <ActorImage actor={actor} sliderValue={sliderValue} />
                   </div>
                   <div className="flex flex-col items-center text-center justify-center w-[100px] pt-1">
-                    <div className="text-gray-200">{actor.name}</div>
-                    <div className="text-gray-400">{actor.character}</div>
+                    <div className="text-gray-200 group-hover:text-blue-400 transition-colors text-sm">
+                      {actor.name}
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      {actor.character}
+                    </div>
                   </div>
                 </div>
               ))}

@@ -5,11 +5,12 @@ import { useEffect, useState, use } from "react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BsArrowLeft, BsPlayCircleFill, BsImage } from "react-icons/bs";
+import { BsArrowLeft, BsImage } from "react-icons/bs";
 import ReactPlayer from "react-player";
 import Layout from "../../../components/Layout";
 import { cachedTmdbDetails } from "../../../utils/apiUtils";
 import { getMovieCredits, getTvCredits } from "../../../utils/tmdbApi";
+import { useMediaStore } from "../../../stores/mediaStore";
 
 interface MediaDetails {
   id: number;
@@ -120,10 +121,18 @@ export default function MediaDetailPage({
   const { mediaType, id } = use(params);
   const resolvedSearchParams = use(searchParams);
 
+  // Session store for uploaded files
+  const { getSessionMovie, getSessionTvShow } = useMediaStore();
+
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Handle clicking on cast member names to navigate to person profile
+  const handleCastMemberClick = (personId: number) => {
+    router.push(`/person/${personId}`);
+  };
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -160,13 +169,19 @@ export default function MediaDetailPage({
             : getTvCredits(parseInt(id)),
         ]);
 
-        // Include local file properties from search params
+        // Include local file properties from session store or search params
+        const sessionData =
+          mediaType === "movie"
+            ? getSessionMovie(parseInt(id))
+            : getSessionTvShow(parseInt(id));
+
         setMediaDetails({
           ...details,
-          ObjUrl: resolvedSearchParams.ObjUrl,
-          fileName: resolvedSearchParams.fileName,
-          folderPath: resolvedSearchParams.folderPath,
-          rootPath: resolvedSearchParams.rootPath,
+          ObjUrl: sessionData?.ObjUrl || resolvedSearchParams.ObjUrl,
+          fileName: sessionData?.fileName || resolvedSearchParams.fileName,
+          folderPath:
+            sessionData?.folderPath || resolvedSearchParams.folderPath,
+          rootPath: sessionData?.rootPath || resolvedSearchParams.rootPath,
         });
 
         // Set credits data
@@ -257,7 +272,7 @@ export default function MediaDetailPage({
     <Layout showMenu={false} showBackground={false}>
       {/* Full Page Background Image - Using Activity for conditional rendering */}
       <Activity mode={backdropUrl ? "visible" : "hidden"}>
-        <div className="fixed inset-0 z-0">
+        <div className="fixed inset-0 z-0 ">
           <Image
             src={backdropUrl || "/placeholder-backdrop.jpg"}
             alt={`${title} backdrop`}
@@ -276,7 +291,7 @@ export default function MediaDetailPage({
         </div>
       </Activity>
 
-      <main className="relative z-10 overflow-y-auto h-[calc(100vh-30px)] space-y-4">
+      <main className="relative z-10 overflow-y-auto scrollbar-hide">
         <div className="px-8 py-3 bg-gray-900/90">
           {/* Back Button */}
           <Link
@@ -320,9 +335,9 @@ export default function MediaDetailPage({
                 </div>
                 {/* Mini Video Thumbnail */}
                 <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg">
-                  {mediaDetails?.ObjUrl || mediaDetails?.fileName ? (
+                  {mediaDetails?.ObjUrl ? (
                     <ReactPlayer
-                      src={mediaDetails.ObjUrl || mediaDetails.fileName}
+                      src={mediaDetails.ObjUrl}
                       controls={true}
                       width="480px"
                       height="270px"
@@ -333,32 +348,28 @@ export default function MediaDetailPage({
                         console.error("ReactPlayer thumbnail error:", error);
                         console.error("Error type:", typeof error);
                         console.error("Error keys:", Object.keys(error || {}));
-                        console.error(
-                          "Thumbnail src:",
-                          mediaDetails.ObjUrl || mediaDetails.fileName
-                        );
+                        console.error("Thumbnail src:", mediaDetails.ObjUrl);
                         console.error(
                           "Can play src:",
-                          ReactPlayer.canPlay?.(
-                            mediaDetails.ObjUrl || mediaDetails.fileName || ""
-                          )
+                          ReactPlayer.canPlay?.(mediaDetails.ObjUrl || "")
                         );
-                        // Try to create a video element to test the URL directly
-                        if (mediaDetails.ObjUrl || mediaDetails.fileName) {
-                          const testVideo = document.createElement("video");
-                          testVideo.onloadeddata = () =>
-                            console.log("Video loaded successfully");
-                          testVideo.onerror = (e) =>
-                            console.error("Direct video error:", e);
-                          testVideo.src =
-                            mediaDetails.ObjUrl || mediaDetails.fileName || "";
-                        }
+                        // Blob URLs should work directly, log source type for debugging
+                        console.log(
+                          "Video source type:",
+                          mediaDetails.ObjUrl?.startsWith("blob:")
+                            ? "Blob URL"
+                            : "Other URL"
+                        );
                       }}
                       onReady={() => console.log("Thumbnail ReactPlayer ready")}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
-                      <BsPlayCircleFill className="text-gray-400 text-2xl" />
+                    <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
+                      <div className="text-center text-gray-400">
+                        <BsImage className="text-3xl mx-auto mb-2" />
+                        <p className="text-xs">Video not available</p>
+                        <p className="text-xs">Upload from local files</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -448,13 +459,14 @@ export default function MediaDetailPage({
               {credits.cast.slice(0, 20).map((actor) => (
                 <div
                   key={actor.id}
-                  className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64"
+                  className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64 cursor-pointer group"
+                  onClick={() => handleCastMemberClick(actor.id)}
                 >
-                  <div className="flex items-center justify-center p-2 bg-gray-800 hover:bg-[#CC7B19] rounded-full transition-colors">
+                  <div className="flex items-center justify-center p-2 bg-gray-800 group-hover:bg-[#CC7B19] rounded-full transition-colors">
                     <ActorImage actor={actor} size={100} />
                   </div>
                   <div className="flex flex-col items-center text-center space-y-1 px-2 h-20 overflow-hidden">
-                    <div className="text-gray-200 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">
+                    <div className="text-gray-200 group-hover:text-blue-400 text-sm font-medium leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full transition-colors">
                       {actor.name}
                     </div>
                     <div className="text-gray-400 text-xs leading-tight overflow-hidden text-ellipsis whitespace-nowrap w-full">

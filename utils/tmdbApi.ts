@@ -125,3 +125,19 @@ export async function getMovieCredits(movieId: number): Promise<any> {
 export async function getTvCredits(tvId: number): Promise<any> {
   return tmdbApiCall(`/tv/${tvId}/credits`);
 }
+
+/**
+ * Get person details
+ */
+export async function getPersonDetails(personId: number): Promise<any> {
+  return tmdbApiCall(`/person/${personId}`, {
+    append_to_response: "images",
+  });
+}
+
+/**
+ * Get person credits (combined cast and crew)
+ */
+export async function getPersonCredits(personId: number): Promise<any> {
+  return tmdbApiCall(`/person/${personId}/combined_credits`);
+}
