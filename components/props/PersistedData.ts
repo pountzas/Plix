@@ -18,15 +18,16 @@ export interface PersistedMovieFile {
   tmdbRating: number
   tmdbGenre: string[]
   fileName: string
-  ObjUrl: string
+  ObjUrl?: string // Optional - populated when restored from IndexedDB
   folderPath: string
   folderPath2: string
   rootPath: string
 
   // Persistence metadata
   userId: string
-  addedAt: Date
-  lastModified: Date
+  addedAt?: Date // Set by serverTimestamp() when saving to Firestore
+  lastModified?: Date // Set by serverTimestamp() when saving to Firestore
+  fileId?: string // IndexedDB file reference for persistent file storage
 }
 
 export interface PersistedTvFile {
@@ -48,15 +49,16 @@ export interface PersistedTvFile {
   tmdbRating: number
   tmdbGenre: string[]
   fileName: string
-  ObjUrl: string
+  ObjUrl?: string // Optional - populated when restored from IndexedDB
   folderPath: string
   folderPath2: string
   rootPath: string
 
   // Persistence metadata
   userId: string
-  addedAt: Date
-  lastModified: Date
+  addedAt?: Date // Set by serverTimestamp() when saving to Firestore
+  lastModified?: Date // Set by serverTimestamp() when saving to Firestore
+  fileId?: string // IndexedDB file reference for persistent file storage
 }
 
 export interface UserMediaCollection {

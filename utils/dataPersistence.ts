@@ -14,6 +14,7 @@ import type {
   PersistedTvFile,
 } from "../components/props/PersistedData";
 import type { MovieFile, TvFile } from "../components/props/types";
+import { filePersistence } from "./filePersistence";
 
 /**
  * Validate and clean MovieFile data for Firestore compatibility
@@ -28,11 +29,26 @@ function validateMovieFile(movieFile: MovieFile): boolean {
  */
 export function createPersistedMovieFile(
   movieFile: MovieFile,
-  userId: string
+  userId: string,
+  originalFile?: File
 ): PersistedMovieFile {
   // Validate required fields
   if (!validateMovieFile(movieFile)) {
     throw new Error("Invalid movie file data: missing required fields");
+  }
+
+  // Store file in IndexedDB if we have the original file
+  let fileId: string | undefined;
+  if (originalFile) {
+    try {
+      fileId = filePersistence.getFileId(originalFile);
+      // Store asynchronously (don't wait for completion)
+      filePersistence.storeFile(originalFile).catch((error) => {
+        console.error("Failed to store file in IndexedDB:", error);
+      });
+    } catch (error) {
+      console.error("Error preparing file for storage:", error);
+    }
   }
 
   // Clean the data by removing undefined values and blob URLs (videos stay local)
@@ -44,9 +60,9 @@ export function createPersistedMovieFile(
 
   return {
     ...cleanData,
+    fileId, // Add file ID for IndexedDB lookup
     userId,
-    addedAt: new Date(),
-    lastModified: new Date(),
+    // addedAt and lastModified are set by serverTimestamp() in batch operations
   } as PersistedMovieFile;
 }
 
@@ -63,11 +79,26 @@ function validateTvFile(tvFile: TvFile): boolean {
  */
 export function createPersistedTvFile(
   tvFile: TvFile,
-  userId: string
+  userId: string,
+  originalFile?: File
 ): PersistedTvFile {
   // Validate required fields
   if (!validateTvFile(tvFile)) {
     throw new Error("Invalid TV file data: missing required fields");
+  }
+
+  // Store file in IndexedDB if we have the original file
+  let fileId: string | undefined;
+  if (originalFile) {
+    try {
+      fileId = filePersistence.getFileId(originalFile);
+      // Store asynchronously (don't wait for completion)
+      filePersistence.storeFile(originalFile).catch((error) => {
+        console.error("Failed to store TV file in IndexedDB:", error);
+      });
+    } catch (error) {
+      console.error("Error preparing TV file for storage:", error);
+    }
   }
 
   // Clean the data by removing undefined values and blob URLs (videos stay local)
@@ -79,9 +110,9 @@ export function createPersistedTvFile(
 
   return {
     ...cleanData,
+    fileId, // Add file ID for IndexedDB lookup
     userId,
-    addedAt: new Date(),
-    lastModified: new Date(),
+    // addedAt and lastModified are set by serverTimestamp() in batch operations
   } as PersistedTvFile;
 }
 
@@ -229,7 +260,8 @@ export async function saveTvShowToUserCollection(
  */
 export async function saveMoviesBatchToUserCollection(
   movieFiles: MovieFile[],
-  userId: string
+  userId: string,
+  originalFiles?: File[]
 ): Promise<void> {
   try {
     // Filter and validate movies before batching
@@ -255,8 +287,19 @@ export async function saveMoviesBatchToUserCollection(
 
     const batch = writeBatch(db);
 
+    // Store files in IndexedDB and create persisted movie data
     validMovies.forEach((movieFile) => {
-      const persistedMovie = createPersistedMovieFile(movieFile, userId);
+      // Find the original file if provided
+      const originalFile = originalFiles?.find(
+        (file) => file.name === movieFile.fileName
+      );
+
+      const persistedMovie = createPersistedMovieFile(
+        movieFile,
+        userId,
+        originalFile
+      );
+
       const movieRef = doc(
         db,
         "users",
@@ -285,7 +328,8 @@ export async function saveMoviesBatchToUserCollection(
  */
 export async function saveTvShowsBatchToUserCollection(
   tvFiles: TvFile[],
-  userId: string
+  userId: string,
+  originalFiles?: File[]
 ): Promise<void> {
   try {
     // Filter and validate TV shows before batching
@@ -311,8 +355,18 @@ export async function saveTvShowsBatchToUserCollection(
 
     const batch = writeBatch(db);
 
+    // Store files in IndexedDB and create persisted TV show data
     validTvShows.forEach((tvFile) => {
-      const persistedTvShow = createPersistedTvFile(tvFile, userId);
+      // Find the original file if provided
+      const originalFile = originalFiles?.find(
+        (file) => file.name === tvFile.fileName
+      );
+
+      const persistedTvShow = createPersistedTvFile(
+        tvFile,
+        userId,
+        originalFile
+      );
       const tvShowRef = doc(
         db,
         "users",
@@ -407,5 +461,77 @@ export async function tvShowExistsInUserCollection(
   } catch (error) {
     console.error("Error checking if TV show exists:", error);
     return false;
+  }
+}
+
+/**
+ * Restore file URLs from IndexedDB for persisted movies
+ */
+export async function restoreMovieFileUrls(
+  movies: PersistedMovieFile[]
+): Promise<PersistedMovieFile[]> {
+  try {
+    await filePersistence.init();
+    const restoredMovies = await Promise.all(
+      movies.map(async (movie) => {
+        if (movie.fileId) {
+          try {
+            const storedFile = await filePersistence.getFile(movie.fileId);
+            if (storedFile) {
+              return {
+                ...movie,
+                ObjUrl: storedFile.url,
+              };
+            }
+          } catch (error) {
+            console.warn(
+              `Failed to restore file for movie ${movie.name}:`,
+              error
+            );
+          }
+        }
+        return movie;
+      })
+    );
+    return restoredMovies;
+  } catch (error) {
+    console.error("Error restoring movie file URLs:", error);
+    return movies; // Return original movies if restoration fails
+  }
+}
+
+/**
+ * Restore file URLs from IndexedDB for persisted TV shows
+ */
+export async function restoreTvShowFileUrls(
+  tvShows: PersistedTvFile[]
+): Promise<PersistedTvFile[]> {
+  try {
+    await filePersistence.init();
+    const restoredTvShows = await Promise.all(
+      tvShows.map(async (tvShow) => {
+        if (tvShow.fileId) {
+          try {
+            const storedFile = await filePersistence.getFile(tvShow.fileId);
+            if (storedFile) {
+              return {
+                ...tvShow,
+                ObjUrl: storedFile.url,
+              };
+            }
+          } catch (error) {
+            console.warn(
+              `Failed to restore file for TV show ${tvShow.name}:`,
+              error
+            );
+          }
+        }
+        return tvShow;
+      })
+    );
+    return restoredTvShows;
+  } catch (error) {
+    console.error("Error restoring TV show file URLs:", error);
+    return tvShows; // Return original TV shows if restoration fails
   }
 }

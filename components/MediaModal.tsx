@@ -36,13 +36,21 @@ function MediaModal() {
   const [totalFiles, setTotalFiles] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const { handleApiError } = useApiErrorHandler();
-  const { saveMoviesToCollection, saveTvShowsToCollection, isAuthenticated } =
-    useMediaPersistence();
+  const {
+    saveMoviesToCollectionWithFiles,
+    saveTvShowsToCollectionWithFiles,
+    isAuthenticated,
+  } = useMediaPersistence();
 
   // Session store actions for uploaded files
   const { addSessionMovie, addSessionTvShow } = useMediaStore();
 
   const folderPickerRef = useRef<HTMLInputElement>(null);
+
+  // Track original files for persistence
+  const [originalFiles, setOriginalFiles] = useState<Map<string, File>>(
+    new Map()
+  );
 
   const handleClose = () => {
     setModalOpen(false);
@@ -121,6 +129,11 @@ function MediaModal() {
                     rootPath: (files[i] as any).path,
                   };
 
+                  // Store original file for persistence
+                  setOriginalFiles(
+                    (prev) => new Map(prev.set(movieFile.fileName, files[i]))
+                  );
+
                   // Add to local array for immediate UI feedback
                   MovieFiles.push(movieFile);
                   // Add to session store for navigation
@@ -184,6 +197,11 @@ function MediaModal() {
                         rootPath: (files[i] as any).path,
                       };
 
+                      // Store original file for persistence
+                      setOriginalFiles(
+                        (prev) => new Map(prev.set(tvFile.fileName, files[i]))
+                      );
+
                       // Add to local array for immediate UI feedback
                       TvFiles.push(tvFile);
                       // Add to session store for navigation
@@ -208,13 +226,25 @@ function MediaModal() {
       ) {
         setIsSaving(true);
         try {
-          // Save movies and TV shows in parallel
+          // Save movies and TV shows in parallel with original files
           const savePromises = [];
           if (processedMovies.length > 0) {
-            savePromises.push(saveMoviesToCollection(processedMovies));
+            // Associate original files with processed movies
+            const moviesWithFiles = processedMovies.map((movie) => ({
+              movieFile: movie,
+              originalFile: originalFiles.get(movie.fileName),
+            }));
+            savePromises.push(saveMoviesToCollectionWithFiles(moviesWithFiles));
           }
           if (processedTvShows.length > 0) {
-            savePromises.push(saveTvShowsToCollection(processedTvShows));
+            // Associate original files with processed TV shows
+            const tvShowsWithFiles = processedTvShows.map((tvShow) => ({
+              tvFile: tvShow,
+              originalFile: originalFiles.get(tvShow.fileName),
+            }));
+            savePromises.push(
+              saveTvShowsToCollectionWithFiles(tvShowsWithFiles)
+            );
           }
 
           await Promise.all(savePromises);

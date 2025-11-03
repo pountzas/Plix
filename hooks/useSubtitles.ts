@@ -44,13 +44,14 @@ export function useSubtitles(): UseSubtitlesReturn {
     setError(null);
 
     try {
-      // For now, we'll create a demo subtitle track
-      // In a real implementation, this would scan for subtitle files
+      // Use the static demo VTT file for React Player v3.3.3
+      const vttUrl = '/demo-subtitles.vtt';
+
       const demoTrack: SubtitleTrack = {
         id: 'demo-en',
         label: 'English (Demo)',
         language: 'en',
-        src: '', // Empty for demo - would be a real VTT URL
+        src: vttUrl,
         kind: 'subtitles',
         default: true
       };

@@ -205,10 +205,12 @@ function MediaItem() {
             <div className="flex items-center space-x-2 mt-2">
               <button
                 onClick={() => {
-                  // Toggle subtitles
-                  if (subtitlesEnabled && selectedTrack) {
+                  // Toggle subtitles - enable/disable selected track
+                  if (selectedTrack && subtitlesEnabled) {
+                    // Disable subtitles by deselecting track
                     selectTrack(null);
                   } else if (subtitleTracks.length > 0) {
+                    // Enable subtitles by selecting first available track
                     selectTrack(subtitleTracks[0].id);
                   }
                 }}
@@ -287,18 +289,22 @@ function MediaItem() {
               }}
               onReady={() => console.log("ReactPlayer ready")}
             >
-              {/* Subtitle tracks */}
+              {/* Subtitle tracks - React Player v3.3.3 supports native subtitle tracks */}
               {subtitlesEnabled &&
-                subtitleTracks.map((track) => (
-                  <track
-                    key={track.id}
-                    kind={track.kind}
-                    srcLang={track.language}
-                    label={track.label}
-                    src={track.src}
-                    default={selectedTrack === track.id}
-                  />
-                ))}
+                selectedTrack &&
+                subtitleTracks.length > 0 &&
+                subtitleTracks
+                  .filter((track) => track.id === selectedTrack)
+                  .map((track) => (
+                    <track
+                      key={track.id}
+                      kind="subtitles"
+                      srcLang={track.language}
+                      label={track.label}
+                      src={track.src}
+                      default
+                    />
+                  ))}
             </ReactPlayer>
           ) : (
             <div className="w-[640px] h-[400px] bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">

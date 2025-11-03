@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import Layout from './Layout';
-import { getPersonDetails, getPersonCredits } from '../utils/tmdbApi';
-import { useApiErrorHandler } from '../hooks/useApiErrorHandler';
-import { BsImage, BsArrowLeft } from 'react-icons/bs';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Layout from "./Layout";
+import { getPersonDetails, getPersonCredits } from "../utils/tmdbApi";
+import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
+import { BsImage, BsArrowLeft } from "react-icons/bs";
 
 interface PersonProfileProps {
   personId: number;
@@ -32,7 +32,7 @@ interface PersonCredit {
   job?: string;
   release_date?: string;
   first_air_date?: string;
-  media_type: 'movie' | 'tv';
+  media_type: "movie" | "tv";
   poster_path?: string;
 }
 
@@ -56,7 +56,7 @@ function PersonProfile({ personId }: PersonProfileProps) {
       // Fetch person details and credits in parallel
       const [personData, creditsData] = await Promise.all([
         getPersonDetails(personId),
-        getPersonCredits(personId)
+        getPersonCredits(personId),
       ]);
 
       setPerson(personData);
@@ -64,23 +64,31 @@ function PersonProfile({ personId }: PersonProfileProps) {
       // Combine and sort credits by release date (most recent first)
       const allCredits = [
         ...(creditsData.cast || []),
-        ...(creditsData.crew || [])
+        ...(creditsData.crew || []),
       ].sort((a, b) => {
-        const dateA = new Date(a.release_date || a.first_air_date || '1900-01-01');
-        const dateB = new Date(b.release_date || b.first_air_date || '1900-01-01');
+        const dateA = new Date(
+          a.release_date || a.first_air_date || "1900-01-01"
+        );
+        const dateB = new Date(
+          b.release_date || b.first_air_date || "1900-01-01"
+        );
         return dateB.getTime() - dateA.getTime();
       });
 
       // Remove duplicates and limit to 20 most recent
       const uniqueCredits = allCredits
-        .filter((credit, index, self) =>
-          index === self.findIndex(c => c.id === credit.id && c.media_type === credit.media_type)
+        .filter(
+          (credit, index, self) =>
+            index ===
+            self.findIndex(
+              (c) => c.id === credit.id && c.media_type === credit.media_type
+            )
         )
         .slice(0, 20);
 
       setCredits(uniqueCredits);
     } catch (error) {
-      console.error('Error fetching person data:', error);
+      console.error("Error fetching person data:", error);
       handleApiError(error);
     } finally {
       setLoading(false);
@@ -117,7 +125,8 @@ function PersonProfile({ personId }: PersonProfileProps) {
     );
   }
 
-  const hasValidProfileImage = person.profile_path && person.profile_path.trim() !== '';
+  const hasValidProfileImage =
+    person.profile_path && person.profile_path.trim() !== "";
   const profileImageSrc = hasValidProfileImage
     ? `https://www.themoviedb.org/t/p/w300_and_h450_bestv2${person.profile_path}`
     : null;
@@ -128,7 +137,7 @@ function PersonProfile({ personId }: PersonProfileProps) {
 
   return (
     <Layout>
-      <div className="min-h-screen text-white p-6">
+      <div className="h-[calc(100vh-170px)] text-white p-6">
         {/* Back button */}
         <button
           onClick={handleBack}
@@ -138,7 +147,7 @@ function PersonProfile({ personId }: PersonProfileProps) {
           <span>Back</span>
         </button>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-hide">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Profile Image */}
             <div className="flex-shrink-0">
@@ -164,14 +173,18 @@ function PersonProfile({ personId }: PersonProfileProps) {
             <div className="flex-1 space-y-6">
               <div>
                 <h1 className="text-4xl font-bold mb-2">{person.name}</h1>
-                <p className="text-gray-400 text-lg">{person.known_for_department}</p>
+                <p className="text-gray-400 text-lg">
+                  {person.known_for_department}
+                </p>
               </div>
 
               {/* Biography */}
               {person.biography && (
                 <div>
                   <h2 className="text-2xl font-semibold mb-3">Biography</h2>
-                  <p className="text-gray-300 leading-relaxed">{person.biography}</p>
+                  <p className="text-gray-300 leading-relaxed">
+                    {person.biography}
+                  </p>
                 </div>
               )}
 
@@ -198,7 +211,9 @@ function PersonProfile({ personId }: PersonProfileProps) {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-1">Popularity</h3>
-                  <p className="text-gray-300">{person.popularity.toFixed(1)}</p>
+                  <p className="text-gray-300">
+                    {person.popularity.toFixed(1)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -211,7 +226,8 @@ function PersonProfile({ personId }: PersonProfileProps) {
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {credits.map((credit) => {
                   const title = credit.title || credit.name;
-                  const hasValidPoster = credit.poster_path && credit.poster_path.trim() !== '';
+                  const hasValidPoster =
+                    credit.poster_path && credit.poster_path.trim() !== "";
                   const posterSrc = hasValidPoster
                     ? `https://www.themoviedb.org/t/p/w200${credit.poster_path}`
                     : null;
@@ -226,7 +242,7 @@ function PersonProfile({ personId }: PersonProfileProps) {
                         {posterSrc ? (
                           <Image
                             src={posterSrc}
-                            alt={title || 'Poster'}
+                            alt={title || "Poster"}
                             width={200}
                             height={300}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -242,18 +258,26 @@ function PersonProfile({ personId }: PersonProfileProps) {
                           {title}
                         </h3>
                         {credit.character && (
-                          <p className="text-xs text-gray-400">as {credit.character}</p>
+                          <p className="text-xs text-gray-400">
+                            as {credit.character}
+                          </p>
                         )}
                         {credit.job && (
                           <p className="text-xs text-gray-400">{credit.job}</p>
                         )}
                         <p className="text-xs text-gray-500 uppercase">
-                          {credit.media_type === 'movie' ? 'Movie' : 'TV Show'}
+                          {credit.media_type === "movie" ? "Movie" : "TV Show"}
                           {credit.release_date && (
-                            <> • {new Date(credit.release_date).getFullYear()}</>
+                            <>
+                              {" "}
+                              • {new Date(credit.release_date).getFullYear()}
+                            </>
                           )}
                           {credit.first_air_date && (
-                            <> • {new Date(credit.first_air_date).getFullYear()}</>
+                            <>
+                              {" "}
+                              • {new Date(credit.first_air_date).getFullYear()}
+                            </>
                           )}
                         </p>
                       </div>

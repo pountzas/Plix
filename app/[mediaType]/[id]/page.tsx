@@ -272,7 +272,7 @@ export default function MediaDetailPage({
     <Layout showMenu={false} showBackground={false}>
       {/* Full Page Background Image - Using Activity for conditional rendering */}
       <Activity mode={backdropUrl ? "visible" : "hidden"}>
-        <div className="fixed inset-0 z-0">
+        <div className="fixed inset-0 z-0 ">
           <Image
             src={backdropUrl || "/placeholder-backdrop.jpg"}
             alt={`${title} backdrop`}
@@ -291,7 +291,7 @@ export default function MediaDetailPage({
         </div>
       </Activity>
 
-      <main className="relative z-10 overflow-y-auto h-[calc(100vh-30px)] space-y-4">
+      <main className="relative z-10 overflow-y-auto scrollbar-hide">
         <div className="px-8 py-3 bg-gray-900/90">
           {/* Back Button */}
           <Link
