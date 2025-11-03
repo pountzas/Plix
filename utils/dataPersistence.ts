@@ -58,12 +58,19 @@ export function createPersistedMovieFile(
     )
   );
 
-  return {
+  // Create the persisted movie object, only including fileId if it has a value
+  const persistedMovie: any = {
     ...cleanData,
-    fileId, // Add file ID for IndexedDB lookup
     userId,
     // addedAt and lastModified are set by serverTimestamp() in batch operations
-  } as PersistedMovieFile;
+  };
+
+  // Only add fileId if it's defined (Firebase doesn't accept undefined values)
+  if (fileId !== undefined) {
+    persistedMovie.fileId = fileId;
+  }
+
+  return persistedMovie as PersistedMovieFile;
 }
 
 /**
@@ -108,12 +115,19 @@ export function createPersistedTvFile(
     )
   );
 
-  return {
+  // Create the persisted TV object, only including fileId if it has a value
+  const persistedTv: any = {
     ...cleanData,
-    fileId, // Add file ID for IndexedDB lookup
     userId,
     // addedAt and lastModified are set by serverTimestamp() in batch operations
-  } as PersistedTvFile;
+  };
+
+  // Only add fileId if it's defined (Firebase doesn't accept undefined values)
+  if (fileId !== undefined) {
+    persistedTv.fileId = fileId;
+  }
+
+  return persistedTv as PersistedTvFile;
 }
 
 /**

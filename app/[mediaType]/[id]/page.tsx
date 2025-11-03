@@ -279,12 +279,10 @@ export default function MediaDetailPage({
             fill
             className="object-cover"
             priority
-            placeholder="blur"
-            blurDataURL={
-              backdropUrl
-                ? `https://www.themoviedb.org/t/p/w220_and_h330_face${mediaDetails.backdrop_path}`
-                : undefined
-            }
+            {...(backdropUrl && {
+              placeholder: "blur" as const,
+              blurDataURL: `https://www.themoviedb.org/t/p/w220_and_h330_face${mediaDetails.backdrop_path}`,
+            })}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent" />
           <div className="absolute inset-0 bg-black/30" />
