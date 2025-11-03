@@ -97,15 +97,6 @@ function MediaItem() {
     setBackgroundImageUrl(MediaItemProps.backdrop_path || "");
     setImageVisible(true);
 
-    // Debug React Player compatibility
-    if (MediaItemProps.ObjUrl) {
-      console.log("MediaItem ObjUrl:", MediaItemProps.ObjUrl);
-      console.log(
-        "ReactPlayer.canPlay(ObjUrl):",
-        ReactPlayer.canPlay?.(MediaItemProps.ObjUrl)
-      );
-    }
-
     setTimeout(() => {
       setCastVisible(true);
       setCrew(true);
@@ -195,43 +186,48 @@ function MediaItem() {
       </div>
       <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[75vh] scrollbar-hide object-contain">
         <div className="items-center lg:flex lg:space-x-8">
-          <ReactPlayer
-            src={MediaItemProps.ObjUrl || MediaItemProps.fileName}
-            controls
-            width="640px"
-            height="400px"
-            volume={1}
-            onError={(error: any) => {
-              console.error("ReactPlayer error:", error);
-              console.error("Error type:", typeof error);
-              console.error("Error keys:", Object.keys(error || {}));
-              console.error("Current src:", MediaItemProps.ObjUrl);
-              console.error("Fallback src:", MediaItemProps.fileName);
-              if (MediaItemProps.ObjUrl) {
+          {MediaItemProps.ObjUrl ? (
+            <ReactPlayer
+              src={MediaItemProps.ObjUrl}
+              controls
+              width="640px"
+              height="400px"
+              volume={1}
+              onError={(error: any) => {
+                console.error("ReactPlayer error:", error);
+                console.error("Error type:", typeof error);
+                console.error("Error keys:", Object.keys(error || {}));
+                console.error("Current src:", MediaItemProps.ObjUrl);
                 console.error(
                   "Can play ObjUrl:",
-                  ReactPlayer.canPlay?.(MediaItemProps.ObjUrl)
+                  ReactPlayer.canPlay?.(MediaItemProps.ObjUrl || "")
                 );
-              }
-              if (MediaItemProps.fileName) {
-                console.error(
-                  "Can play fileName:",
-                  ReactPlayer.canPlay?.(MediaItemProps.fileName)
+                // Blob URLs should work directly
+                console.log(
+                  "Video source type:",
+                  MediaItemProps.ObjUrl?.startsWith("blob:")
+                    ? "Blob URL"
+                    : "Other URL"
                 );
-              }
-              // Try to create a video element to test the URL directly
-              if (MediaItemProps.ObjUrl || MediaItemProps.fileName) {
-                const testVideo = document.createElement("video");
-                testVideo.onloadeddata = () =>
-                  console.log("MediaItem video loaded successfully");
-                testVideo.onerror = (e) =>
-                  console.error("MediaItem direct video error:", e);
-                testVideo.src =
-                  MediaItemProps.ObjUrl || MediaItemProps.fileName || "";
-              }
-            }}
-            onReady={() => console.log("ReactPlayer ready")}
-          />
+              }}
+              onReady={() => console.log("ReactPlayer ready")}
+            />
+          ) : (
+            <div className="w-[640px] h-[400px] bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
+              <div className="text-center text-gray-400">
+                <BsImage className="text-6xl mx-auto mb-4" />
+                <p className="text-lg font-semibold mb-2">
+                  Video Not Available
+                </p>
+                <p className="text-sm">
+                  This video needs to be re-uploaded from your local machine.
+                </p>
+                <p className="text-xs mt-2">
+                  Videos are not stored in the cloud for privacy.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="lg:max-w-[40vw] space-y-4">
             <div className="text-3xl text-gray-100">
               {MediaItemProps.tmdbTitle}

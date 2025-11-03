@@ -2,15 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
-import { useSession } from "next-auth/react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BsArrowLeft, BsPlayCircleFill, BsImage } from "react-icons/bs";
+import { BsArrowLeft, BsImage } from "react-icons/bs";
 import ReactPlayer from "react-player";
 import Layout from "../../../components/Layout";
 import { cachedTmdbDetails } from "../../../utils/apiUtils";
 import { getMovieCredits, getTvCredits } from "../../../utils/tmdbApi";
+import { useMediaStore } from "../../../stores/mediaStore";
 
 interface MediaDetails {
   id: number;
@@ -118,9 +118,11 @@ export default function MediaDetailPage({
   searchParams,
 }: MediaDetailPageProps) {
   const router = useRouter();
-  const { data: session } = useSession();
   const { mediaType, id } = use(params);
   const resolvedSearchParams = use(searchParams);
+
+  // Session store for uploaded files
+  const { getSessionMovie, getSessionTvShow } = useMediaStore();
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [credits, setCredits] = useState<CreditsData | null>(null);
@@ -167,13 +169,19 @@ export default function MediaDetailPage({
             : getTvCredits(parseInt(id)),
         ]);
 
-        // Include local file properties from search params
+        // Include local file properties from session store or search params
+        const sessionData =
+          mediaType === "movie"
+            ? getSessionMovie(parseInt(id))
+            : getSessionTvShow(parseInt(id));
+
         setMediaDetails({
           ...details,
-          ObjUrl: resolvedSearchParams.ObjUrl,
-          fileName: resolvedSearchParams.fileName,
-          folderPath: resolvedSearchParams.folderPath,
-          rootPath: resolvedSearchParams.rootPath,
+          ObjUrl: sessionData?.ObjUrl || resolvedSearchParams.ObjUrl,
+          fileName: sessionData?.fileName || resolvedSearchParams.fileName,
+          folderPath:
+            sessionData?.folderPath || resolvedSearchParams.folderPath,
+          rootPath: sessionData?.rootPath || resolvedSearchParams.rootPath,
         });
 
         // Set credits data
@@ -327,9 +335,9 @@ export default function MediaDetailPage({
                 </div>
                 {/* Mini Video Thumbnail */}
                 <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg">
-                  {mediaDetails?.ObjUrl || mediaDetails?.fileName ? (
+                  {mediaDetails?.ObjUrl ? (
                     <ReactPlayer
-                      src={mediaDetails.ObjUrl || mediaDetails.fileName}
+                      src={mediaDetails.ObjUrl}
                       controls={true}
                       width="480px"
                       height="270px"
@@ -340,32 +348,28 @@ export default function MediaDetailPage({
                         console.error("ReactPlayer thumbnail error:", error);
                         console.error("Error type:", typeof error);
                         console.error("Error keys:", Object.keys(error || {}));
-                        console.error(
-                          "Thumbnail src:",
-                          mediaDetails.ObjUrl || mediaDetails.fileName
-                        );
+                        console.error("Thumbnail src:", mediaDetails.ObjUrl);
                         console.error(
                           "Can play src:",
-                          ReactPlayer.canPlay?.(
-                            mediaDetails.ObjUrl || mediaDetails.fileName || ""
-                          )
+                          ReactPlayer.canPlay?.(mediaDetails.ObjUrl || "")
                         );
-                        // Try to create a video element to test the URL directly
-                        if (mediaDetails.ObjUrl || mediaDetails.fileName) {
-                          const testVideo = document.createElement("video");
-                          testVideo.onloadeddata = () =>
-                            console.log("Video loaded successfully");
-                          testVideo.onerror = (e) =>
-                            console.error("Direct video error:", e);
-                          testVideo.src =
-                            mediaDetails.ObjUrl || mediaDetails.fileName || "";
-                        }
+                        // Blob URLs should work directly, log source type for debugging
+                        console.log(
+                          "Video source type:",
+                          mediaDetails.ObjUrl?.startsWith("blob:")
+                            ? "Blob URL"
+                            : "Other URL"
+                        );
                       }}
                       onReady={() => console.log("Thumbnail ReactPlayer ready")}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
-                      <BsPlayCircleFill className="text-gray-400 text-2xl" />
+                    <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
+                      <div className="text-center text-gray-400">
+                        <BsImage className="text-3xl mx-auto mb-2" />
+                        <p className="text-xs">Video not available</p>
+                        <p className="text-xs">Upload from local files</p>
+                      </div>
                     </div>
                   )}
                 </div>

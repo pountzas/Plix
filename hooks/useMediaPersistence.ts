@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
@@ -93,12 +93,6 @@ export function useMediaPersistence() {
 
   const userId = (session?.user as any)?.uid;
   const isAuthenticated = !!session?.user;
-
-  console.log("useMediaPersistence - Session status:", {
-    isAuthenticated,
-    userId,
-    sessionUser: session?.user,
-  });
 
   // Load user data when authenticated
   useEffect(() => {

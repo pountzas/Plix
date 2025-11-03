@@ -18,6 +18,7 @@
     "react-dom": "19.2.0",
     "react-icons": "^4.4.0",
     "react-player": "^3.3.3",
+    "subtitle": "^4.2.2-alpha.0",
     "zustand": "^4.5.7"
   },
   "devDependencies": {
