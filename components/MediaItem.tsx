@@ -15,9 +15,11 @@ import SliderProps from "./props/SliderProps";
 
 import { FaBackward } from "react-icons/fa";
 import { BsImage } from "react-icons/bs";
+import { MdSubtitles, MdSubtitlesOff } from "react-icons/md";
 import SliderComp from "./SliderComp";
 import { getMovieCredits } from "../utils/tmdbApi";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
+import { useSubtitles } from "../hooks/useSubtitles";
 
 // Actor image component with fallback handling - defined outside MediaItem to prevent state resets
 const ActorImage = ({
@@ -86,6 +88,17 @@ function MediaItem() {
   const [castCredits, setCastCredits] = useState<MediaCredit[]>([]);
   const { handleApiError } = useApiErrorHandler();
 
+  // Subtitle management
+  const {
+    subtitleTracks,
+    selectedTrack,
+    isLoading: subtitlesLoading,
+    error: subtitleError,
+    loadSubtitles,
+    selectTrack,
+    subtitlesEnabled,
+  } = useSubtitles();
+
   // Handle clicking on cast member names to navigate to person profile
   const handleCastMemberClick = (personId: number) => {
     router.push(`/person/${personId}`);
@@ -97,11 +110,17 @@ function MediaItem() {
     setBackgroundImageUrl(MediaItemProps.backdrop_path || "");
     setImageVisible(true);
 
+    // Load subtitles for the video
+    const videoPath = MediaItemProps.ObjUrl || MediaItemProps.fileName;
+    if (videoPath) {
+      loadSubtitles(videoPath);
+    }
+
     setTimeout(() => {
       setCastVisible(true);
       setCrew(true);
     }, 500);
-  }, [menuSize]);
+  }, [menuSize, loadSubtitles]);
 
   const getMediaDetails = async () => {
     if (MediaItemProps.tmdbId) {
@@ -159,7 +178,7 @@ function MediaItem() {
           <FaBackward className="text-[#CC7B19] hover:text-gray-700 p-1 hover:bg-[#CC7B19] rounded-full text-3xl" />
         </button>
         {crew && (
-          <div>
+          <div className="flex flex-col space-y-2">
             <SliderComp
               defaultValue={sliderValue}
               step={25}
@@ -181,6 +200,62 @@ function MediaItem() {
                 )
               }
             />
+
+            {/* Subtitle Controls */}
+            <div className="flex items-center space-x-2 mt-2">
+              <button
+                onClick={() => {
+                  // Toggle subtitles
+                  if (subtitlesEnabled && selectedTrack) {
+                    selectTrack(null);
+                  } else if (subtitleTracks.length > 0) {
+                    selectTrack(subtitleTracks[0].id);
+                  }
+                }}
+                className={`p-2 rounded-full transition-colors ${
+                  selectedTrack && subtitlesEnabled
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-gray-600 hover:bg-gray-700 text-gray-300"
+                }`}
+                title={
+                  selectedTrack && subtitlesEnabled
+                    ? "Disable Subtitles"
+                    : "Enable Subtitles"
+                }
+              >
+                {selectedTrack && subtitlesEnabled ? (
+                  <MdSubtitles className="text-xl" />
+                ) : (
+                  <MdSubtitlesOff className="text-xl" />
+                )}
+              </button>
+
+              {subtitleTracks.length > 1 && (
+                <select
+                  value={selectedTrack || ""}
+                  onChange={(e) => selectTrack(e.target.value || null)}
+                  className="bg-gray-700 text-white px-3 py-1 rounded text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+                  disabled={!subtitlesEnabled}
+                >
+                  <option value="">No subtitles</option>
+                  {subtitleTracks.map((track) => (
+                    <option key={track.id} value={track.id}>
+                      {track.label}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {subtitlesLoading && (
+                <div className="text-xs text-gray-400">
+                  Loading subtitles...
+                </div>
+              )}
+
+              {subtitleError && (
+                <div className="text-xs text-red-400">Subtitle error</div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -211,7 +286,20 @@ function MediaItem() {
                 );
               }}
               onReady={() => console.log("ReactPlayer ready")}
-            />
+            >
+              {/* Subtitle tracks */}
+              {subtitlesEnabled &&
+                subtitleTracks.map((track) => (
+                  <track
+                    key={track.id}
+                    kind={track.kind}
+                    srcLang={track.language}
+                    label={track.label}
+                    src={track.src}
+                    default={selectedTrack === track.id}
+                  />
+                ))}
+            </ReactPlayer>
           ) : (
             <div className="w-[640px] h-[400px] bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
               <div className="text-center text-gray-400">
