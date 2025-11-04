@@ -1,7 +1,6 @@
 // Shared type definitions for media files
 
 export interface MovieFile {
-  id: number
   name: string
   tmdbId: number
   adult: boolean
@@ -24,7 +23,6 @@ export interface MovieFile {
 }
 
 export interface TvFile {
-  id: number
   name: string
   episode?: any
   tmdbId: number

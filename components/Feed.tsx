@@ -96,8 +96,8 @@ function Feed() {
                         .filter((movie) => movie.ObjUrl) // Only show movies with restored files
                         .map((movie) => (
                           <MediaCard
-                            key={movie.id}
-                            id={movie.id}
+                            key={movie.tmdbId}
+                            id={movie.tmdbId}
                             name={movie.name}
                             tmdbId={movie.tmdbId}
                             mediaType="movie"
@@ -131,8 +131,8 @@ function Feed() {
                         .filter((tv) => tv.ObjUrl) // Only show TV shows with restored files
                         .map((tv) => (
                           <MediaCard
-                            key={tv.id}
-                            id={tv.id}
+                            key={tv.tmdbId}
+                            id={tv.tmdbId}
                             name={tv.name}
                             tmdbId={tv.tmdbId}
                             mediaType="tv"
@@ -171,9 +171,9 @@ function Feed() {
             {persistedMovies
               .filter((movie) => movie.ObjUrl) // Only show movies with restored files
               .map((movie) => (
-                <div className="pr-7" key={movie.id}>
+                <div className="pr-7" key={movie.tmdbId}>
                   <MediaCard
-                    id={movie.id}
+                    id={movie.tmdbId}
                     name={movie.name}
                     tmdbId={movie.tmdbId}
                     mediaType="movie"
@@ -208,9 +208,9 @@ function Feed() {
             {persistedTvShows
               .filter((tv) => tv.ObjUrl) // Only show TV shows with restored files
               .map((tv) => (
-                <div className="pr-7" key={tv.id}>
+                <div className="pr-7" key={tv.tmdbId}>
                   <MediaCard
-                    id={tv.id}
+                    id={tv.tmdbId}
                     name={tv.name}
                     tmdbId={tv.tmdbId}
                     mediaType="tv"

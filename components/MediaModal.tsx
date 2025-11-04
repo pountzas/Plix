@@ -105,7 +105,6 @@ function MediaModal() {
                 if (tmdbId) {
                   const movieFile = {
                     name,
-                    id: i,
                     tmdbId,
                     adult: data.results[0].adult,
                     backdrop_path: data.results[0]?.backdrop_path,
@@ -177,7 +176,6 @@ function MediaModal() {
                       const tvFile = {
                         name: processedName,
                         episode: episode,
-                        id: i,
                         tmdbId,
                         backdrop_path: data.results[0]?.backdrop_path,
                         original_language: data.results[0]?.original_language,

@@ -2,7 +2,6 @@
 
 export interface PersistedMovieFile {
   // Original MovieFile data
-  id: number
   name: string
   tmdbId: number
   adult: boolean
@@ -32,7 +31,6 @@ export interface PersistedMovieFile {
 
 export interface PersistedTvFile {
   // Original TvFile data
-  id: number
   name: string
   episode?: any
   tmdbId: number
