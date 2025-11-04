@@ -16,7 +16,7 @@ import { FiActivity, FiTool, FiCast, FiSearch } from "react-icons/fi";
 import { BsPersonCircle } from "react-icons/bs";
 
 interface SearchResult {
-  id: number;
+  tmdbId: number;
   name: string;
   tmdbPoster: string;
   tmdbTitle: string;

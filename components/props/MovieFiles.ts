@@ -1,5 +1,4 @@
 interface MovieFile {
-  id: number
   name: string
   tmdbId: number
   adult: boolean

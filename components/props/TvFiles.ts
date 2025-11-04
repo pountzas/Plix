@@ -1,5 +1,4 @@
 interface TvFile {
-  id: number
   name: string
   episode?: any
   tmdbId: number
