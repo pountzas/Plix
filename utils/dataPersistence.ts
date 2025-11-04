@@ -27,11 +27,11 @@ function validateMovieFile(movieFile: MovieFile): boolean {
  * Convert MovieFile to PersistedMovieFile with user metadata
  * Cleans undefined values for Firestore compatibility
  */
-export function createPersistedMovieFile(
+export async function createPersistedMovieFile(
   movieFile: MovieFile,
   userId: string,
   originalFile?: File
-): PersistedMovieFile {
+): Promise<PersistedMovieFile> {
   // Validate required fields
   if (!validateMovieFile(movieFile)) {
     throw new Error("Invalid movie file data: missing required fields");
@@ -42,12 +42,11 @@ export function createPersistedMovieFile(
   if (originalFile) {
     try {
       fileId = filePersistence.getFileId(originalFile);
-      // Store asynchronously (don't wait for completion)
-      filePersistence.storeFile(originalFile).catch((error) => {
-        console.error("Failed to store file in IndexedDB:", error);
-      });
+      // Store synchronously to ensure file is available for restoration
+      await filePersistence.storeFile(originalFile);
     } catch (error) {
-      console.error("Error preparing file for storage:", error);
+      console.error("Failed to store file in IndexedDB:", error);
+      fileId = undefined; // Don't save fileId if storage failed
     }
   }
 
@@ -84,11 +83,11 @@ function validateTvFile(tvFile: TvFile): boolean {
  * Convert TvFile to PersistedTvFile with user metadata
  * Cleans undefined values for Firestore compatibility
  */
-export function createPersistedTvFile(
+export async function createPersistedTvFile(
   tvFile: TvFile,
   userId: string,
   originalFile?: File
-): PersistedTvFile {
+): Promise<PersistedTvFile> {
   // Validate required fields
   if (!validateTvFile(tvFile)) {
     throw new Error("Invalid TV file data: missing required fields");
@@ -99,12 +98,11 @@ export function createPersistedTvFile(
   if (originalFile) {
     try {
       fileId = filePersistence.getFileId(originalFile);
-      // Store asynchronously (don't wait for completion)
-      filePersistence.storeFile(originalFile).catch((error) => {
-        console.error("Failed to store TV file in IndexedDB:", error);
-      });
+      // Store synchronously to ensure file is available for restoration
+      await filePersistence.storeFile(originalFile);
     } catch (error) {
-      console.error("Error preparing TV file for storage:", error);
+      console.error("Failed to store TV file in IndexedDB:", error);
+      fileId = undefined; // Don't save fileId if storage failed
     }
   }
 
@@ -302,13 +300,13 @@ export async function saveMoviesBatchToUserCollection(
     const batch = writeBatch(db);
 
     // Store files in IndexedDB and create persisted movie data
-    validMovies.forEach((movieFile) => {
+    for (const movieFile of validMovies) {
       // Find the original file if provided
       const originalFile = originalFiles?.find(
         (file) => file.name === movieFile.fileName
       );
 
-      const persistedMovie = createPersistedMovieFile(
+      const persistedMovie = await createPersistedMovieFile(
         movieFile,
         userId,
         originalFile
@@ -327,7 +325,7 @@ export async function saveMoviesBatchToUserCollection(
         addedAt: serverTimestamp(),
         lastModified: serverTimestamp(),
       });
-    });
+    }
 
     await batch.commit();
     console.log(`Successfully saved ${validMovies.length} movies to Firestore`);
@@ -370,13 +368,13 @@ export async function saveTvShowsBatchToUserCollection(
     const batch = writeBatch(db);
 
     // Store files in IndexedDB and create persisted TV show data
-    validTvShows.forEach((tvFile) => {
+    for (const tvFile of validTvShows) {
       // Find the original file if provided
       const originalFile = originalFiles?.find(
         (file) => file.name === tvFile.fileName
       );
 
-      const persistedTvShow = createPersistedTvFile(
+      const persistedTvShow = await createPersistedTvFile(
         tvFile,
         userId,
         originalFile
@@ -394,7 +392,7 @@ export async function saveTvShowsBatchToUserCollection(
         addedAt: serverTimestamp(),
         lastModified: serverTimestamp(),
       });
-    });
+    }
 
     await batch.commit();
     console.log(

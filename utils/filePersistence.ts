@@ -206,7 +206,7 @@ export const filePersistence = {
 
   // Utility functions
   getFileId(file: File): string {
-    return `${file.name}_${file.lastModified}`;
+    return `${file.name}_${file.lastModified}_${file.size}`;
   },
 
   async fileExists(id: string): Promise<boolean> {

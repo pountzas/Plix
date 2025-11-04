@@ -14,7 +14,7 @@ import { useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import MovieFiles from "./props/MovieFiles";
 import TvFiles from "./props/TvFiles";
-import { searchMovies, searchTvShows } from "../utils/tmdbApi";
+import { cachedTmdbSearch } from "../utils/apiUtils";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
 
@@ -99,7 +99,7 @@ function MediaModal() {
           if (movieLibrary) {
             if (name) {
               try {
-                const data = await searchMovies(name);
+                const data = await cachedTmdbSearch(name, "movie");
                 const tmdbId = data?.results[0]?.id;
 
                 if (tmdbId) {
@@ -170,7 +170,7 @@ function MediaModal() {
                 if (name2Str !== null) {
                   const processedName = name2Str.replace(/[^\w\s]/gi, "");
                   try {
-                    const data = await searchTvShows(processedName);
+                    const data = await cachedTmdbSearch(processedName, "tv");
                     const tmdbId = data.results[0]?.id;
 
                     if (tmdbId) {
