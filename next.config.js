@@ -1,11 +1,31 @@
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   images: {
-    domains: [
-      'image.tmdb.org',
-      'localhost:3000',
-      'www.themoviedb.org',
-      'lh3.googleusercontent.com',
-      'res.cloudinary.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'image.tmdb.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.themoviedb.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+      },
     ],
   },
-};
+}
+
+module.exports = nextConfig
