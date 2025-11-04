@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";

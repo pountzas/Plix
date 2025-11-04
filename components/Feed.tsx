@@ -93,7 +93,6 @@ function Feed() {
                     <h3>{latestMovie ? "Latest Movies" : "Your Movies"}</h3>
                     <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
                       {persistedMovies
-                        .filter((movie) => movie.ObjUrl) // Only show movies with restored files
                         .map((movie) => (
                           <MediaCard
                             key={movie.tmdbId}
@@ -114,7 +113,7 @@ function Feed() {
                             tmdbRating={movie.tmdbRating}
                             tmdbGenre={movie.tmdbGenre}
                             fileName={movie.fileName}
-                            ObjUrl={movie.ObjUrl!}
+                            ObjUrl={movie.ObjUrl || ""}
                             folderPath={movie.folderPath}
                             folderPath2={movie.folderPath2}
                             rootPath={movie.rootPath}
@@ -128,7 +127,6 @@ function Feed() {
                     <h3>{latestTv ? "Latest TV Shows" : "Your TV Shows"}</h3>
                     <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
                       {persistedTvShows
-                        .filter((tv) => tv.ObjUrl) // Only show TV shows with restored files
                         .map((tv) => (
                           <MediaCard
                             key={tv.tmdbId}
@@ -149,7 +147,7 @@ function Feed() {
                             tmdbRating={tv.tmdbRating}
                             tmdbGenre={tv.tmdbGenre}
                             fileName={tv.fileName}
-                            ObjUrl={tv.ObjUrl!}
+                            ObjUrl={tv.ObjUrl || ""}
                             folderPath={tv.folderPath}
                             folderPath2={tv.folderPath2}
                             rootPath={tv.rootPath}
@@ -169,7 +167,6 @@ function Feed() {
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1">
             {persistedMovies
-              .filter((movie) => movie.ObjUrl) // Only show movies with restored files
               .map((movie) => (
                 <div className="pr-7" key={movie.tmdbId}>
                   <MediaCard
@@ -190,7 +187,7 @@ function Feed() {
                     tmdbRating={movie.tmdbRating}
                     tmdbGenre={movie.tmdbGenre}
                     fileName={movie.fileName}
-                    ObjUrl={movie.ObjUrl!}
+                    ObjUrl={movie.ObjUrl || ""}
                     folderPath={movie.folderPath}
                     folderPath2={movie.folderPath2}
                     rootPath={movie.rootPath}
@@ -206,7 +203,6 @@ function Feed() {
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain">
             {persistedTvShows
-              .filter((tv) => tv.ObjUrl) // Only show TV shows with restored files
               .map((tv) => (
                 <div className="pr-7" key={tv.tmdbId}>
                   <MediaCard
@@ -227,7 +223,7 @@ function Feed() {
                     tmdbRating={tv.tmdbRating}
                     tmdbGenre={tv.tmdbGenre}
                     fileName={tv.fileName}
-                    ObjUrl={tv.ObjUrl!}
+                    ObjUrl={tv.ObjUrl || ""}
                     folderPath={tv.folderPath}
                     folderPath2={tv.folderPath2}
                     rootPath={tv.rootPath}
