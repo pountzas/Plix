@@ -302,10 +302,10 @@ function MediaModal() {
   };
 
   const handleTvMedia = () => {
-    // !tvLibrary && setTypeSection(false),
-    //   setFolderLoadSection(true),
-    //   setTvLibrary(true),
-    //   setMovieLibrary(false);
+    !tvLibrary && setTypeSection(false);
+    setFolderLoadSection(true);
+    setTvLibrary(true);
+    setMovieLibrary(false);
   };
 
   const handleOk = () => {

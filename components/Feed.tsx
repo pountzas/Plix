@@ -92,33 +92,32 @@ function Feed() {
                   <div className="w-full">
                     <h3>{latestMovie ? "Latest Movies" : "Your Movies"}</h3>
                     <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
-                      {persistedMovies
-                        .map((movie) => (
-                          <MediaCard
-                            key={movie.tmdbId}
-                            id={movie.tmdbId}
-                            name={movie.name}
-                            tmdbId={movie.tmdbId}
-                            mediaType="movie"
-                            adult={movie.adult}
-                            backdrop_path={movie.backdrop_path}
-                            lang={movie.original_language}
-                            popularity={movie.popularity}
-                            voteAverage={movie.vote_average}
-                            voteCount={movie.vote_count}
-                            tmdbPoster={movie.tmdbPoster}
-                            tmdbTitle={movie.tmdbTitle}
-                            tmdbOverview={movie.tmdbOverview}
-                            tmdbReleaseDate={movie.tmdbReleaseDate}
-                            tmdbRating={movie.tmdbRating}
-                            tmdbGenre={movie.tmdbGenre}
-                            fileName={movie.fileName}
-                            ObjUrl={movie.ObjUrl || ""}
-                            folderPath={movie.folderPath}
-                            folderPath2={movie.folderPath2}
-                            rootPath={movie.rootPath}
-                          />
-                        ))}
+                      {persistedMovies.map((movie) => (
+                        <MediaCard
+                          key={movie.tmdbId}
+                          id={movie.tmdbId}
+                          name={movie.name}
+                          tmdbId={movie.tmdbId}
+                          mediaType="movie"
+                          adult={movie.adult}
+                          backdrop_path={movie.backdrop_path}
+                          lang={movie.original_language}
+                          popularity={movie.popularity}
+                          voteAverage={movie.vote_average}
+                          voteCount={movie.vote_count}
+                          tmdbPoster={movie.tmdbPoster}
+                          tmdbTitle={movie.tmdbTitle}
+                          tmdbOverview={movie.tmdbOverview}
+                          tmdbReleaseDate={movie.tmdbReleaseDate}
+                          tmdbRating={movie.tmdbRating}
+                          tmdbGenre={movie.tmdbGenre}
+                          fileName={movie.fileName}
+                          ObjUrl={movie.ObjUrl || ""}
+                          folderPath={movie.folderPath}
+                          folderPath2={movie.folderPath2}
+                          rootPath={movie.rootPath}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -126,33 +125,32 @@ function Feed() {
                   <div className="pt-9">
                     <h3>{latestTv ? "Latest TV Shows" : "Your TV Shows"}</h3>
                     <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
-                      {persistedTvShows
-                        .map((tv) => (
-                          <MediaCard
-                            key={tv.tmdbId}
-                            id={tv.tmdbId}
-                            name={tv.name}
-                            tmdbId={tv.tmdbId}
-                            mediaType="tv"
-                            adult={tv.adult}
-                            backdrop_path={tv.backdrop_path}
-                            lang={tv.original_language}
-                            popularity={tv.popularity}
-                            voteAverage={tv.vote_average}
-                            voteCount={tv.vote_count}
-                            tmdbPoster={tv.tmdbPoster}
-                            tmdbTitle={tv.tmdbTitle}
-                            tmdbOverview={tv.tmdbOverview}
-                            tmdbReleaseDate={tv.tmdbReleaseDate}
-                            tmdbRating={tv.tmdbRating}
-                            tmdbGenre={tv.tmdbGenre}
-                            fileName={tv.fileName}
-                            ObjUrl={tv.ObjUrl || ""}
-                            folderPath={tv.folderPath}
-                            folderPath2={tv.folderPath2}
-                            rootPath={tv.rootPath}
-                          />
-                        ))}
+                      {persistedTvShows.map((tv) => (
+                        <MediaCard
+                          key={tv.tmdbId}
+                          id={tv.tmdbId}
+                          name={tv.name}
+                          tmdbId={tv.tmdbId}
+                          mediaType="tv"
+                          adult={tv.adult}
+                          backdrop_path={tv.backdrop_path}
+                          lang={tv.original_language}
+                          popularity={tv.popularity}
+                          voteAverage={tv.vote_average}
+                          voteCount={tv.vote_count}
+                          tmdbPoster={tv.tmdbPoster}
+                          tmdbTitle={tv.tmdbTitle}
+                          tmdbOverview={tv.tmdbOverview}
+                          tmdbReleaseDate={tv.tmdbReleaseDate}
+                          tmdbRating={tv.tmdbRating}
+                          tmdbGenre={tv.tmdbGenre}
+                          fileName={tv.fileName}
+                          ObjUrl={tv.ObjUrl || ""}
+                          folderPath={tv.folderPath}
+                          folderPath2={tv.folderPath2}
+                          rootPath={tv.rootPath}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -166,34 +164,33 @@ function Feed() {
       {isMoviesPage && (
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain w-full pl-1">
-            {persistedMovies
-              .map((movie) => (
-                <div className="pr-7" key={movie.tmdbId}>
-                  <MediaCard
-                    id={movie.tmdbId}
-                    name={movie.name}
-                    tmdbId={movie.tmdbId}
-                    mediaType="movie"
-                    adult={movie.adult}
-                    backdrop_path={movie.backdrop_path}
-                    lang={movie.original_language}
-                    popularity={movie.popularity}
-                    voteAverage={movie.vote_average}
-                    voteCount={movie.vote_count}
-                    tmdbPoster={movie.tmdbPoster}
-                    tmdbTitle={movie.tmdbTitle}
-                    tmdbOverview={movie.tmdbOverview}
-                    tmdbReleaseDate={movie.tmdbReleaseDate}
-                    tmdbRating={movie.tmdbRating}
-                    tmdbGenre={movie.tmdbGenre}
-                    fileName={movie.fileName}
-                    ObjUrl={movie.ObjUrl || ""}
-                    folderPath={movie.folderPath}
-                    folderPath2={movie.folderPath2}
-                    rootPath={movie.rootPath}
-                  />
-                </div>
-              ))}
+            {persistedMovies.map((movie) => (
+              <div className="pr-7" key={movie.tmdbId}>
+                <MediaCard
+                  id={movie.tmdbId}
+                  name={movie.name}
+                  tmdbId={movie.tmdbId}
+                  mediaType="movie"
+                  adult={movie.adult}
+                  backdrop_path={movie.backdrop_path}
+                  lang={movie.original_language}
+                  popularity={movie.popularity}
+                  voteAverage={movie.vote_average}
+                  voteCount={movie.vote_count}
+                  tmdbPoster={movie.tmdbPoster}
+                  tmdbTitle={movie.tmdbTitle}
+                  tmdbOverview={movie.tmdbOverview}
+                  tmdbReleaseDate={movie.tmdbReleaseDate}
+                  tmdbRating={movie.tmdbRating}
+                  tmdbGenre={movie.tmdbGenre}
+                  fileName={movie.fileName}
+                  ObjUrl={movie.ObjUrl || ""}
+                  folderPath={movie.folderPath}
+                  folderPath2={movie.folderPath2}
+                  rootPath={movie.rootPath}
+                />
+              </div>
+            ))}
           </div>
         </section>
       )}
@@ -202,34 +199,33 @@ function Feed() {
       {isTVPage && (
         <section>
           <div className="flex flex-wrap justify-start pt-4 overflow-y-scroll h-[80vh] scrollbar-hide object-contain">
-            {persistedTvShows
-              .map((tv) => (
-                <div className="pr-7" key={tv.tmdbId}>
-                  <MediaCard
-                    id={tv.tmdbId}
-                    name={tv.name}
-                    tmdbId={tv.tmdbId}
-                    mediaType="tv"
-                    adult={tv.adult}
-                    backdrop_path={tv.backdrop_path}
-                    lang={tv.original_language}
-                    popularity={tv.popularity}
-                    voteAverage={tv.vote_average}
-                    voteCount={tv.vote_count}
-                    tmdbPoster={tv.tmdbPoster}
-                    tmdbTitle={tv.tmdbTitle}
-                    tmdbOverview={tv.tmdbOverview}
-                    tmdbReleaseDate={tv.tmdbReleaseDate}
-                    tmdbRating={tv.tmdbRating}
-                    tmdbGenre={tv.tmdbGenre}
-                    fileName={tv.fileName}
-                    ObjUrl={tv.ObjUrl || ""}
-                    folderPath={tv.folderPath}
-                    folderPath2={tv.folderPath2}
-                    rootPath={tv.rootPath}
-                  />
-                </div>
-              ))}
+            {persistedTvShows.map((tv) => (
+              <div className="pr-7" key={tv.tmdbId}>
+                <MediaCard
+                  id={tv.tmdbId}
+                  name={tv.name}
+                  tmdbId={tv.tmdbId}
+                  mediaType="tv"
+                  adult={tv.adult}
+                  backdrop_path={tv.backdrop_path}
+                  lang={tv.original_language}
+                  popularity={tv.popularity}
+                  voteAverage={tv.vote_average}
+                  voteCount={tv.vote_count}
+                  tmdbPoster={tv.tmdbPoster}
+                  tmdbTitle={tv.tmdbTitle}
+                  tmdbOverview={tv.tmdbOverview}
+                  tmdbReleaseDate={tv.tmdbReleaseDate}
+                  tmdbRating={tv.tmdbRating}
+                  tmdbGenre={tv.tmdbGenre}
+                  fileName={tv.fileName}
+                  ObjUrl={tv.ObjUrl || ""}
+                  folderPath={tv.folderPath}
+                  folderPath2={tv.folderPath2}
+                  rootPath={tv.rootPath}
+                />
+              </div>
+            ))}
           </div>
         </section>
       )}
