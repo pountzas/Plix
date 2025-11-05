@@ -144,7 +144,11 @@ export const useMediaStore = create<MediaStore>((set) => ({
   addSessionTvShow: (tvShow: any) =>
     set((state) => ({
       sessionTvShows: [
-        ...state.sessionTvShows.filter((t) => t.tmdbId !== tvShow.tmdbId),
+        ...state.sessionTvShows.filter((t) =>
+          !(t.tmdbId === tvShow.tmdbId &&
+            t.seasonNumber === tvShow.seasonNumber &&
+            t.episodeNumber === tvShow.episodeNumber)
+        ),
         tvShow,
       ],
     })),
