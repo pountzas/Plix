@@ -57,7 +57,7 @@ class FilePersistenceDB {
       const blobUrl = URL.createObjectURL(file);
 
       const storedFile: StoredFile = {
-        id: `${file.name}_${file.lastModified}`,
+        id: `${file.name}_${file.lastModified}_${file.size}`,
         fileName: file.name,
         file: file,
         blob: file, // Store the file as blob
@@ -91,10 +91,8 @@ class FilePersistenceDB {
       request.onsuccess = () => {
         const storedFile = request.result;
         if (storedFile) {
-          // Recreate blob URL if it doesn't exist or is revoked
-          if (!storedFile.url || storedFile.url.startsWith('blob:')) {
-            storedFile.url = URL.createObjectURL(storedFile.blob);
-          }
+          // Always recreate blob URL since they don't persist across sessions
+          storedFile.url = URL.createObjectURL(storedFile.blob);
           resolve(storedFile);
         } else {
           resolve(null);
@@ -118,11 +116,9 @@ class FilePersistenceDB {
 
       request.onsuccess = () => {
         const files = request.result as StoredFile[];
-        // Ensure all blob URLs are valid
+        // Always recreate blob URLs since they don't persist across sessions
         files.forEach(file => {
-          if (!file.url || file.url.startsWith('blob:')) {
-            file.url = URL.createObjectURL(file.blob);
-          }
+          file.url = URL.createObjectURL(file.blob);
         });
         resolve(files);
       };
