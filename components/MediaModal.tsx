@@ -20,6 +20,34 @@ import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
 
 /**
+ * Clean TV show name by removing years, resolution, source, codec, and release group
+ */
+function cleanShowName(showName: string): string {
+  let cleaned = showName
+    .replace(/[._]/g, " ") // Replace dots/underscores with spaces
+    .replace(/\s+/g, " ") // Normalize multiple spaces
+    .trim();
+
+  // Remove years (4-digit numbers between 1900-2100)
+  cleaned = cleaned.replace(/\b(19|20)\d{2}\b/g, "").trim();
+
+  // Remove common metadata patterns
+  const metadataPatterns = [
+    /\b\d{3,4}p\b/i, // Resolution: 720p, 1080p, etc.
+    /\b(WEBDL|WEBRip|BluRay|DVD|DVDRip|HDTV|WEB|BRRip|BDRip|HDRip)\b/i, // Sources
+    /\b(x264|x265|h264|h265|XviD|DivX|AVC|HEVC)\b/i, // Codecs
+    /\b[A-Z]{3,8}\b/g, // Release groups (typically 3-8 uppercase letters)
+  ];
+
+  metadataPatterns.forEach(pattern => {
+    cleaned = cleaned.replace(pattern, "").trim();
+  });
+
+  // Clean up any double spaces created by removals
+  return cleaned.replace(/\s+/g, " ").trim();
+}
+
+/**
  * Extract TV show name, season, and episode information from filename
  */
 function extractTvShowInfo(filename: string): {
@@ -50,11 +78,8 @@ function extractTvShowInfo(filename: string): {
       const seasonNumber = parseInt(seasonStr, 10);
       const episodeNumber = parseInt(episodeStr, 10);
 
-      // Clean up the show name
-      const cleanName = showName
-        .replace(/[._]/g, " ") // Replace dots/underscores with spaces
-        .replace(/\s+/g, " ") // Normalize multiple spaces
-        .trim();
+      // Clean up the show name (remove years and metadata)
+      const cleanName = cleanShowName(showName);
 
       return {
         name: cleanName,
@@ -82,10 +107,8 @@ function extractTvShowInfo(filename: string): {
       ? parseInt(e2, 10)
       : undefined;
 
-    const cleanName = showName
-      .replace(/[._]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+    // Clean up the show name (remove years and metadata)
+    const cleanName = cleanShowName(showName);
 
     return {
       name: cleanName,
@@ -96,10 +119,7 @@ function extractTvShowInfo(filename: string): {
   }
 
   // Last resort: just clean the filename
-  const cleanName = nameWithoutExt
-    .replace(/[._]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const cleanName = cleanShowName(nameWithoutExt);
 
   return {
     name: cleanName,
@@ -222,9 +242,14 @@ function MediaModal() {
 
         // Skip directories and non-video files
         if (file.type === "" && file.size === 0) continue;
-        if (!file.type.includes("video") && !file.name.toLowerCase().endsWith(".srt") &&
-            !file.name.toLowerCase().endsWith(".vtt") && !file.name.toLowerCase().endsWith(".sub") &&
-            !file.name.toLowerCase().endsWith(".ass")) continue;
+        if (
+          !file.type.includes("video") &&
+          !file.name.toLowerCase().endsWith(".srt") &&
+          !file.name.toLowerCase().endsWith(".vtt") &&
+          !file.name.toLowerCase().endsWith(".sub") &&
+          !file.name.toLowerCase().endsWith(".ass")
+        )
+          continue;
 
         // Process ALL TV files - both organized folders and individual files
         const tvShowInfo = extractTvShowInfo(file.name);
@@ -270,13 +295,13 @@ function MediaModal() {
           }
 
           const fileType = file.type.includes("video") ? "video" : "subtitle";
-          const pathType = ((file as any).webkitRelativePath || "").includes("/series/") ||
-                          ((file as any).webkitRelativePath || "").includes("\\series\\")
-                          ? "organized" : "individual";
+          const pathType =
+            ((file as any).webkitRelativePath || "").includes("/series/") ||
+            ((file as any).webkitRelativePath || "").includes("\\series\\")
+              ? "organized"
+              : "individual";
           console.log(
-            `Inventoried: ${seriesName} - ${seasonEpisodeKey} - ${
-              file.name
-            } (${fileType}, ${pathType})`
+            `Inventoried: ${seriesName} - ${seasonEpisodeKey} - ${file.name} (${fileType}, ${pathType})`
           );
         }
       }
@@ -299,11 +324,14 @@ function MediaModal() {
         if (file.type.includes("video")) {
           // Check if this is a TV file that was already inventoried in Phase 1
           const tvShowInfo = extractTvShowInfo(file.name);
-          const isInventoriedTVFile = tvShowInfo.name && tvSeriesInventory[tvShowInfo.name];
+          const isInventoriedTVFile =
+            tvShowInfo.name && tvSeriesInventory[tvShowInfo.name];
 
           if (tvLibrary && isInventoriedTVFile) {
             // Skip TV files that were already inventoried - they'll be processed in Phase 3
-            console.log(`Skipping inventoried TV file: ${file.name} (processed in Phase 3)`);
+            console.log(
+              `Skipping inventoried TV file: ${file.name} (processed in Phase 3)`
+            );
             continue;
           }
 
@@ -421,17 +449,24 @@ function MediaModal() {
                   hasSubtitles: false,
                 };
 
-                setOriginalFiles((prev) => new Map(prev.set(tvFile.fileName, file)));
+                setOriginalFiles(
+                  (prev) => new Map(prev.set(tvFile.fileName, file))
+                );
                 TvFiles.push(tvFile);
                 addSessionTvShow(tvFile);
                 processedTvShows.push(tvFile);
 
                 console.log(
-                  `Processed fallback TV episode: S${tvShowInfo.seasonNumber || "?"}E${tvShowInfo.episodeNumber || "?"} - ${tvFile.fileName}`
+                  `Processed fallback TV episode: S${
+                    tvShowInfo.seasonNumber || "?"
+                  }E${tvShowInfo.episodeNumber || "?"} - ${tvFile.fileName}`
                 );
               }
             } catch (error) {
-              console.error(`Error processing fallback TV file ${files[i].name}:`, error);
+              console.error(
+                `Error processing fallback TV file ${files[i].name}:`,
+                error
+              );
               handleApiError(error);
             }
           }
