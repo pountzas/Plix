@@ -6,6 +6,7 @@ import ApiKeyErrorModal from '../components/ApiKeyErrorModal'
 import RateLimitErrorModal from '../components/RateLimitErrorModal'
 import { PersistenceStatus } from '../components/PersistenceStatus'
 import { useApiErrorHandler } from '../hooks/useApiErrorHandler'
+import { useMediaDataLoader } from '../hooks/useMediaDataLoader'
 
 // Client component wrapper for Zustand hooks and global components
 function ClientProviders({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,9 @@ function ClientProviders({ children }: { children: React.ReactNode }) {
 
   // Initialize global error handler
   useApiErrorHandler()
+
+  // Initialize global media data loader (runs once)
+  useMediaDataLoader()
 
   return (
     <>
