@@ -5,6 +5,7 @@ import Menu from "./Menu";
 import MediaModal from "./MediaModal";
 import { useVisualStore } from "../stores/visualStore";
 import Image from "next/image";
+import { Activity } from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -44,7 +45,13 @@ export default function Layout({
       )}
 
       {/* Background Image */}
-      {showBackground && imageVisible && backgroundImageUrl && (
+      <Activity
+        mode={
+          showBackground && imageVisible && backgroundImageUrl
+            ? "visible"
+            : "hidden"
+        }
+      >
         <div className="fixed inset-0 z-0">
           <Image
             className="min-w-full min-h-screen"
@@ -55,7 +62,7 @@ export default function Layout({
             loading="lazy"
           />
         </div>
-      )}
+      </Activity>
 
       <MediaModal />
     </div>
