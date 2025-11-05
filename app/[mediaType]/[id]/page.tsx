@@ -127,7 +127,7 @@ export default function MediaDetailPage({
   const resolvedSearchParams = use(searchParams);
 
   // Session store for uploaded files
-  const { getSessionMovie, getSessionTvShow, persistedTvShows } =
+  const { getSessionMovie, getSessionTvShow, persistedTvShows, sessionTvShows } =
     useMediaStore();
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
@@ -288,13 +288,17 @@ export default function MediaDetailPage({
             }
             setTmdbEpisodesBySeason(episodesBySeasonData);
 
-            // Find local episodes for this TV series
-            const seriesEpisodes = persistedTvShows.filter(
+            // Find local episodes for this TV series (both persisted and session)
+            const persistedEpisodes = persistedTvShows.filter(
               (tv) => tv.tmdbId === parseInt(id)
             );
+            const sessionEpisodes = sessionTvShows.filter(
+              (tv) => tv.tmdbId === parseInt(id)
+            );
+            const seriesEpisodes = [...persistedEpisodes, ...sessionEpisodes];
 
             console.log(
-              `Found ${seriesEpisodes.length} local episodes for TV series ID ${id}`
+              `Found ${seriesEpisodes.length} local episodes for TV series ID ${id} (${persistedEpisodes.length} persisted, ${sessionEpisodes.length} session)`
             );
 
             // Group local episodes by season
