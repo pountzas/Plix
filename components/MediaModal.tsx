@@ -39,7 +39,7 @@ function cleanShowName(showName: string): string {
     /\b[A-Z]{3,8}\b/g, // Release groups (typically 3-8 uppercase letters)
   ];
 
-  metadataPatterns.forEach(pattern => {
+  metadataPatterns.forEach((pattern) => {
     cleaned = cleaned.replace(pattern, "").trim();
   });
 

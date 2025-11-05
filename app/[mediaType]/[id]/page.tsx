@@ -127,8 +127,12 @@ export default function MediaDetailPage({
   const resolvedSearchParams = use(searchParams);
 
   // Session store for uploaded files
-  const { getSessionMovie, getSessionTvShow, persistedTvShows, sessionTvShows } =
-    useMediaStore();
+  const {
+    getSessionMovie,
+    getSessionTvShow,
+    persistedTvShows,
+    sessionTvShows,
+  } = useMediaStore();
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [credits, setCredits] = useState<CreditsData | null>(null);

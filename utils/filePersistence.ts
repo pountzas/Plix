@@ -16,8 +16,8 @@ interface StoredFile {
 // IndexedDB setup
 class FilePersistenceDB {
   private db: IDBDatabase | null = null;
-  private readonly dbName = 'PlixMediaDB';
-  private readonly storeName = 'files';
+  private readonly dbName = "PlixMediaDB";
+  private readonly storeName = "files";
   private readonly version = 1;
 
   async init(): Promise<void> {
@@ -25,22 +25,22 @@ class FilePersistenceDB {
       const request = indexedDB.open(this.dbName, this.version);
 
       request.onerror = () => {
-        console.error('Failed to open IndexedDB');
+        console.error("Failed to open IndexedDB");
         reject(request.error);
       };
 
       request.onsuccess = () => {
         this.db = request.result;
-        console.log('File persistence DB initialized');
+        console.log("File persistence DB initialized");
         resolve();
       };
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
-          store.createIndex('fileName', 'fileName', { unique: false });
-          store.createIndex('lastModified', 'lastModified', { unique: false });
+          const store = db.createObjectStore(this.storeName, { keyPath: "id" });
+          store.createIndex("fileName", "fileName", { unique: false });
+          store.createIndex("lastModified", "lastModified", { unique: false });
         }
       };
     });
@@ -50,7 +50,7 @@ class FilePersistenceDB {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
 
       // Create blob URL for immediate use
@@ -74,7 +74,7 @@ class FilePersistenceDB {
       };
 
       request.onerror = () => {
-        console.error('Failed to store file:', request.error);
+        console.error("Failed to store file:", request.error);
         reject(request.error);
       };
     });
@@ -84,7 +84,7 @@ class FilePersistenceDB {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readonly');
+      const transaction = this.db!.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const request = store.get(id);
 
@@ -100,7 +100,7 @@ class FilePersistenceDB {
       };
 
       request.onerror = () => {
-        console.error('Failed to get file:', request.error);
+        console.error("Failed to get file:", request.error);
         reject(request.error);
       };
     });
@@ -110,21 +110,21 @@ class FilePersistenceDB {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readonly');
+      const transaction = this.db!.transaction([this.storeName], "readonly");
       const store = transaction.objectStore(this.storeName);
       const request = store.getAll();
 
       request.onsuccess = () => {
         const files = request.result as StoredFile[];
         // Always recreate blob URLs since they don't persist across sessions
-        files.forEach(file => {
+        files.forEach((file) => {
           file.url = URL.createObjectURL(file.blob);
         });
         resolve(files);
       };
 
       request.onerror = () => {
-        console.error('Failed to get all files:', request.error);
+        console.error("Failed to get all files:", request.error);
         reject(request.error);
       };
     });
@@ -134,7 +134,7 @@ class FilePersistenceDB {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.delete(id);
 
@@ -144,7 +144,7 @@ class FilePersistenceDB {
       };
 
       request.onerror = () => {
-        console.error('Failed to delete file:', request.error);
+        console.error("Failed to delete file:", request.error);
         reject(request.error);
       };
     });
@@ -154,17 +154,17 @@ class FilePersistenceDB {
     if (!this.db) await this.init();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([this.storeName], 'readwrite');
+      const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
       const request = store.clear();
 
       request.onsuccess = () => {
-        console.log('All files cleared');
+        console.log("All files cleared");
         resolve();
       };
 
       request.onerror = () => {
-        console.error('Failed to clear files:', request.error);
+        console.error("Failed to clear files:", request.error);
         reject(request.error);
       };
     });
