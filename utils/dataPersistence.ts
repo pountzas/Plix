@@ -484,16 +484,21 @@ export async function restoreMovieFileUrls(
 ): Promise<PersistedMovieFile[]> {
   try {
     await filePersistence.init();
+    console.log(`Attempting to restore URLs for ${movies.length} movies`);
     const restoredMovies = await Promise.all(
       movies.map(async (movie) => {
         if (movie.fileId) {
           try {
+            console.log(`Restoring file for movie "${movie.name}" with fileId: ${movie.fileId}`);
             const storedFile = await filePersistence.getFile(movie.fileId);
             if (storedFile) {
+              console.log(`Successfully restored URL for movie "${movie.name}": ${storedFile.url.substring(0, 50)}...`);
               return {
                 ...movie,
                 ObjUrl: storedFile.url,
               };
+            } else {
+              console.warn(`No stored file found for movie "${movie.name}" with fileId: ${movie.fileId}`);
             }
           } catch (error) {
             console.warn(
@@ -501,10 +506,14 @@ export async function restoreMovieFileUrls(
               error
             );
           }
+        } else {
+          console.warn(`Movie "${movie.name}" has no fileId`);
         }
         return movie;
       })
     );
+    const restoredCount = restoredMovies.filter(m => m.ObjUrl).length;
+    console.log(`Restored URLs for ${restoredCount}/${movies.length} movies`);
     return restoredMovies;
   } catch (error) {
     console.error("Error restoring movie file URLs:", error);
@@ -520,16 +529,21 @@ export async function restoreTvShowFileUrls(
 ): Promise<PersistedTvFile[]> {
   try {
     await filePersistence.init();
+    console.log(`Attempting to restore URLs for ${tvShows.length} TV shows`);
     const restoredTvShows = await Promise.all(
       tvShows.map(async (tvShow) => {
         if (tvShow.fileId) {
           try {
+            console.log(`Restoring file for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} with fileId: ${tvShow.fileId}`);
             const storedFile = await filePersistence.getFile(tvShow.fileId);
             if (storedFile) {
+              console.log(`Successfully restored URL for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber}: ${storedFile.url.substring(0, 50)}...`);
               return {
                 ...tvShow,
                 ObjUrl: storedFile.url,
               };
+            } else {
+              console.warn(`No stored file found for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} with fileId: ${tvShow.fileId}`);
             }
           } catch (error) {
             console.warn(
@@ -537,10 +551,14 @@ export async function restoreTvShowFileUrls(
               error
             );
           }
+        } else {
+          console.warn(`TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} has no fileId`);
         }
         return tvShow;
       })
     );
+    const restoredCount = restoredTvShows.filter(tv => tv.ObjUrl).length;
+    console.log(`Restored URLs for ${restoredCount}/${tvShows.length} TV shows`);
     return restoredTvShows;
   } catch (error) {
     console.error("Error restoring TV show file URLs:", error);
