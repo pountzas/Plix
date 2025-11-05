@@ -127,6 +127,16 @@ export async function getTvCredits(tvId: number): Promise<any> {
 }
 
 /**
+ * Get TV season details
+ */
+export async function getTvSeason(
+  tvId: number,
+  seasonNumber: number
+): Promise<any> {
+  return tmdbApiCall(`/tv/${tvId}/season/${seasonNumber}`);
+}
+
+/**
  * Get person details
  */
 export async function getPersonDetails(personId: number): Promise<any> {
@@ -140,4 +150,23 @@ export async function getPersonDetails(personId: number): Promise<any> {
  */
 export async function getPersonCredits(personId: number): Promise<any> {
   return tmdbApiCall(`/person/${personId}/combined_credits`);
+}
+
+/**
+ * Get TV series details including all seasons
+ */
+export async function getTvDetails(tvId: number): Promise<any> {
+  return tmdbApiCall(`/tv/${tvId}`, {
+    append_to_response: "seasons",
+  });
+}
+
+/**
+ * Get all episodes for a specific season
+ */
+export async function getSeasonEpisodes(
+  tvId: number,
+  seasonNumber: number
+): Promise<any> {
+  return tmdbApiCall(`/tv/${tvId}/season/${seasonNumber}`);
 }

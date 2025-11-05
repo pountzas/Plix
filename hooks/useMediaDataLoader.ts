@@ -1,15 +1,11 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useMediaStore } from "../stores/mediaStore";
 import {
   loadUserMovies,
   loadUserTvShows,
-  saveMoviesBatchToUserCollection,
-  saveTvShowsBatchToUserCollection,
-  createPersistedMovieFile,
-  createPersistedTvFile,
   restoreMovieFileUrls,
   restoreTvShowFileUrls,
 } from "../utils/dataPersistence";
@@ -29,13 +25,6 @@ import { firestoreCache, clearFirestoreCache } from "../utils/firestoreCache";
 export function useMediaDataLoader() {
   const { data: session } = useSession();
   const {
-    // State
-    persistedMovies,
-    persistedTvShows,
-    isLoadingMovies,
-    isLoadingTvShows,
-    persistenceError,
-
     // Actions
     setPersistedMovies,
     setPersistedTvShows,

@@ -9,7 +9,12 @@ import { BsArrowLeft, BsImage } from "react-icons/bs";
 import ReactPlayer from "react-player";
 import Layout from "../../../components/Layout";
 import { cachedTmdbDetails } from "../../../utils/apiUtils";
-import { getMovieCredits, getTvCredits } from "../../../utils/tmdbApi";
+import {
+  getMovieCredits,
+  getTvCredits,
+  getTvDetails,
+  getSeasonEpisodes,
+} from "../../../utils/tmdbApi";
 import { useMediaStore } from "../../../stores/mediaStore";
 
 interface MediaDetails {
@@ -122,18 +127,92 @@ export default function MediaDetailPage({
   const resolvedSearchParams = use(searchParams);
 
   // Session store for uploaded files
-  const { getSessionMovie, getSessionTvShow } = useMediaStore();
+  const { getSessionMovie, getSessionTvShow, persistedTvShows } =
+    useMediaStore();
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // TV series specific state
+  const [selectedSeason, setSelectedSeason] = useState<number>(1);
+  const [selectedEpisode, setSelectedEpisode] = useState<number>(1);
+  const [currentEpisodeFile, setCurrentEpisodeFile] = useState<any>(null);
+  const [, setMissingEpisodes] = useState<
+    { season: number; episode: number; title?: string }[]
+  >([]);
+
+  // TMDB TV series data
+  const [tmdbSeasons, setTmdbSeasons] = useState<any[]>([]);
+  const [tmdbEpisodesBySeason, setTmdbEpisodesBySeason] = useState<{
+    [season: number]: any[];
+  }>({});
+
   // Handle clicking on cast member names to navigate to person profile
   const handleCastMemberClick = (personId: number) => {
     router.push(`/person/${personId}`);
   };
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Local episodes management (existing files)
+  const [localEpisodesBySeason, setLocalEpisodesBySeason] = useState<{
+    [season: number]: any[];
+  }>({});
+
+  const handleSeasonChange = (season: number) => {
+    setSelectedSeason(season);
+    setSelectedEpisode(1); // Reset to first episode of new season
+
+    // Update current episode file based on local files
+    const seasonEpisodes = localEpisodesBySeason[season];
+    if (seasonEpisodes && seasonEpisodes.length > 0) {
+      setCurrentEpisodeFile(seasonEpisodes[0]);
+    } else {
+      setCurrentEpisodeFile(null);
+    }
+
+    // Update missing episodes for selected season
+    updateMissingEpisodesForSeason(season);
+  };
+
+  const handleEpisodeChange = (episode: number) => {
+    setSelectedEpisode(episode);
+
+    // Update current episode file based on local files
+    const seasonEpisodes = localEpisodesBySeason[selectedSeason];
+    if (seasonEpisodes) {
+      const episodeFile = seasonEpisodes.find(
+        (ep) => ep.episodeNumber === episode
+      );
+      if (episodeFile) {
+        setCurrentEpisodeFile(episodeFile);
+      } else {
+        setCurrentEpisodeFile(null);
+      }
+    }
+  };
+
+  const updateMissingEpisodesForSeason = (seasonNumber: number) => {
+    const tmdbEpisodes = tmdbEpisodesBySeason[seasonNumber] || [];
+    const localEpisodes = localEpisodesBySeason[seasonNumber] || [];
+
+    // Create a set of local episode numbers for quick lookup
+    const localEpisodeNumbers = new Set(
+      localEpisodes.map((ep) => ep.episodeNumber).filter((n) => n)
+    );
+
+    // Find missing episodes for this season
+    const missing = tmdbEpisodes
+      .filter((tmdbEp: any) => !localEpisodeNumbers.has(tmdbEp.episode_number))
+      .map((tmdbEp: any) => ({
+        season: seasonNumber,
+        episode: tmdbEp.episode_number,
+        title: tmdbEp.name,
+      }));
+
+    setMissingEpisodes(missing);
+  };
 
   useEffect(() => {
     // Validate required parameters
@@ -174,6 +253,99 @@ export default function MediaDetailPage({
           mediaType === "movie"
             ? getSessionMovie(parseInt(id))
             : getSessionTvShow(parseInt(id));
+
+        // For TV series, fetch TMDB data and set up episode navigation
+        if (mediaType === "tv") {
+          try {
+            // Fetch complete TV series details including all seasons
+            const tvDetails = await getTvDetails(parseInt(id));
+            const seasons = tvDetails.seasons || [];
+
+            // Filter out specials (season_number === 0) and sort seasons
+            const validSeasons = seasons
+              .filter((season: any) => season.season_number > 0)
+              .sort((a: any, b: any) => a.season_number - b.season_number);
+
+            setTmdbSeasons(validSeasons);
+
+            // Fetch episodes for all seasons
+            const episodesBySeasonData: { [season: number]: any[] } = {};
+            for (const season of validSeasons) {
+              try {
+                const seasonData = await getSeasonEpisodes(
+                  parseInt(id),
+                  season.season_number
+                );
+                episodesBySeasonData[season.season_number] =
+                  seasonData.episodes || [];
+              } catch (error) {
+                console.error(
+                  `Error fetching episodes for season ${season.season_number}:`,
+                  error
+                );
+                episodesBySeasonData[season.season_number] = [];
+              }
+            }
+            setTmdbEpisodesBySeason(episodesBySeasonData);
+
+            // Find local episodes for this TV series
+            const seriesEpisodes = persistedTvShows.filter(
+              (tv) => tv.tmdbId === parseInt(id)
+            );
+
+            console.log(
+              `Found ${seriesEpisodes.length} local episodes for TV series ID ${id}`
+            );
+
+            // Group local episodes by season
+            const localEpisodesGrouped: { [season: number]: any[] } = {};
+            seriesEpisodes.forEach((episode) => {
+              const season = episode.seasonNumber || 1;
+              if (!localEpisodesGrouped[season]) {
+                localEpisodesGrouped[season] = [];
+              }
+              localEpisodesGrouped[season].push(episode);
+            });
+
+            // Sort local episodes within each season
+            Object.keys(localEpisodesGrouped).forEach((season) => {
+              localEpisodesGrouped[parseInt(season)].sort(
+                (a, b) => (a.episodeNumber || 0) - (b.episodeNumber || 0)
+              );
+            });
+
+            setLocalEpisodesBySeason(localEpisodesGrouped);
+
+            // Set initial season (first available season with episodes or first TMDB season)
+            const availableSeasons = Object.keys(localEpisodesGrouped)
+              .map((s) => parseInt(s))
+              .sort((a, b) => a - b);
+
+            let initialSeason = 1;
+            if (availableSeasons.length > 0) {
+              initialSeason = availableSeasons[0];
+            } else if (validSeasons.length > 0) {
+              initialSeason = validSeasons[0].season_number;
+            }
+
+            setSelectedSeason(initialSeason);
+
+            // Set initial episode
+            const localSeasonEpisodes = localEpisodesGrouped[initialSeason];
+            if (localSeasonEpisodes && localSeasonEpisodes.length > 0) {
+              setSelectedEpisode(localSeasonEpisodes[0].episodeNumber || 1);
+              setCurrentEpisodeFile(localSeasonEpisodes[0]);
+            } else {
+              setSelectedEpisode(1);
+              setCurrentEpisodeFile(null);
+            }
+
+            // Update missing episodes for initial season
+            updateMissingEpisodesForSeason(initialSeason);
+          } catch (error) {
+            console.error("Error fetching TV series data:", error);
+          }
+        }
 
         setMediaDetails({
           ...details,
@@ -325,6 +497,147 @@ export default function MediaDetailPage({
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h1 className="text-4xl font-bold mb-2">{title}</h1>
+
+                  {/* TV Series Episode Navigation */}
+                  {mediaType === "tv" && tmdbSeasons.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {/* <label className="text-gray-300 text-sm">Season:</label> */}
+                        <select
+                          value={selectedSeason}
+                          onChange={(e) =>
+                            handleSeasonChange(parseInt(e.target.value))
+                          }
+                          className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-600 focus:border-[#CC7B19] focus:outline-none"
+                        >
+                          {tmdbSeasons.map((season) => (
+                            <option
+                              key={season.season_number}
+                              value={season.season_number}
+                            >
+                              Season {season.season_number}
+                              {season.name !== `Season ${season.season_number}`
+                                ? ` - ${season.name}`
+                                : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {/* <label className="text-gray-300 text-sm">
+                          Episode:
+                        </label> */}
+                        <select
+                          value={selectedEpisode}
+                          onChange={(e) =>
+                            handleEpisodeChange(parseInt(e.target.value))
+                          }
+                          className="bg-gray-800 text-white px-3 py-1 rounded border border-gray-600 focus:border-[#CC7B19] focus:outline-none"
+                        >
+                          {tmdbEpisodesBySeason[selectedSeason]?.map(
+                            (episode) => {
+                              const localEpisode = localEpisodesBySeason[
+                                selectedSeason
+                              ]?.find(
+                                (localEp) =>
+                                  localEp.episodeNumber ===
+                                  episode.episode_number
+                              );
+                              const hasLocalFile = !!localEpisode;
+                              const hasVideo = localEpisode?.hasVideo;
+                              const hasSubtitles = localEpisode?.hasSubtitles;
+
+                              let statusText = "";
+                              if (hasLocalFile) {
+                                const parts = [];
+                                if (hasVideo) parts.push("🎥");
+                                if (hasSubtitles) parts.push("📝");
+                                statusText = ` ${parts.join(" ")}`;
+                              } else {
+                                statusText = " (not downloaded)";
+                              }
+
+                              return (
+                                <option
+                                  key={episode.episode_number}
+                                  value={episode.episode_number}
+                                  className={
+                                    hasLocalFile
+                                      ? "text-white"
+                                      : "text-gray-400"
+                                  }
+                                >
+                                  Episode {episode.episode_number}:{" "}
+                                  {episode.name}
+                                  {statusText}
+                                </option>
+                              );
+                            }
+                          )}
+                        </select>
+                      </div>
+
+                      <div className="text-sm text-gray-400">
+                        {currentEpisodeFile?.fileName ? (
+                          <div className="flex flex-col">
+                            <span className="text-green-600">
+                              ✓{/* {currentEpisodeFile.fileName} */}
+                            </span>
+                            {currentEpisodeFile.relatedFiles &&
+                              currentEpisodeFile.relatedFiles.length > 1 && (
+                                <span className="text-xs text-gray-500">
+                                  + {currentEpisodeFile.relatedFiles.length - 1}{" "}
+                                  related file
+                                  {currentEpisodeFile.relatedFiles.length -
+                                    1 !==
+                                  1
+                                    ? "s"
+                                    : ""}
+                                  {currentEpisodeFile.hasVideo && " 🎥"}
+                                  {currentEpisodeFile.hasSubtitles && " 📝"}
+                                </span>
+                              )}
+                          </div>
+                        ) : (
+                          <span className="text-yellow-400">
+                            No local files for this episode
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Missing Episodes Notification */}
+                  {/* {mediaType === "tv" && missingEpisodes.length > 0 && (
+                    <div className="mt-4 p-4 bg-gray-800/80 border border-gray-600 rounded-lg shadow-lg">
+                      <h4 className="text-yellow-400 font-medium mb-3 flex items-center gap-2">
+                        <span className="text-lg">📁</span>
+                        Missing Episodes (Season {selectedSeason})
+                      </h4>
+                      <div className="text-sm text-gray-300 space-y-2 max-h-32 overflow-y-auto">
+                        {missingEpisodes.map((ep, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 p-2 bg-gray-700/50 rounded border-l-2 border-yellow-500"
+                          >
+                            <span className="text-yellow-400 font-medium min-w-[60px]">
+                              S{ep.season}E{String(ep.episode).padStart(2, "0")}
+                            </span>
+                            <span className="flex-1">
+                              {ep.title || `Episode ${ep.episode}`}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-xs text-gray-400">
+                        {missingEpisodes.length} episode
+                        {missingEpisodes.length !== 1 ? "s" : ""} missing from
+                        this season
+                      </div>
+                    </div>
+                  )} */}
+
                   {mediaDetails.tagline && (
                     <p className="text-xl text-gray-300 italic mb-4">
                       {mediaDetails.tagline}
@@ -333,37 +646,36 @@ export default function MediaDetailPage({
                 </div>
                 {/* Mini Video Thumbnail */}
                 <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg">
-                  {mediaDetails?.ObjUrl ? (
+                  {currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl ? (
                     <ReactPlayer
-                      src={mediaDetails.ObjUrl}
-                      controls={true}
-                      width="480px"
-                      height="270px"
-                      playing={true}
+                      key={currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl} // Force recreation when source changes
+                      src={currentEpisodeFile?.ObjUrl || mediaDetails.ObjUrl}
+                      controls={false} // Remove controls for thumbnail
+                      width="100%"
+                      height="100%"
+                      playing={false} // Don't auto-play thumbnail
                       muted={true}
-                      loop={true}
+                      loop={false}
+                      playsInline={true}
                       onError={(error: any) => {
-                        console.error("ReactPlayer thumbnail error:", error);
-                        console.error("Error type:", typeof error);
-                        console.error("Error keys:", Object.keys(error || {}));
-                        console.error("Thumbnail src:", mediaDetails.ObjUrl);
-                        console.error(
-                          "Can play src:",
-                          ReactPlayer.canPlay?.(mediaDetails.ObjUrl || "")
-                        );
-                        // Blob URLs should work directly, log source type for debugging
-                        console.log(
-                          "Video source type:",
-                          mediaDetails.ObjUrl?.startsWith("blob:")
-                            ? "Blob URL"
-                            : "Other URL"
-                        );
+                        // Only log actual errors, not empty objects or synthetic events
+                        if (
+                          error &&
+                          typeof error === "object" &&
+                          Object.keys(error).length > 0
+                        ) {
+                          console.warn("ReactPlayer thumbnail error:", error);
+                        }
+                        // Don't log synthetic React events or empty errors
                       }}
-                      onReady={() => console.log("Thumbnail ReactPlayer ready")}
+                      style={{
+                        objectFit: "cover",
+                        borderRadius: "0.5rem",
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
-                      <div className="text-center text-gray-400">
+                      <div className="text-center text-gray-400 p-6">
                         <BsImage className="text-3xl mx-auto mb-2" />
                         <p className="text-xs">Video not available</p>
                         <p className="text-xs">Upload from local files</p>

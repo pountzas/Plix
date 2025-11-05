@@ -122,7 +122,7 @@ function Feed() {
                   </div>
                 )}
                 {(latestTv || persistedTvShows.length > 0) && (
-                  <div className="pt-9">
+                  <div className="pt-9 w-full">
                     <h3>{latestTv ? "Latest TV Shows" : "Your TV Shows"}</h3>
                     <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
                       {persistedTvShows.map((tv) => (

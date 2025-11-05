@@ -24,7 +24,9 @@ export interface MovieFile {
 
 export interface TvFile {
   name: string
-  episode?: any
+  seasonNumber?: number
+  episodeNumber?: number
+  episodeTitle?: string
   tmdbId: number
   adult?: boolean
   backdrop_path: string

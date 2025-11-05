@@ -32,17 +32,15 @@ export function useMediaPersistence() {
     // Actions
     setPersistedMovies,
     setPersistedTvShows,
-    setIsLoadingMovies,
-    setIsLoadingTvShows,
-    setIsSavingMovies,
-    setIsSavingTvShows,
     setPersistenceError,
     setLastSynced,
-    resetPersistedData,
+
+    // Loading states
+    setIsSavingMovies,
+    setIsSavingTvShows,
   } = useMediaStore();
 
   const userId = (session?.user as any)?.uid;
-  const isAuthenticated = !!session?.user;
 
   // Save movies to collection
   const saveMoviesToCollection = useCallback(
