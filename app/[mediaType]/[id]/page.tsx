@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback, useRef } from "react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import {
   getSeasonEpisodes,
 } from "../../../utils/tmdbApi";
 import { useMediaStore } from "../../../stores/mediaStore";
+import { filePersistence } from "../../../utils/filePersistence";
 
 interface MediaDetails {
   id: number;
@@ -68,6 +69,7 @@ interface MediaDetailPageProps {
   }>;
   searchParams: Promise<{
     ObjUrl?: string;
+    objUrl?: string;
     fileName?: string;
     folderPath?: string;
     rootPath?: string;
@@ -130,6 +132,7 @@ export default function MediaDetailPage({
   const {
     getSessionMovie,
     getSessionTvShow,
+    persistedMovies,
     persistedTvShows,
     sessionTvShows,
   } = useMediaStore();
@@ -138,6 +141,67 @@ export default function MediaDetailPage({
   const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Blob URL creation state
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [creatingBlobUrl, setCreatingBlobUrl] = useState(false);
+
+  // Global store for fresh upload files (persists across navigation)
+  const freshUploadFiles = useRef<Map<string, File>>(new Map());
+
+  // Function to create blob URL on-demand
+  const createBlobUrlForMedia = useCallback(
+    async (mediaData: any) => {
+      if (!mediaData) return null;
+
+      try {
+        setCreatingBlobUrl(true);
+        console.log(
+          `Creating blob URL for ${mediaType}: ${mediaData.fileName}`
+        );
+
+        let blobUrl: string | null = null;
+
+        // First, check if this is a fresh upload with stored file reference
+        const fileKey = `${mediaData.fileName}_${mediaData.folderPath}`;
+        const storedFile = freshUploadFiles.current.get(fileKey);
+
+        if (storedFile) {
+          // Create blob URL from stored file reference
+          blobUrl = URL.createObjectURL(storedFile);
+          console.log(
+            `Created blob URL from stored file: ${blobUrl.substring(0, 50)}...`
+          );
+        } else if (mediaData.fileId) {
+          // Try to get from IndexedDB (for persisted files)
+          await filePersistence.init();
+          const storedFileData = await filePersistence.getFile(
+            mediaData.fileId
+          );
+          if (storedFileData?.url) {
+            blobUrl = storedFileData.url;
+            console.log(
+              `Created blob URL from IndexedDB: ${blobUrl.substring(0, 50)}...`
+            );
+          }
+        }
+
+        if (blobUrl) {
+          setBlobUrl(blobUrl);
+          return blobUrl;
+        } else {
+          console.warn(`Could not create blob URL for: ${mediaData.fileName}`);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error creating blob URL:", error);
+        return null;
+      } finally {
+        setCreatingBlobUrl(false);
+      }
+    },
+    [mediaType]
+  );
 
   // TV series specific state
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
@@ -191,8 +255,17 @@ export default function MediaDetailPage({
       );
       if (episodeFile) {
         setCurrentEpisodeFile(episodeFile);
+        // Set blob URL from session data if available, otherwise create on-demand
+        if (episodeFile.ObjUrl) {
+          setBlobUrl(episodeFile.ObjUrl);
+        } else if (episodeFile.fileId) {
+          createBlobUrlForMedia(episodeFile);
+        } else {
+          setBlobUrl(null);
+        }
       } else {
         setCurrentEpisodeFile(null);
+        setBlobUrl(null);
       }
     }
   };
@@ -341,11 +414,19 @@ export default function MediaDetailPage({
             // Set initial episode
             const localSeasonEpisodes = localEpisodesGrouped[initialSeason];
             if (localSeasonEpisodes && localSeasonEpisodes.length > 0) {
-              setSelectedEpisode(localSeasonEpisodes[0].episodeNumber || 1);
-              setCurrentEpisodeFile(localSeasonEpisodes[0]);
+              const firstEpisode = localSeasonEpisodes[0];
+              setSelectedEpisode(firstEpisode.episodeNumber || 1);
+              setCurrentEpisodeFile(firstEpisode);
+              // Set blob URL from session data if available, otherwise create on-demand
+              if (firstEpisode.ObjUrl) {
+                setBlobUrl(firstEpisode.ObjUrl);
+              } else if (firstEpisode.fileId) {
+                createBlobUrlForMedia(firstEpisode);
+              }
             } else {
               setSelectedEpisode(1);
               setCurrentEpisodeFile(null);
+              setBlobUrl(null);
             }
 
             // Update missing episodes for initial season
@@ -355,14 +436,34 @@ export default function MediaDetailPage({
           }
         }
 
+        // First, find the appropriate media data (session or persisted)
+        let mediaData = sessionData;
+        if (!mediaData) {
+          // Check persisted data for this media
+          const persistedItems =
+            mediaType === "movie" ? persistedMovies : persistedTvShows;
+          mediaData = persistedItems.find(
+            (item) => item.tmdbId === parseInt(id)
+          );
+        }
+
         setMediaDetails({
           ...details,
-          ObjUrl: sessionData?.ObjUrl || resolvedSearchParams.ObjUrl,
-          fileName: sessionData?.fileName || resolvedSearchParams.fileName,
-          folderPath:
-            sessionData?.folderPath || resolvedSearchParams.folderPath,
-          rootPath: sessionData?.rootPath || resolvedSearchParams.rootPath,
+          ObjUrl: mediaData?.ObjUrl || resolvedSearchParams.objUrl || "",
+          fileName: mediaData?.fileName || resolvedSearchParams.fileName,
+          folderPath: mediaData?.folderPath || resolvedSearchParams.folderPath,
+          rootPath: mediaData?.rootPath || resolvedSearchParams.rootPath,
         });
+
+        // Set blob URL from session data, URL params, or create on-demand
+        if (mediaData?.ObjUrl) {
+          setBlobUrl(mediaData.ObjUrl);
+        } else if (resolvedSearchParams.objUrl) {
+          setBlobUrl(resolvedSearchParams.objUrl);
+        } else if (mediaData?.fileId) {
+          // Create blob URL on-demand for persisted files
+          createBlobUrlForMedia(mediaData);
+        }
 
         // Set credits data
         setCredits(creditsData);
@@ -590,8 +691,13 @@ export default function MediaDetailPage({
                         {currentEpisodeFile?.fileName ? (
                           <div className="flex flex-col">
                             <span className="text-green-600">
-                              ✓{/* {currentEpisodeFile.fileName} */}
+                              ✓ {currentEpisodeFile.fileName}
                             </span>
+                            {creatingBlobUrl && (
+                              <span className="text-blue-400 text-xs">
+                                Loading video...
+                              </span>
+                            )}
                             {currentEpisodeFile.relatedFiles &&
                               currentEpisodeFile.relatedFiles.length > 1 && (
                                 <span className="text-xs text-gray-500">
@@ -654,10 +760,11 @@ export default function MediaDetailPage({
                 </div>
                 {/* Mini Video Thumbnail */}
                 <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg">
-                  {currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl ? (
+                  {(currentEpisodeFile && blobUrl) ||
+                  (mediaDetails && blobUrl) ? (
                     <ReactPlayer
-                      key={currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl} // Force recreation when source changes
-                      src={currentEpisodeFile?.ObjUrl || mediaDetails.ObjUrl}
+                      key={blobUrl} // Use blobUrl as key to force recreation when source changes
+                      src={blobUrl}
                       controls={false} // Remove controls for thumbnail
                       width="100%"
                       height="100%"

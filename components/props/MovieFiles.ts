@@ -18,6 +18,7 @@ interface MovieFile {
   folderPath: string
   folderPath2: string
   rootPath: string
+  fileId?: string
 }
 
 const MovieFiles: MovieFile[] = []

@@ -18,6 +18,7 @@ import { MovieFile, TvFile } from "./props/types";
 import { cachedTmdbSearch } from "../utils/apiUtils";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
+import { filePersistence } from "../utils/filePersistence";
 
 /**
  * Clean TV show name by removing years, resolution, source, codec, and release group
@@ -349,7 +350,7 @@ function MediaModal() {
                 const tmdbId = data?.results[0]?.id;
 
                 if (tmdbId) {
-                  const movieFile = {
+                  const movieFile: MovieFile = {
                     name,
                     tmdbId,
                     adult: data.results[0].adult,
@@ -368,7 +369,8 @@ function MediaModal() {
                     tmdbRating: data.results[0]?.vote_average,
                     tmdbGenre: data.results[0]?.genre_ids,
                     fileName: files[i].name,
-                    ObjUrl: URL.createObjectURL(files[i]), // Blob URL for immediate playback only
+                    // ObjUrl will be created on-demand when entering media page
+                    ObjUrl: "",
                     folderPath: files[i].webkitRelativePath,
                     folderPath2: (files[i] as any).webkitdirectory,
                     rootPath: (files[i] as any).path,
@@ -378,6 +380,18 @@ function MediaModal() {
                   setOriginalFiles(
                     (prev) => new Map(prev.set(movieFile.fileName, files[i]))
                   );
+
+                  // Store file in IndexedDB immediately for on-demand blob URL creation
+                  try {
+                    const fileId = filePersistence.getFileId(files[i]);
+                    (movieFile as any).fileId = fileId;
+                    await filePersistence.storeFile(files[i]);
+                  } catch (error) {
+                    console.warn(
+                      "Failed to store movie file immediately:",
+                      error
+                    );
+                  }
 
                   // Add to local array for immediate UI feedback
                   MovieFiles.push(movieFile);
@@ -440,18 +454,34 @@ function MediaModal() {
                   tmdbRating: tvShow.vote_average,
                   tmdbGenre: tvShow.genre_ids,
                   fileName: file.name,
-                  ObjUrl: URL.createObjectURL(file),
+                  // ObjUrl will be created on-demand when entering media page
+                  ObjUrl: "",
                   folderPath: (file as any).webkitRelativePath,
                   folderPath2: (file as any).webkitdirectory,
                   rootPath: (file as any).path,
                   relatedFiles: [file.name],
-                  hasVideo: true,
-                  hasSubtitles: false,
+                  hasVideo: file.type.includes("video"),
+                  hasSubtitles:
+                    !file.type.includes("video") &&
+                    (file.name.toLowerCase().endsWith(".srt") ||
+                      file.name.toLowerCase().endsWith(".vtt") ||
+                      file.name.toLowerCase().endsWith(".sub") ||
+                      file.name.toLowerCase().endsWith(".ass")),
                 };
 
                 setOriginalFiles(
                   (prev) => new Map(prev.set(tvFile.fileName, file))
                 );
+
+                // Store file in IndexedDB immediately for on-demand blob URL creation
+                try {
+                  const fileId = filePersistence.getFileId(file);
+                  (tvFile as any).fileId = fileId;
+                  await filePersistence.storeFile(file);
+                } catch (error) {
+                  console.warn("Failed to store TV file immediately:", error);
+                }
+
                 TvFiles.push(tvFile);
                 addSessionTvShow(tvFile);
                 processedTvShows.push(tvFile);
@@ -550,7 +580,8 @@ function MediaModal() {
                     tmdbRating: tvShow.vote_average,
                     tmdbGenre: tvShow.genre_ids,
                     fileName: primaryFile.name,
-                    ObjUrl: URL.createObjectURL(primaryFile), // Blob URL for immediate playback only
+                    // ObjUrl will be created on-demand when entering media page
+                    ObjUrl: "",
                     folderPath: (primaryFile as any).webkitRelativePath,
                     folderPath2: (primaryFile as any).webkitdirectory,
                     rootPath: (primaryFile as any).path,
@@ -569,6 +600,16 @@ function MediaModal() {
                     setOriginalFiles(
                       (prev) => new Map(prev.set(file.name, file))
                     );
+
+                    // Store file in IndexedDB immediately for on-demand blob URL creation
+                    // Note: We don't set fileId on tvFile here since it's the primary file
+                    // The episode lookup will use fileId from the episode data
+                    filePersistence.storeFile(file).catch((error) => {
+                      console.warn(
+                        `Failed to store file ${file.name} immediately:`,
+                        error
+                      );
+                    });
                   });
 
                   // Add to local array for immediate UI feedback

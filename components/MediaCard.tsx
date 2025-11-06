@@ -94,6 +94,12 @@ function MediaCard({
       folderPath: _folderPath || "",
       rootPath: _rootPath || "",
     });
+
+    // Include ObjUrl if available (for fresh uploads)
+    if (_ObjUrl) {
+      params.set("objUrl", _ObjUrl);
+    }
+
     const url = `/${mediaType}/${tmdbId}?${params.toString()}`;
     router.push(url);
   };
