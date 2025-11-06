@@ -37,13 +37,11 @@ export async function createPersistedMovieFile(
     throw new Error("Invalid movie file data: missing required fields");
   }
 
-  // Store file in IndexedDB if we have the original file
+  // Store file in IndexedDB for on-demand blob URL creation
   let fileId: string | undefined;
   if (originalFile) {
     try {
-      fileId = filePersistence.getFileId(originalFile);
-      // Store synchronously to ensure file is available for restoration
-      await filePersistence.storeFile(originalFile);
+      fileId = await filePersistence.storeFile(originalFile);
     } catch (error) {
       console.error("Failed to store file in IndexedDB:", error);
       fileId = undefined; // Don't save fileId if storage failed
@@ -93,13 +91,11 @@ export async function createPersistedTvFile(
     throw new Error("Invalid TV file data: missing required fields");
   }
 
-  // Store file in IndexedDB if we have the original file
+  // Store file in IndexedDB for on-demand blob URL creation
   let fileId: string | undefined;
   if (originalFile) {
     try {
-      fileId = filePersistence.getFileId(originalFile);
-      // Store synchronously to ensure file is available for restoration
-      await filePersistence.storeFile(originalFile);
+      fileId = await filePersistence.storeFile(originalFile);
     } catch (error) {
       console.error("Failed to store TV file in IndexedDB:", error);
       fileId = undefined; // Don't save fileId if storage failed
@@ -148,12 +144,6 @@ export async function loadUserMovies(
     querySnapshot.forEach((doc) => {
       const data = doc.data();
 
-      // Skip deleted movies
-      if (data.deleted === true) {
-        console.log("Skipping deleted movie:", doc.id);
-        return;
-      }
-
       movies.push({
         ...data,
         addedAt: data.addedAt?.toDate() || new Date(),
@@ -189,12 +179,6 @@ export async function loadUserTvShows(
     const tvShows: PersistedTvFile[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-
-      // Skip deleted TV shows
-      if (data.deleted === true) {
-        console.log("Skipping deleted TV show:", doc.id);
-        return;
-      }
 
       tvShows.push({
         ...data,
@@ -384,7 +368,7 @@ export async function saveTvShowsBatchToUserCollection(
         "users",
         userId,
         "tvshows",
-        tvFile.tmdbId.toString()
+        `${tvFile.tmdbId}_S${tvFile.seasonNumber}E${tvFile.episodeNumber}`
       );
 
       batch.set(tvShowRef, {
@@ -413,10 +397,8 @@ export async function removeMovieFromUserCollection(
 ): Promise<void> {
   try {
     const movieRef = doc(db, "users", userId, "movies", tmdbId.toString());
-    await updateDoc(movieRef, {
-      deleted: true,
-      lastModified: serverTimestamp(),
-    });
+    await deleteDoc(movieRef);
+    console.log(`Completely deleted movie ${tmdbId} from Firebase`);
   } catch (error) {
     console.error("Error removing movie from collection:", error);
     throw new Error("Failed to remove movie from collection");
@@ -432,13 +414,33 @@ export async function removeTvShowFromUserCollection(
 ): Promise<void> {
   try {
     const tvShowRef = doc(db, "users", userId, "tvshows", tmdbId.toString());
-    await updateDoc(tvShowRef, {
-      deleted: true,
-      lastModified: serverTimestamp(),
-    });
+    await deleteDoc(tvShowRef);
+    console.log(`Completely deleted TV show ${tmdbId} from Firebase`);
   } catch (error) {
     console.error("Error removing TV show from collection:", error);
     throw new Error("Failed to remove TV show from collection");
+  }
+}
+
+/**
+ * Remove all episodes of a TV show from user's collection
+ */
+export async function removeAllEpisodesOfTvShowFromUserCollection(
+  tmdbId: number,
+  userId: string
+): Promise<void> {
+  try {
+    const tvShowsRef = collection(db, "users", userId, "tvshows");
+    const q = query(tvShowsRef, where("tmdbId", "==", tmdbId));
+    const querySnapshot = await getDocs(q);
+
+    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+
+    console.log(`Completely deleted ${deletePromises.length} episodes of TV show ${tmdbId} from Firebase`);
+  } catch (error) {
+    console.error("Error removing TV show episodes from collection:", error);
+    throw new Error("Failed to remove TV show episodes from collection");
   }
 }
 
@@ -484,16 +486,21 @@ export async function restoreMovieFileUrls(
 ): Promise<PersistedMovieFile[]> {
   try {
     await filePersistence.init();
+    console.log(`Attempting to restore URLs for ${movies.length} movies`);
     const restoredMovies = await Promise.all(
       movies.map(async (movie) => {
         if (movie.fileId) {
           try {
+            console.log(`Restoring file for movie "${movie.name}" with fileId: ${movie.fileId}`);
             const storedFile = await filePersistence.getFile(movie.fileId);
             if (storedFile) {
+              console.log(`Successfully restored URL for movie "${movie.name}": ${storedFile.url.substring(0, 50)}...`);
               return {
                 ...movie,
                 ObjUrl: storedFile.url,
               };
+            } else {
+              console.warn(`No stored file found for movie "${movie.name}" with fileId: ${movie.fileId}`);
             }
           } catch (error) {
             console.warn(
@@ -501,10 +508,14 @@ export async function restoreMovieFileUrls(
               error
             );
           }
+        } else {
+          console.warn(`Movie "${movie.name}" has no fileId`);
         }
         return movie;
       })
     );
+    const restoredCount = restoredMovies.filter(m => m.ObjUrl).length;
+    console.log(`Restored URLs for ${restoredCount}/${movies.length} movies`);
     return restoredMovies;
   } catch (error) {
     console.error("Error restoring movie file URLs:", error);
@@ -520,16 +531,21 @@ export async function restoreTvShowFileUrls(
 ): Promise<PersistedTvFile[]> {
   try {
     await filePersistence.init();
+    console.log(`Attempting to restore URLs for ${tvShows.length} TV shows`);
     const restoredTvShows = await Promise.all(
       tvShows.map(async (tvShow) => {
         if (tvShow.fileId) {
           try {
+            console.log(`Restoring file for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} with fileId: ${tvShow.fileId}`);
             const storedFile = await filePersistence.getFile(tvShow.fileId);
             if (storedFile) {
+              console.log(`Successfully restored URL for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber}: ${storedFile.url.substring(0, 50)}...`);
               return {
                 ...tvShow,
                 ObjUrl: storedFile.url,
               };
+            } else {
+              console.warn(`No stored file found for TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} with fileId: ${tvShow.fileId}`);
             }
           } catch (error) {
             console.warn(
@@ -537,10 +553,14 @@ export async function restoreTvShowFileUrls(
               error
             );
           }
+        } else {
+          console.warn(`TV show "${tvShow.name}" S${tvShow.seasonNumber}E${tvShow.episodeNumber} has no fileId`);
         }
         return tvShow;
       })
     );
+    const restoredCount = restoredTvShows.filter(tv => tv.ObjUrl).length;
+    console.log(`Restored URLs for ${restoredCount}/${tvShows.length} TV shows`);
     return restoredTvShows;
   } catch (error) {
     console.error("Error restoring TV show file URLs:", error);

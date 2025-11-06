@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback, useRef } from "react";
 import { Activity } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BsArrowLeft, BsImage } from "react-icons/bs";
+import { BsArrowLeft, BsImage, BsPlay, BsChevronDown } from "react-icons/bs";
 import ReactPlayer from "react-player";
 import Layout from "../../../components/Layout";
 import { cachedTmdbDetails } from "../../../utils/apiUtils";
@@ -16,6 +16,8 @@ import {
   getSeasonEpisodes,
 } from "../../../utils/tmdbApi";
 import { useMediaStore } from "../../../stores/mediaStore";
+import { filePersistence } from "../../../utils/filePersistence";
+import { useSession } from "next-auth/react";
 
 interface MediaDetails {
   id: number;
@@ -68,6 +70,7 @@ interface MediaDetailPageProps {
   }>;
   searchParams: Promise<{
     ObjUrl?: string;
+    objUrl?: string;
     fileName?: string;
     folderPath?: string;
     rootPath?: string;
@@ -127,13 +130,33 @@ export default function MediaDetailPage({
   const resolvedSearchParams = use(searchParams);
 
   // Session store for uploaded files
-  const { getSessionMovie, getSessionTvShow, persistedTvShows } =
-    useMediaStore();
+  const {
+    getSessionMovie,
+    getSessionTvShow,
+    persistedMovies,
+    persistedTvShows,
+    sessionTvShows,
+  } = useMediaStore();
+
+  // Auth session
+  const { data: session } = useSession();
 
   const [mediaDetails, setMediaDetails] = useState<MediaDetails | null>(null);
   const [credits, setCredits] = useState<CreditsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Blob URL creation state
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [creatingBlobUrl, setCreatingBlobUrl] = useState(false);
+  const [fileNotFound, setFileNotFound] = useState(false);
+
+  // Version selection state
+  const [availableVersions, setAvailableVersions] = useState<any[]>([]);
+  const [selectedVersionIndex, setSelectedVersionIndex] = useState(0);
+
+  // Global store for fresh upload files (persists across navigation)
+  const freshUploadFiles = useRef<Map<string, File>>(new Map());
 
   // TV series specific state
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
@@ -187,8 +210,17 @@ export default function MediaDetailPage({
       );
       if (episodeFile) {
         setCurrentEpisodeFile(episodeFile);
+        // Set blob URL from session data if available, otherwise create on-demand
+        if (episodeFile.ObjUrl) {
+          setBlobUrl(episodeFile.ObjUrl);
+        } else if (episodeFile.fileId) {
+          createBlobUrlForMedia(episodeFile);
+        } else {
+          setBlobUrl(null);
+        }
       } else {
         setCurrentEpisodeFile(null);
+        setBlobUrl(null);
       }
     }
   };
@@ -213,6 +245,212 @@ export default function MediaDetailPage({
 
     setMissingEpisodes(missing);
   };
+
+  // Function to create blob URL on-demand
+  const createBlobUrlForMedia = useCallback(
+    async (mediaData: any) => {
+      if (!mediaData) return null;
+
+      try {
+        setCreatingBlobUrl(true);
+        console.log(
+          `Creating blob URL for ${mediaType}: ${mediaData.fileName}`
+        );
+
+        let blobUrl: string | null = null;
+
+        // First, check if this is a fresh upload with stored file reference
+        const fileKey = `${mediaData.fileName}_${mediaData.folderPath}`;
+        const storedFile = freshUploadFiles.current.get(fileKey);
+
+        if (storedFile) {
+          // Create blob URL from stored file reference
+          blobUrl = URL.createObjectURL(storedFile);
+          console.log(
+            `Created blob URL from stored file: ${blobUrl.substring(0, 50)}...`
+          );
+        } else if (mediaData.fileId) {
+          // Try to get from IndexedDB (for persisted files)
+          console.log(
+            `Attempting to get file from IndexedDB with fileId: ${mediaData.fileId}`
+          );
+          await filePersistence.init();
+
+          try {
+            const storedFileData = await filePersistence.getFile(
+              mediaData.fileId
+            );
+
+            if (storedFileData?.url) {
+              blobUrl = storedFileData.url;
+              console.log(
+                `✅ Created blob URL from IndexedDB: ${blobUrl.substring(
+                  0,
+                  50
+                )}...`
+              );
+            } else {
+              console.log(
+                `❌ File not found in IndexedDB for fileId: ${mediaData.fileId}`
+              );
+              console.log(`Stored file data:`, storedFileData);
+
+              // Try to get all files to see what's available
+              const allFiles = await filePersistence.getAllFiles();
+              console.log(
+                `All files in IndexedDB (${allFiles.length}):`,
+                allFiles.map((f) => ({ id: f.id, name: f.fileName }))
+              );
+            }
+          } catch (error) {
+            console.error(`❌ Error getting file from IndexedDB:`, error);
+          }
+        }
+
+        if (blobUrl) {
+          setBlobUrl(blobUrl);
+          setFileNotFound(false); // Reset the not found flag
+          return blobUrl;
+        } else {
+          console.warn(`Could not create blob URL for: ${mediaData.fileName}`);
+          console.warn(
+            `File not found in fresh uploads or IndexedDB. This usually means:`
+          );
+          console.warn(
+            `1. File was uploaded in a previous session and IndexedDB was cleared`
+          );
+          console.warn(`2. File was never properly stored during upload`);
+          console.warn(`3. File ID mismatch between storage and retrieval`);
+          console.warn(
+            `Please re-upload the file through the MediaModal to restore playback.`
+          );
+
+          // Set flags to show re-upload message in UI
+          setBlobUrl(null);
+          setFileNotFound(true);
+          return null;
+        }
+      } catch (error) {
+        console.error("Error creating blob URL:", error);
+        return null;
+      } finally {
+        setCreatingBlobUrl(false);
+      }
+    },
+    [mediaType]
+  );
+
+  // Detect available versions of the same media
+  const detectAvailableVersions = useCallback(async () => {
+    if (!mediaDetails?.id) return;
+
+    try {
+      const userId = (session as any)?.user?.uid;
+      if (!userId) return;
+
+      let versions: any[] = [];
+
+      if (mediaType === "movie") {
+        // Get all movie versions from persisted store
+        const { persistedMovies } = useMediaStore.getState();
+        versions = persistedMovies.filter((m) => m.tmdbId === mediaDetails.id);
+      } else if (mediaType === "tv") {
+        // For TV shows, get all episodes of this series
+        const { persistedTvShows } = useMediaStore.getState();
+        versions = persistedTvShows.filter(
+          (tv) => tv.tmdbId === mediaDetails.id
+        );
+      }
+
+      if (versions.length > 1) {
+        setAvailableVersions(versions);
+        // Set current version as selected (find the one that matches current file)
+        const currentIndex = versions.findIndex(
+          (v) => v.fileName === mediaDetails?.fileName
+        );
+        setSelectedVersionIndex(currentIndex >= 0 ? currentIndex : 0);
+      } else {
+        setAvailableVersions([]);
+        setSelectedVersionIndex(0);
+      }
+    } catch (error) {
+      console.error("Error detecting available versions:", error);
+    }
+  }, [mediaDetails, mediaType, session]);
+
+  // Switch to a different version
+  const switchToVersion = useCallback(
+    async (versionIndex: number) => {
+      if (versionIndex < 0 || versionIndex >= availableVersions.length) return;
+
+      const selectedVersion = availableVersions[versionIndex];
+      setSelectedVersionIndex(versionIndex);
+
+      console.log(`Switching to version: ${selectedVersion.fileName}`);
+
+      if (mediaType === "movie") {
+        // For movies, update mediaDetails and recreate blob URL
+        setMediaDetails((prev) =>
+          prev
+            ? {
+                ...prev,
+                fileName: selectedVersion.fileName,
+                folderPath: selectedVersion.folderPath,
+                rootPath: selectedVersion.rootPath,
+                ObjUrl: selectedVersion.ObjUrl,
+              }
+            : null
+        );
+
+        // Recreate blob URL for the new version
+        await createBlobUrlForMedia(selectedVersion);
+      } else if (
+        mediaType === "tv" &&
+        selectedVersion.seasonNumber &&
+        selectedVersion.episodeNumber
+      ) {
+        // For TV shows, update episode selection and recreate blob URL
+        setSelectedSeason(selectedVersion.seasonNumber);
+        setSelectedEpisode(selectedVersion.episodeNumber);
+
+        // Find and set the episode file
+        const episodeFile = localEpisodesBySeason[
+          selectedVersion.seasonNumber
+        ]?.find(
+          (ep: any) => ep.episodeNumber === selectedVersion.episodeNumber
+        );
+
+        if (episodeFile) {
+          setCurrentEpisodeFile(episodeFile);
+          await createBlobUrlForMedia(episodeFile);
+        }
+      }
+    },
+    [availableVersions, mediaType, createBlobUrlForMedia, localEpisodesBySeason]
+  );
+
+  // Generate human-readable label for version
+  const getVersionLabel = useCallback((version: any): string => {
+    if (!version.fileName) return "Unknown version";
+
+    // Extract quality info from filename
+    const fileName = version.fileName.toLowerCase();
+    let quality = "Standard";
+
+    if (fileName.includes("2160p") || fileName.includes("4k"))
+      quality = "4K UHD";
+    else if (fileName.includes("1080p")) quality = "1080p HD";
+    else if (fileName.includes("720p")) quality = "720p HD";
+    else if (fileName.includes("480p")) quality = "480p";
+
+    // For TV shows, include episode info
+    if (version.seasonNumber && version.episodeNumber) {
+      return `S${version.seasonNumber}E${version.episodeNumber} - ${quality}`;
+    }
+
+    // For movies, just show quality
+    return quality;
+  }, []);
 
   useEffect(() => {
     // Validate required parameters
@@ -288,13 +526,17 @@ export default function MediaDetailPage({
             }
             setTmdbEpisodesBySeason(episodesBySeasonData);
 
-            // Find local episodes for this TV series
-            const seriesEpisodes = persistedTvShows.filter(
+            // Find local episodes for this TV series (both persisted and session)
+            const persistedEpisodes = persistedTvShows.filter(
               (tv) => tv.tmdbId === parseInt(id)
             );
+            const sessionEpisodes = sessionTvShows.filter(
+              (tv) => tv.tmdbId === parseInt(id)
+            );
+            const seriesEpisodes = [...persistedEpisodes, ...sessionEpisodes];
 
             console.log(
-              `Found ${seriesEpisodes.length} local episodes for TV series ID ${id}`
+              `Found ${seriesEpisodes.length} local episodes for TV series ID ${id} (${persistedEpisodes.length} persisted, ${sessionEpisodes.length} session)`
             );
 
             // Group local episodes by season
@@ -333,11 +575,19 @@ export default function MediaDetailPage({
             // Set initial episode
             const localSeasonEpisodes = localEpisodesGrouped[initialSeason];
             if (localSeasonEpisodes && localSeasonEpisodes.length > 0) {
-              setSelectedEpisode(localSeasonEpisodes[0].episodeNumber || 1);
-              setCurrentEpisodeFile(localSeasonEpisodes[0]);
+              const firstEpisode = localSeasonEpisodes[0];
+              setSelectedEpisode(firstEpisode.episodeNumber || 1);
+              setCurrentEpisodeFile(firstEpisode);
+              // Set blob URL from session data if available, otherwise create on-demand
+              if (firstEpisode.ObjUrl) {
+                setBlobUrl(firstEpisode.ObjUrl);
+              } else if (firstEpisode.fileId) {
+                createBlobUrlForMedia(firstEpisode);
+              }
             } else {
               setSelectedEpisode(1);
               setCurrentEpisodeFile(null);
+              setBlobUrl(null);
             }
 
             // Update missing episodes for initial season
@@ -347,14 +597,37 @@ export default function MediaDetailPage({
           }
         }
 
+        // First, find the appropriate media data (session or persisted)
+        let mediaData = sessionData;
+        if (!mediaData) {
+          // Check persisted data for this media
+          const persistedItems =
+            mediaType === "movie" ? persistedMovies : persistedTvShows;
+          mediaData = persistedItems.find(
+            (item) => item.tmdbId === parseInt(id)
+          );
+        }
+
         setMediaDetails({
           ...details,
-          ObjUrl: sessionData?.ObjUrl || resolvedSearchParams.ObjUrl,
-          fileName: sessionData?.fileName || resolvedSearchParams.fileName,
-          folderPath:
-            sessionData?.folderPath || resolvedSearchParams.folderPath,
-          rootPath: sessionData?.rootPath || resolvedSearchParams.rootPath,
+          ObjUrl: mediaData?.ObjUrl || resolvedSearchParams.objUrl || "",
+          fileName: mediaData?.fileName || resolvedSearchParams.fileName,
+          folderPath: mediaData?.folderPath || resolvedSearchParams.folderPath,
+          rootPath: mediaData?.rootPath || resolvedSearchParams.rootPath,
         });
+
+        // Detect available versions after media details are loaded
+        await detectAvailableVersions();
+
+        // Set blob URL from session data, URL params, or create on-demand
+        if (mediaData?.ObjUrl) {
+          setBlobUrl(mediaData.ObjUrl);
+        } else if (resolvedSearchParams.objUrl) {
+          setBlobUrl(resolvedSearchParams.objUrl);
+        } else if (mediaData?.fileId) {
+          // Create blob URL on-demand for persisted files
+          createBlobUrlForMedia(mediaData);
+        }
 
         // Set credits data
         setCredits(creditsData);
@@ -582,8 +855,13 @@ export default function MediaDetailPage({
                         {currentEpisodeFile?.fileName ? (
                           <div className="flex flex-col">
                             <span className="text-green-600">
-                              ✓{/* {currentEpisodeFile.fileName} */}
+                              ✓ {currentEpisodeFile.fileName}
                             </span>
+                            {creatingBlobUrl && (
+                              <span className="text-blue-400 text-xs">
+                                Loading video...
+                              </span>
+                            )}
                             {currentEpisodeFile.relatedFiles &&
                               currentEpisodeFile.relatedFiles.length > 1 && (
                                 <span className="text-xs text-gray-500">
@@ -644,18 +922,48 @@ export default function MediaDetailPage({
                     </p>
                   )}
                 </div>
+
+                {/* Version Selection Dropdown */}
+                {availableVersions.length > 1 && (
+                  <Activity mode="visible">
+                    <div className="mb-4">
+                      <div className="relative">
+                        <select
+                          value={selectedVersionIndex}
+                          onChange={(e) =>
+                            switchToVersion(parseInt(e.target.value))
+                          }
+                          className="appearance-none bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 pr-8 text-white text-sm focus:outline-none focus:border-gray-500"
+                        >
+                          {availableVersions.map((version, index) => (
+                            <option key={index} value={index}>
+                              {getVersionLabel(version)}
+                            </option>
+                          ))}
+                        </select>
+                        <BsChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {availableVersions.length} versions available
+                      </p>
+                    </div>
+                  </Activity>
+                )}
+
                 {/* Mini Video Thumbnail */}
-                <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg">
-                  {currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl ? (
+                <div className="w-48 h-32 rounded-lg overflow-hidden shadow-lg flex items-center justify-end">
+                  {(currentEpisodeFile && blobUrl) ||
+                  (mediaDetails && blobUrl) ? (
                     <ReactPlayer
-                      key={currentEpisodeFile?.ObjUrl || mediaDetails?.ObjUrl} // Force recreation when source changes
-                      src={currentEpisodeFile?.ObjUrl || mediaDetails.ObjUrl}
-                      controls={false} // Remove controls for thumbnail
-                      width="100%"
-                      height="100%"
-                      playing={false} // Don't auto-play thumbnail
+                      key={blobUrl}
+                      src={blobUrl}
+                      playIcon={<BsPlay className="text-white text-2xl" />}
+                      controls={true}
+                      width="30vw"
+                      height="auto"
+                      playing={true}
                       muted={true}
-                      loop={false}
+                      loop={true}
                       playsInline={true}
                       onError={(error: any) => {
                         // Only log actual errors, not empty objects or synthetic events
@@ -677,8 +985,29 @@ export default function MediaDetailPage({
                     <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg border-2 border-gray-600">
                       <div className="text-center text-gray-400 p-6">
                         <BsImage className="text-3xl mx-auto mb-2" />
-                        <p className="text-xs">Video not available</p>
-                        <p className="text-xs">Upload from local files</p>
+                        {fileNotFound ? (
+                          <>
+                            <p className="text-xs text-red-400 mb-1">
+                              File not found in storage
+                            </p>
+                            <p className="text-xs">
+                              This file was uploaded previously but is no longer
+                              available.
+                            </p>
+                            <p className="text-xs text-blue-400 mt-1">
+                              Please re-upload through the MediaModal to restore
+                              playback.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-xs">Video not available</p>
+                            <p className="text-xs text-gray-500">
+                              Supported formats: MP4, WebM, OGV
+                            </p>
+                            <p className="text-xs">Upload from local files</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
@@ -766,7 +1095,7 @@ export default function MediaDetailPage({
           <div className="px-2">
             {/* <h2 className="text-2xl font-bold mb-2">Cast</h2> */}
             <div className="flex object-contain w-full pb-4 pl-3 overflow-hidden overflow-x-scroll space-x-7 scrollbar-track-gray-800 scrollbar-thumb-black scrollbar-thin">
-              {credits.cast.slice(0, 20).map((actor) => (
+              {credits.cast.slice(0, 30).map((actor) => (
                 <div
                   key={actor.id}
                   className="flex flex-col items-center space-y-3 flex-shrink-0 w-48 h-64 cursor-pointer group"

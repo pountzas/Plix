@@ -21,6 +21,7 @@ interface TvFile {
   folderPath: string;
   folderPath2: string;
   rootPath: string;
+  fileId?: string;
   // Enhanced fields for file inventory
   relatedFiles?: string[]; // All related files (videos + subtitles) for this episode
   hasVideo?: boolean; // Whether this episode has video files
