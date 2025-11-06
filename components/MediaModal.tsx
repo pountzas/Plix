@@ -10,7 +10,7 @@ import { FaFolderOpen } from "react-icons/fa";
 import { BsFilm, BsGearFill } from "react-icons/bs";
 import { MdMonitor } from "react-icons/md";
 import { HiOutlineMusicNote } from "react-icons/hi";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import MovieFiles from "./props/MovieFiles";
 import TvFiles from "./props/TvFiles";
@@ -19,6 +19,10 @@ import { cachedTmdbSearch } from "../utils/apiUtils";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
 import { filePersistence } from "../utils/filePersistence";
+import {
+  checkMovieDuplicate,
+  checkTvEpisodeDuplicate,
+} from "../utils/mediaDuplicateDetection";
 
 /**
  * Clean TV show name by removing years, resolution, source, codec, and release group
@@ -156,6 +160,8 @@ function MediaModal() {
 
   // Session store actions for uploaded files
   const {
+    persistedMovies,
+    persistedTvShows,
     addSessionMovie,
     addSessionTvShow,
     addPersistedMovie,
@@ -169,6 +175,18 @@ function MediaModal() {
     new Map()
   );
 
+  // Track processed media for saving to Firestore
+  const [processedMovies, setProcessedMovies] = useState<MovieFile[]>([]);
+  const [processedTvShows, setProcessedTvShows] = useState<TvFile[]>([]);
+
+  // Clear arrays when modal opens to start fresh
+  useEffect(() => {
+    if (modalOpen) {
+      setProcessedMovies([]);
+      setProcessedTvShows([]);
+    }
+  }, [modalOpen]);
+
   const handleClose = () => {
     setModalOpen(false);
     setMovieLibrary(false);
@@ -177,6 +195,9 @@ function MediaModal() {
     setTypeSection(true);
     setFolderLoadSection(false);
     setAdvancedSection(false);
+    // Clear processed arrays
+    setProcessedMovies([]);
+    setProcessedTvShows([]);
   };
 
   const showLatestMovies = () => {
@@ -214,9 +235,9 @@ function MediaModal() {
       setTotalFiles(files.length);
       setProcessedCount(0);
 
-      // Arrays to collect processed media for batch saving
-      const processedMovies: MovieFile[] = [];
-      const processedTvShows: TvFile[] = [];
+      // Reset processed media arrays
+      setProcessedMovies([]);
+      setProcessedTvShows([]);
 
       // File inventory for TV series - tracks all files per series
       const tvSeriesInventory: {
@@ -381,24 +402,50 @@ function MediaModal() {
                     (prev) => new Map(prev.set(movieFile.fileName, files[i]))
                   );
 
-                  // Store file in IndexedDB immediately for on-demand blob URL creation
-                  try {
-                    const fileId = filePersistence.getFileId(files[i]);
-                    (movieFile as any).fileId = fileId;
-                    await filePersistence.storeFile(files[i]);
-                  } catch (error) {
-                    console.warn(
-                      "Failed to store movie file immediately:",
-                      error
-                    );
+                  // Generate fileId for metadata (blob will be created on-demand)
+                  const fileId = filePersistence.getFileId(files[i]);
+                  (movieFile as any).fileId = fileId;
+
+                  // Check for duplicates against existing movies (persisted + processed)
+                  const existingMovies = [
+                    ...persistedMovies,
+                    ...processedMovies,
+                  ];
+                  const duplicateCheck = checkMovieDuplicate(
+                    movieFile,
+                    existingMovies
+                  );
+
+                  console.log(
+                    `Movie "${movieFile.name}": ${duplicateCheck.reason}`
+                  );
+
+                  if (duplicateCheck.action === "skip") {
+                    console.log(`Skipping duplicate movie: ${movieFile.name}`);
+                    continue;
                   }
 
-                  // Add to local array for immediate UI feedback
-                  MovieFiles.push(movieFile);
+                  if (
+                    duplicateCheck.action === "update" &&
+                    duplicateCheck.existingItem
+                  ) {
+                    console.log(`Updating movie quality: ${movieFile.name}`);
+                    // For updates, we would need to handle replacing the existing item
+                    // For now, skip updates and only handle new additions
+                    console.log(
+                      `Quality update not implemented yet, skipping: ${movieFile.name}`
+                    );
+                    continue;
+                  }
+
+                  // Add to local array for immediate UI feedback (avoid duplicates)
+                  if (!MovieFiles.some((m) => m.tmdbId === movieFile.tmdbId)) {
+                    MovieFiles.push(movieFile);
+                  }
                   // Add to session store for navigation
                   addSessionMovie(movieFile);
                   // Collect for batch saving to Firebase
-                  processedMovies.push(movieFile);
+                  setProcessedMovies((prev) => [...prev, movieFile]);
                 } else {
                   console.log(
                     name + " not found " + files[i].webkitRelativePath
@@ -473,18 +520,59 @@ function MediaModal() {
                   (prev) => new Map(prev.set(tvFile.fileName, file))
                 );
 
-                // Store file in IndexedDB immediately for on-demand blob URL creation
-                try {
-                  const fileId = filePersistence.getFileId(file);
-                  (tvFile as any).fileId = fileId;
-                  await filePersistence.storeFile(file);
-                } catch (error) {
-                  console.warn("Failed to store TV file immediately:", error);
+                // Generate fileId for metadata (blob will be created on-demand)
+                const fileId = filePersistence.getFileId(file);
+                (tvFile as any).fileId = fileId;
+
+                // Check for duplicates against existing TV episodes (persisted + processed)
+                const existingEpisodes = [
+                  ...persistedTvShows,
+                  ...processedTvShows,
+                ];
+                const duplicateCheck = checkTvEpisodeDuplicate(
+                  tvFile,
+                  existingEpisodes
+                );
+
+                console.log(
+                  `TV Episode "${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}": ${duplicateCheck.reason}`
+                );
+
+                if (duplicateCheck.action === "skip") {
+                  console.log(
+                    `Skipping duplicate TV episode: ${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}`
+                  );
+                  continue;
                 }
 
-                TvFiles.push(tvFile);
+                if (
+                  duplicateCheck.action === "update" &&
+                  duplicateCheck.existingItem
+                ) {
+                  console.log(
+                    `Updating TV episode quality: ${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}`
+                  );
+                  // For updates, we would need to handle replacing the existing item
+                  // For now, skip updates and only handle new additions
+                  console.log(
+                    `Quality update not implemented yet, skipping: ${tvFile.name}`
+                  );
+                  continue;
+                }
+
+                // Add to local array for immediate UI feedback (avoid duplicates)
+                if (
+                  !TvFiles.some(
+                    (tv) =>
+                      tv.tmdbId === tvFile.tmdbId &&
+                      tv.seasonNumber === tvFile.seasonNumber &&
+                      tv.episodeNumber === tvFile.episodeNumber
+                  )
+                ) {
+                  TvFiles.push(tvFile);
+                }
                 addSessionTvShow(tvFile);
-                processedTvShows.push(tvFile);
+                setProcessedTvShows((prev) => [...prev, tvFile]);
 
                 console.log(
                   `Processed fallback TV episode: S${
@@ -600,24 +688,64 @@ function MediaModal() {
                     setOriginalFiles(
                       (prev) => new Map(prev.set(file.name, file))
                     );
-
-                    // Store file in IndexedDB immediately for on-demand blob URL creation
-                    // Note: We don't set fileId on tvFile here since it's the primary file
-                    // The episode lookup will use fileId from the episode data
-                    filePersistence.storeFile(file).catch((error) => {
-                      console.warn(
-                        `Failed to store file ${file.name} immediately:`,
-                        error
-                      );
-                    });
                   });
 
+                  // Generate fileId for the primary file (blob will be created on-demand)
+                  const primaryFileId = filePersistence.getFileId(primaryFile);
+                  (tvFile as any).fileId = primaryFileId;
+
+                  // Check for duplicates against existing TV episodes (persisted + processed)
+                  const existingEpisodes = [
+                    ...persistedTvShows,
+                    ...processedTvShows,
+                  ];
+                  const duplicateCheck = checkTvEpisodeDuplicate(
+                    tvFile,
+                    existingEpisodes
+                  );
+
+                  console.log(
+                    `TV Episode "${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}": ${duplicateCheck.reason}`
+                  );
+
+                  if (duplicateCheck.action === "skip") {
+                    console.log(
+                      `Skipping duplicate TV episode: ${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}`
+                    );
+                    continue;
+                  }
+
+                  if (
+                    duplicateCheck.action === "update" &&
+                    duplicateCheck.existingItem
+                  ) {
+                    console.log(
+                      `Updating TV episode quality: ${tvFile.name} S${tvFile.seasonNumber}E${tvFile.episodeNumber}`
+                    );
+                    // For updates, we would need to handle replacing the existing item
+                    // For now, skip updates and only handle new additions
+                    console.log(
+                      `Quality update not implemented yet, skipping: ${tvFile.name}`
+                    );
+                    continue;
+                  }
+
                   // Add to local array for immediate UI feedback
-                  TvFiles.push(tvFile);
+                  // Add to local array for immediate UI feedback (avoid duplicates)
+                  if (
+                    !TvFiles.some(
+                      (tv) =>
+                        tv.tmdbId === tvFile.tmdbId &&
+                        tv.seasonNumber === tvFile.seasonNumber &&
+                        tv.episodeNumber === tvFile.episodeNumber
+                    )
+                  ) {
+                    TvFiles.push(tvFile);
+                  }
                   // Add to session store for navigation
                   addSessionTvShow(tvFile);
                   // Collect for batch saving to Firebase
-                  processedTvShows.push(tvFile);
+                  setProcessedTvShows((prev) => [...prev, tvFile]);
 
                   console.log(
                     `Successfully processed episode: ${seasonEpisodeKey} - ${tvFile.fileName} (${episodeData.videoFiles.length} videos, ${episodeData.subtitleFiles.length} subtitles)`
@@ -634,80 +762,8 @@ function MediaModal() {
         }
       }
 
-      // Save processed media to Firebase if user is authenticated
-      if (
-        isAuthenticated &&
-        (processedMovies.length > 0 || processedTvShows.length > 0)
-      ) {
-        setIsSaving(true);
-        try {
-          // Save movies and TV shows in parallel with original files
-          const savePromises = [];
-          if (processedMovies.length > 0) {
-            // Associate original files with processed movies
-            const moviesWithFiles = processedMovies.map((movie: MovieFile) => ({
-              movieFile: movie,
-              originalFile: originalFiles.get(movie.fileName),
-            }));
-            savePromises.push(saveMoviesToCollectionWithFiles(moviesWithFiles));
-          }
-          if (processedTvShows.length > 0) {
-            // Associate original files with processed TV shows
-            const tvShowsWithFiles = processedTvShows.map((tvShow: TvFile) => ({
-              tvFile: tvShow,
-              originalFile: originalFiles.get(tvShow.fileName),
-            }));
-            savePromises.push(
-              saveTvShowsToCollectionWithFiles(tvShowsWithFiles)
-            );
-          }
-
-          await Promise.all(savePromises);
-          console.log(
-            `Saved ${processedMovies.length} movies and ${processedTvShows.length} TV shows to collection`
-          );
-          console.log(
-            "TV shows saved:",
-            processedTvShows.map((tv) => ({
-              name: tv.name,
-              season: tv.seasonNumber,
-              episode: tv.episodeNumber,
-              file: tv.fileName,
-            }))
-          );
-
-          // Update persisted data in store using proper actions
-          if (processedMovies.length > 0) {
-            processedMovies.forEach((movie: MovieFile) => {
-              const persistedMovie = {
-                ...movie,
-                userId: (session?.user as any)?.uid || "",
-                addedAt: new Date(),
-                lastModified: new Date(),
-              };
-              addPersistedMovie(persistedMovie as any); // Type assertion needed
-            });
-          }
-
-          if (processedTvShows.length > 0) {
-            processedTvShows.forEach((tvShow: TvFile) => {
-              const persistedTvShow = {
-                ...tvShow,
-                userId: (session?.user as any)?.uid || "",
-                addedAt: new Date(),
-                lastModified: new Date(),
-              };
-              addPersistedTvShow(persistedTvShow as any); // Type assertion needed
-            });
-          }
-        } catch (error) {
-          console.error("Error saving media to collection:", error);
-          // Note: Local arrays already updated, so UI will show the media
-          // but user will see a persistence error in the store
-        } finally {
-          setIsSaving(false);
-        }
-      }
+      // Note: Saving to Firebase is now handled asynchronously when OK is pressed
+      // This prevents UI blocking and improves performance
 
       setIsProcessing(false);
       setOk(true);
@@ -730,12 +786,117 @@ function MediaModal() {
 
   const handleOk = () => {
     if (ok) {
+      // Start background saving process (non-blocking)
+      if (
+        isAuthenticated &&
+        (processedMovies.length > 0 || processedTvShows.length > 0)
+      ) {
+        saveProcessedMediaInBackground();
+      }
+
+      // Show the latest content immediately (don't wait for saving)
       if (tvLibrary) {
         showLatestTv();
       } else if (movieLibrary) {
         showLatestMovies();
       }
+
       setOk(false);
+    }
+  };
+
+  // Background saving function - runs asynchronously without blocking UI
+  const saveProcessedMediaInBackground = async () => {
+    try {
+      console.log("Starting background save process...");
+      setIsSaving(true);
+
+      const savePromises = [];
+
+      // Save movies in background
+      if (movieLibrary && processedMovies.length > 0) {
+        console.log(`Saving ${processedMovies.length} movies in background...`);
+
+        // Create data with original files for IndexedDB storage
+        const movieDataWithFiles = processedMovies.map((movieFile) => ({
+          movieFile,
+          originalFile: originalFiles.get(movieFile.fileName),
+        }));
+
+        savePromises.push(saveMoviesToCollectionWithFiles(movieDataWithFiles));
+      }
+
+      // Save TV shows in background
+      if (tvLibrary && processedTvShows.length > 0) {
+        console.log(
+          `Saving ${processedTvShows.length} TV shows in background...`
+        );
+
+        // For TV shows, we need to handle multiple files per episode
+        const tvDataWithFiles = processedTvShows.map((tvFile) => {
+          // Get the primary file for this TV episode
+          const primaryFile = originalFiles.get(tvFile.fileName);
+
+          // If this TV episode has related files, we need to save them too
+          // The related files should already be stored in IndexedDB from the processing phase
+          return {
+            tvFile,
+            originalFile: primaryFile,
+          };
+        });
+
+        savePromises.push(saveTvShowsToCollectionWithFiles(tvDataWithFiles));
+      }
+
+      // Wait for all saves to complete
+      const results = await Promise.all(savePromises);
+
+      // Update local store and log results
+      if (movieLibrary && processedMovies.length > 0) {
+        if (results[0]) {
+          console.log("✅ Movies saved successfully to Firestore");
+
+          // Update local store with persisted movies
+          processedMovies.forEach((movie) => {
+            const persistedMovie = {
+              ...movie,
+              userId: (session?.user as any)?.uid || "",
+              addedAt: new Date(),
+              lastModified: new Date(),
+            };
+            addPersistedMovie(persistedMovie as any);
+          });
+        } else {
+          console.error("❌ Failed to save movies to Firestore");
+        }
+      }
+
+      if (tvLibrary && processedTvShows.length > 0) {
+        const tvResultIndex =
+          movieLibrary && processedMovies.length > 0 ? 1 : 0;
+        if (results[tvResultIndex]) {
+          console.log("✅ TV shows saved successfully to Firestore");
+
+          // Update local store with persisted TV shows
+          processedTvShows.forEach((tvShow) => {
+            const persistedTvShow = {
+              ...tvShow,
+              userId: (session?.user as any)?.uid || "",
+              addedAt: new Date(),
+              lastModified: new Date(),
+            };
+            addPersistedTvShow(persistedTvShow as any);
+          });
+        } else {
+          console.error("❌ Failed to save TV shows to Firestore");
+        }
+      }
+
+      console.log("Background save process completed");
+    } catch (error) {
+      console.error("❌ Error in background save process:", error);
+    } finally {
+      setIsSaving(false);
     }
   };
 

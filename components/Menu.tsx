@@ -14,8 +14,10 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   removeMovieFromUserCollection,
-  removeTvShowFromUserCollection,
+  removeAllEpisodesOfTvShowFromUserCollection,
 } from "../utils/dataPersistence";
+import MovieFiles from "./props/MovieFiles";
+import TvFiles from "./props/TvFiles";
 
 function Menu() {
   const router = useRouter();
@@ -66,12 +68,27 @@ function Menu() {
         )
       );
 
-      // Then remove from local state
+      // Remove from local state
       persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
+
+      // Clear global MovieFiles array
+      MovieFiles.length = 0;
+
+      // Clear from IndexedDB (if files exist)
+      const { filePersistence } = await import("../utils/filePersistence");
+      await Promise.all(
+        persistedMovies
+          .filter(movie => movie.fileId)
+          .map(movie => filePersistence.deleteFile(movie.fileId!))
+      );
+
+      console.log(`Deleted ${persistedMovies.length} movies from all storage layers`);
     } catch (error) {
       console.error("Failed to delete movies from Firebase:", error);
       // Still remove from local state as fallback
       persistedMovies.forEach((movie) => removePersistedMovie(movie.tmdbId));
+      // Clear global array even on error
+      MovieFiles.length = 0;
     }
   };
 
@@ -85,23 +102,41 @@ function Menu() {
     }
 
     try {
-      // Remove from Firebase first
+      // Get unique TMDB IDs from persisted TV shows
+      const uniqueTmdbIds = [...new Set(persistedTvShows.map(tv => tv.tmdbId))];
+
+      // Remove all episodes of each series from Firebase
       await Promise.all(
-        persistedTvShows.map((tvShow) =>
-          removeTvShowFromUserCollection(tvShow.tmdbId, userId)
+        uniqueTmdbIds.map((tmdbId) =>
+          removeAllEpisodesOfTvShowFromUserCollection(tmdbId, userId)
         )
       );
 
-      // Then remove from local state
+      // Remove from local state
       persistedTvShows.forEach((tvShow) =>
         removePersistedTvShow(tvShow.tmdbId)
       );
+
+      // Clear global TvFiles array
+      TvFiles.length = 0;
+
+      // Clear from IndexedDB (if files exist)
+      const { filePersistence } = await import("../utils/filePersistence");
+      await Promise.all(
+        persistedTvShows
+          .filter(tvShow => tvShow.fileId)
+          .map(tvShow => filePersistence.deleteFile(tvShow.fileId!))
+      );
+
+      console.log(`Deleted ${persistedTvShows.length} TV episodes from all storage layers`);
     } catch (error) {
       console.error("Failed to delete TV shows from Firebase:", error);
       // Still remove from local state as fallback
       persistedTvShows.forEach((tvShow) =>
         removePersistedTvShow(tvShow.tmdbId)
       );
+      // Clear global array even on error
+      TvFiles.length = 0;
     }
   };
 

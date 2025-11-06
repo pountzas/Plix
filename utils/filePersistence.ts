@@ -53,15 +53,12 @@ class FilePersistenceDB {
       const transaction = this.db!.transaction([this.storeName], "readwrite");
       const store = transaction.objectStore(this.storeName);
 
-      // Create blob URL for immediate use
-      const blobUrl = URL.createObjectURL(file);
-
       const storedFile: StoredFile = {
         id: `${file.name}_${file.lastModified}_${file.size}`,
         fileName: file.name,
         file: file,
-        blob: file, // Store the file as blob
-        url: blobUrl,
+        blob: file, // Store the file as blob for on-demand URL creation
+        url: "", // Don't create blob URL during storage - create on-demand
         lastModified: file.lastModified,
         size: file.size,
       };
@@ -69,7 +66,7 @@ class FilePersistenceDB {
       const request = store.put(storedFile);
 
       request.onsuccess = () => {
-        console.log(`File stored: ${file.name}`);
+        console.log(`File stored (no blob URL): ${file.name}`);
         resolve(storedFile.id);
       };
 
@@ -91,7 +88,7 @@ class FilePersistenceDB {
       request.onsuccess = () => {
         const storedFile = request.result;
         if (storedFile) {
-          // Always recreate blob URL since they don't persist across sessions
+          // Create blob URL on-demand from stored file
           storedFile.url = URL.createObjectURL(storedFile.blob);
           resolve(storedFile);
         } else {
@@ -116,7 +113,7 @@ class FilePersistenceDB {
 
       request.onsuccess = () => {
         const files = request.result as StoredFile[];
-        // Always recreate blob URLs since they don't persist across sessions
+        // Create blob URLs on-demand from stored files
         files.forEach((file) => {
           file.url = URL.createObjectURL(file.blob);
         });
