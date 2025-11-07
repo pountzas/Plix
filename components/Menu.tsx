@@ -156,7 +156,12 @@ function Menu() {
         >
           <MdMonitor className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
           <Activity mode={menuSize ? "hidden" : "visible"}>
-            <p>TV Shows ({persistedTvShows.length})</p>
+            <p>
+              TV Shows{" "}
+              <span className="text-gray-500 text-sm">
+                ({persistedTvShows.length})
+              </span>
+            </p>
           </Activity>
           <MdDelete
             onClick={deleteAllTvShows}
@@ -175,7 +180,11 @@ function Menu() {
         >
           <MdMusicNote className={`text-2xl mr-4 ${!menuSize && "mr-8"}`} />
           <Activity mode={menuSize ? "hidden" : "visible"}>
-            <p>Music ({persistedMusic.length})</p>
+            <p>Music{" "}
+              <span className="text-gray-500 text-sm">
+                ({persistedMusic.length})
+              </span>
+            </p>
           </Activity>
         </div>
       )} */}

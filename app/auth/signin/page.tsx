@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { getProviders, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -14,7 +14,9 @@ interface Provider {
 }
 
 export default function SignIn() {
-  const [providers, setProviders] = useState<Record<string, Provider> | null>(null);
+  const [providers, setProviders] = useState<Record<string, Provider> | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -25,7 +27,7 @@ export default function SignIn() {
   }, []);
 
   return (
-    <section className="bg-gray-800 min-h-[100vh]">
+    <section className="bg-gray-800 h-screen">
       <Header />
       <div className="flex flex-col items-center justify-center mt-40 text-center">
         <Image
@@ -37,19 +39,20 @@ export default function SignIn() {
         <p className="font-xs italic text-gray-200 pt-20">
           This is not a real App, it is built for educational purposes only.
         </p>
-        {providers && Object.values(providers).map((provider) => (
-          <div
-            className="flex flex-col items-center space-y-3 pt-5"
-            key={provider.name}
-          >
-            <button
-              className="bg-gray-300 rounded-2xl m-2 p-2"
-              onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+        {providers &&
+          Object.values(providers).map((provider) => (
+            <div
+              className="flex flex-col items-center space-y-3 pt-5"
+              key={provider.name}
             >
-              Sign in with {provider.name}
-            </button>
-          </div>
-        ))}
+              <button
+                className="bg-gray-300 rounded-2xl m-2 p-2"
+                onClick={() => signIn(provider.id, { callbackUrl: "/" })}
+              >
+                Sign in with {provider.name}
+              </button>
+            </div>
+          ))}
       </div>
     </section>
   );

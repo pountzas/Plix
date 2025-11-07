@@ -1,27 +1,32 @@
 interface TvFile {
-  id: number
-  name: string
-  episode?: any
-  tmdbId: number
-  adult?: boolean
-  backdrop_path: string
-  original_language: string
-  popularity: number
-  vote_average: number
-  vote_count: number
-  tmdbPoster: string
-  tmdbTitle: string
-  tmdbOverview: string
-  tmdbReleaseDate: string
-  tmdbRating: number
-  tmdbGenre: string[]
-  fileName: string
-  ObjUrl: string
-  folderPath: string
-  folderPath2: string
-  rootPath: string
+  name: string;
+  seasonNumber?: number;
+  episodeNumber?: number;
+  episodeTitle?: string;
+  tmdbId: number;
+  adult?: boolean;
+  backdrop_path: string;
+  original_language: string;
+  popularity: number;
+  vote_average: number;
+  vote_count: number;
+  tmdbPoster: string;
+  tmdbTitle: string;
+  tmdbOverview: string;
+  tmdbReleaseDate: string;
+  tmdbRating: number;
+  tmdbGenre: string[];
+  fileName: string;
+  ObjUrl: string;
+  folderPath: string;
+  folderPath2: string;
+  rootPath: string;
+  // Enhanced fields for file inventory
+  relatedFiles?: string[]; // All related files (videos + subtitles) for this episode
+  hasVideo?: boolean; // Whether this episode has video files
+  hasSubtitles?: boolean; // Whether this episode has subtitle files
 }
 
-const TvFiles: TvFile[] = []
+const TvFiles: TvFile[] = [];
 
-export default TvFiles
+export default TvFiles;

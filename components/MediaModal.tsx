@@ -14,9 +14,100 @@ import { useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import MovieFiles from "./props/MovieFiles";
 import TvFiles from "./props/TvFiles";
-import { searchMovies, searchTvShows } from "../utils/tmdbApi";
+import { MovieFile, TvFile } from "./props/types";
+import { cachedTmdbSearch } from "../utils/apiUtils";
 import { useApiErrorHandler } from "../hooks/useApiErrorHandler";
 import { useMediaPersistence } from "../hooks/useMediaPersistence";
+
+/**
+ * Extract TV show name, season, and episode information from filename
+ */
+function extractTvShowInfo(filename: string): {
+  name: string;
+  seasonNumber?: number;
+  episodeNumber?: number;
+  episodeTitle?: string;
+} {
+  // Remove file extension
+  const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+
+  // Various regex patterns for season/episode extraction
+  const patterns = [
+    // S01E01, s01e01, S1E1, s1e1
+    /^(.+?)[._\s-]+[Ss](\d{1,2})[Ee](\d{1,2})[._\s-]*(.*?)$/i,
+    // 1x01, 01x01
+    /^(.+?)[._\s-]+(\d{1,2})[xX](\d{1,2})[._\s-]*(.*?)$/i,
+    // Season 1 Episode 1, Season 01 Episode 01
+    /^(.+?)[._\s-]*[Ss]eason\s*(\d{1,2})[._\s-]*[Ee]pisode\s*(\d{1,2})[._\s-]*(.*?)$/i,
+    // 1.01, 01.01
+    /^(.+?)[._\s-]+(\d{1,2})\.(\d{1,2})[._\s-]*(.*?)$/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = nameWithoutExt.match(pattern);
+    if (match) {
+      const [, showName, seasonStr, episodeStr, episodeTitle] = match;
+      const seasonNumber = parseInt(seasonStr, 10);
+      const episodeNumber = parseInt(episodeStr, 10);
+
+      // Clean up the show name
+      const cleanName = showName
+        .replace(/[._]/g, " ") // Replace dots/underscores with spaces
+        .replace(/\s+/g, " ") // Normalize multiple spaces
+        .trim();
+
+      return {
+        name: cleanName,
+        seasonNumber,
+        episodeNumber,
+        episodeTitle: episodeTitle ? episodeTitle.trim() : undefined,
+      };
+    }
+  }
+
+  // Fallback: try to extract just season/episode info even if pattern doesn't match perfectly
+  const fallbackMatch = nameWithoutExt.match(
+    /(.+?)[._\s-]+(?:[Ss](\d{1,2})[Ee](\d{1,2})|(\d{1,2})[xX](\d{1,2}))[._\s-]*(.*?)$/i
+  );
+  if (fallbackMatch) {
+    const [, showName, s1, e1, s2, e2, episodeTitle] = fallbackMatch;
+    const seasonNumber = s1
+      ? parseInt(s1, 10)
+      : s2
+      ? parseInt(s2, 10)
+      : undefined;
+    const episodeNumber = e1
+      ? parseInt(e1, 10)
+      : e2
+      ? parseInt(e2, 10)
+      : undefined;
+
+    const cleanName = showName
+      .replace(/[._]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return {
+      name: cleanName,
+      seasonNumber,
+      episodeNumber,
+      episodeTitle: episodeTitle ? episodeTitle.trim() : undefined,
+    };
+  }
+
+  // Last resort: just clean the filename
+  const cleanName = nameWithoutExt
+    .replace(/[._]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    name: cleanName,
+  };
+}
+
+// Cache TMDB results to ensure consistency across episodes of the same show
+const tmdbShowCache = new Map<string, any>();
 
 function MediaModal() {
   const { data: session } = useSession();
@@ -43,7 +134,12 @@ function MediaModal() {
   } = useMediaPersistence();
 
   // Session store actions for uploaded files
-  const { addSessionMovie, addSessionTvShow } = useMediaStore();
+  const {
+    addSessionMovie,
+    addSessionTvShow,
+    addPersistedMovie,
+    addPersistedTvShow,
+  } = useMediaStore();
 
   const folderPickerRef = useRef<HTMLInputElement>(null);
 
@@ -75,22 +171,134 @@ function MediaModal() {
   const addFolderUrl = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
 
+    console.log("=== FOLDER SCAN DEBUG ===");
+    console.log(`Total files received: ${files?.length || 0}`);
+
     if (files) {
+      // Debug: Log all files received
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        console.log(`File ${i}: ${file.name}`, {
+          type: file.type,
+          size: file.size,
+          webkitRelativePath: (file as any).webkitRelativePath,
+          path: (file as any).path,
+          isVideo: file.type.includes("video"),
+          isDirectory: file.type === "" && file.size === 0,
+        });
+      }
+
       setIsProcessing(true);
       setIsSaving(false);
       setTotalFiles(files.length);
       setProcessedCount(0);
 
       // Arrays to collect processed media for batch saving
-      const processedMovies: any[] = [];
-      const processedTvShows: any[] = [];
+      const processedMovies: MovieFile[] = [];
+      const processedTvShows: TvFile[] = [];
 
+      // File inventory for TV series - tracks all files per series
+      const tvSeriesInventory: {
+        [seriesName: string]: {
+          tmdbData?: any;
+          files: {
+            [seasonEpisodeKey: string]: {
+              seasonNumber?: number;
+              episodeNumber?: number;
+              videoFiles: File[];
+              subtitleFiles: File[];
+              episodeTitle?: string;
+            };
+          };
+        };
+      } = {};
+
+      console.log(`Processing ${files.length} files...`);
+
+      // Phase 1: Create comprehensive file inventory for TV series
+      console.log("=== PHASE 1: FILE INVENTORY ===");
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Skip directories
+        if (file.type === "" && file.size === 0) continue;
+
+        // Check if this is a TV series file based on path structure
+        const relativePath = (file as any).webkitRelativePath || "";
+        if (
+          relativePath.includes("/series/") ||
+          relativePath.includes("\\series\\")
+        ) {
+          const tvShowInfo = extractTvShowInfo(file.name);
+
+          if (tvShowInfo.name) {
+            const seriesName = tvShowInfo.name;
+            const seasonEpisodeKey = `S${tvShowInfo.seasonNumber || 0}E${
+              tvShowInfo.episodeNumber || 0
+            }`;
+
+            // Initialize series inventory if not exists
+            if (!tvSeriesInventory[seriesName]) {
+              tvSeriesInventory[seriesName] = {
+                files: {},
+              };
+            }
+
+            // Initialize episode entry if not exists
+            if (!tvSeriesInventory[seriesName].files[seasonEpisodeKey]) {
+              tvSeriesInventory[seriesName].files[seasonEpisodeKey] = {
+                seasonNumber: tvShowInfo.seasonNumber,
+                episodeNumber: tvShowInfo.episodeNumber,
+                videoFiles: [],
+                subtitleFiles: [],
+                episodeTitle: tvShowInfo.episodeTitle,
+              };
+            }
+
+            // Add file to appropriate category
+            if (file.type.includes("video")) {
+              tvSeriesInventory[seriesName].files[
+                seasonEpisodeKey
+              ].videoFiles.push(file);
+            } else if (
+              file.name.toLowerCase().endsWith(".srt") ||
+              file.name.toLowerCase().endsWith(".vtt") ||
+              file.name.toLowerCase().endsWith(".sub") ||
+              file.name.toLowerCase().endsWith(".ass")
+            ) {
+              tvSeriesInventory[seriesName].files[
+                seasonEpisodeKey
+              ].subtitleFiles.push(file);
+            }
+
+            console.log(
+              `Inventoried: ${seriesName} - ${seasonEpisodeKey} - ${
+                file.name
+              } (${file.type || "subtitle"})`
+            );
+          }
+        }
+      }
+
+      console.log("TV Series Inventory:", tvSeriesInventory);
+
+      // Phase 2: Process movies and non-series TV files normally
+      console.log("=== PHASE 2: PROCESSING FILES ===");
       for (let i = 0; i < files.length; i++) {
         setProcessedCount(i + 1);
+        const file = files[i];
+
+        console.log(
+          `Processing file ${i + 1}/${files.length}: ${file.name} (type: ${
+            file.type
+          })`
+        );
+
+        // Process ALL files, not just videos - we need subtitles too for TV shows
         // find videos with type
-        if (files[i].type.includes("video")) {
+        if (file.type.includes("video")) {
           // regex files name without all characters after the year
-          const nameMatch = files[i].name.match(
+          const nameMatch = file.name.match(
             /^(?!\d\d?[ex]\d\d?)(?:\[(?:[-\w\s]+)*\] )?(.*?)[-_. ]?(?:[\{\(\[]?(?:dvdrip|[-._\b]ita|[-._\b]h264|x264|hdtv|hdtv-lol|web|proper|internal|[-._\b]eng|xvid| cd\d|dvdscr|\w{1,5}rip|divx|\d+p|\d{4}).*?)?\.([\w]{2,3})$/i
           );
           let name = nameMatch?.[1] || "";
@@ -99,13 +307,12 @@ function MediaModal() {
           if (movieLibrary) {
             if (name) {
               try {
-                const data = await searchMovies(name);
+                const data = await cachedTmdbSearch(name, "movie");
                 const tmdbId = data?.results[0]?.id;
 
                 if (tmdbId) {
                   const movieFile = {
                     name,
-                    id: i,
                     tmdbId,
                     adult: data.results[0].adult,
                     backdrop_path: data.results[0]?.backdrop_path,
@@ -152,69 +359,233 @@ function MediaModal() {
           }
 
           if (tvLibrary) {
-            if (files[i].type.includes("video")) {
-              // remove all after episode name
-              let name2 = name.match(
-                /^(.+?)[-. ]{0,3}s?(\d?\d)[ex](\d\d)[-. ]{0,3}(.*?)[-. ]?(?:.+)?$/gim
-              );
+            // For TV library, we handle processing differently - we process the inventory after this loop
+            // Individual file processing is skipped for TV series files (they're handled in Phase 3)
+            const relativePath = (file as any).webkitRelativePath || "";
+            if (
+              relativePath.includes("/series/") ||
+              relativePath.includes("\\series\\")
+            ) {
+              // Skip individual processing for series files - they'll be processed as a group
+              continue;
+            }
 
-              let episodeMatch = files[i].name.match(
-                /([Ss]?)([0-9]{1,2})([xXeE\.\-]?)([0-9]{1,2})/
-              );
+            // Handle non-series TV files normally (if any)
+            const tvShowInfo = extractTvShowInfo(files[i].name);
+            const showName = tvShowInfo.name;
 
-              let episode = episodeMatch?.[0] || "";
+            console.log(`Processing non-series TV file: ${files[i].name}`);
+            console.log(`Extracted info:`, tvShowInfo);
 
-              if (name2) {
-                const name2Str = JSON.stringify(name2);
+            // Use extracted show name for TMDB search
+            if (showName) {
+              try {
+                let tvShow = tmdbShowCache.get(showName.toLowerCase());
 
-                if (name2Str !== null) {
-                  const processedName = name2Str.replace(/[^\w\s]/gi, "");
-                  try {
-                    const data = await searchTvShows(processedName);
-                    const tmdbId = data.results[0]?.id;
+                if (!tvShow) {
+                  const data = await cachedTmdbSearch(showName, "tv");
+                  console.log(
+                    `TMDB search results for "${showName}":`,
+                    data.results?.length || 0,
+                    "results"
+                  );
 
-                    if (tmdbId) {
-                      const tvFile = {
-                        name: processedName,
-                        episode: episode,
-                        id: i,
-                        tmdbId,
-                        backdrop_path: data.results[0]?.backdrop_path,
-                        original_language: data.results[0]?.original_language,
-                        popularity: data.results[0]?.popularity,
-                        vote_average: data.results[0]?.vote_average,
-                        vote_count: data.results[0]?.vote_count,
-                        tmdbPoster: data.results[0]?.poster_path,
-                        tmdbTitle: data.results[0]?.name,
-                        tmdbOverview: data.results[0]?.overview,
-                        tmdbReleaseDate: data.results[0]?.first_air_date,
-                        tmdbRating: data.results[0]?.vote_average,
-                        tmdbGenre: data.results[0]?.genre_ids,
-                        fileName: files[i].name,
-                        ObjUrl: URL.createObjectURL(files[i]), // Blob URL for immediate playback only
-                        folderPath: files[i].webkitRelativePath,
-                        folderPath2: (files[i] as any).webkitdirectory,
-                        rootPath: (files[i] as any).path,
-                      };
-
-                      // Store original file for persistence
-                      setOriginalFiles(
-                        (prev) => new Map(prev.set(tvFile.fileName, files[i]))
-                      );
-
-                      // Add to local array for immediate UI feedback
-                      TvFiles.push(tvFile);
-                      // Add to session store for navigation
-                      addSessionTvShow(tvFile);
-                      // Collect for batch saving to Firebase
-                      processedTvShows.push(tvFile);
-                    }
-                  } catch (error) {
-                    handleApiError(error);
+                  if (data.results[0]) {
+                    tvShow = data.results[0];
+                    tmdbShowCache.set(showName.toLowerCase(), tvShow);
+                    console.log(
+                      `Cached TMDB show: "${tvShow.name}" (ID: ${tvShow.id})`
+                    );
                   }
+                } else {
+                  console.log(
+                    `Using cached TMDB show: "${tvShow.name}" (ID: ${tvShow.id})`
+                  );
                 }
+
+                // Only proceed if we found a valid TV show match
+                if (tvShow) {
+                  const tvFile = {
+                    name: showName,
+                    seasonNumber: tvShowInfo.seasonNumber,
+                    episodeNumber: tvShowInfo.episodeNumber,
+                    episodeTitle: tvShowInfo.episodeTitle,
+                    tmdbId: tvShow.id,
+                    backdrop_path: tvShow.backdrop_path,
+                    original_language: tvShow.original_language,
+                    popularity: tvShow.popularity,
+                    vote_average: tvShow.vote_average,
+                    vote_count: tvShow.vote_count,
+                    tmdbPoster: tvShow.poster_path,
+                    tmdbTitle: tvShow.name,
+                    tmdbOverview: tvShow.overview,
+                    tmdbReleaseDate: tvShow.first_air_date,
+                    tmdbRating: tvShow.vote_average,
+                    tmdbGenre: tvShow.genre_ids,
+                    fileName: file.name,
+                    ObjUrl: URL.createObjectURL(file), // Blob URL for immediate playback only
+                    folderPath: (file as any).webkitRelativePath,
+                    folderPath2: (file as any).webkitdirectory,
+                    rootPath: (file as any).path,
+                    // Enhanced fields for file inventory (single file case)
+                    relatedFiles: [file.name],
+                    hasVideo: file.type.includes("video"),
+                    hasSubtitles:
+                      !file.type.includes("video") &&
+                      (file.name.toLowerCase().endsWith(".srt") ||
+                        file.name.toLowerCase().endsWith(".vtt") ||
+                        file.name.toLowerCase().endsWith(".sub") ||
+                        file.name.toLowerCase().endsWith(".ass")),
+                  };
+
+                  // Store original file for persistence
+                  setOriginalFiles(
+                    (prev) => new Map(prev.set(tvFile.fileName, file))
+                  );
+
+                  // Add to local array for immediate UI feedback
+                  TvFiles.push(tvFile);
+                  // Add to session store for navigation
+                  addSessionTvShow(tvFile);
+                  // Collect for batch saving to Firebase
+                  processedTvShows.push(tvFile);
+
+                  console.log(
+                    `Successfully processed non-series episode: S${
+                      tvShowInfo.seasonNumber || "?"
+                    }E${tvShowInfo.episodeNumber || "?"} - ${tvFile.fileName}`
+                  );
+                } else {
+                  console.log(`No TMDB results found for show: "${showName}"`);
+                }
+              } catch (error) {
+                console.error(
+                  `Error processing TV file ${files[i].name}:`,
+                  error
+                );
+                handleApiError(error);
               }
             }
+          }
+        }
+      }
+
+      // Phase 3: Process TV series inventory
+      console.log("=== PHASE 3: PROCESSING TV SERIES INVENTORY ===");
+      if (tvLibrary) {
+        for (const [seriesName, seriesData] of Object.entries(
+          tvSeriesInventory
+        )) {
+          console.log(`Processing series: ${seriesName}`);
+
+          try {
+            // Get TMDB data for this series
+            let tvShow = tmdbShowCache.get(seriesName.toLowerCase());
+
+            if (!tvShow) {
+              const data = await cachedTmdbSearch(seriesName, "tv");
+              console.log(
+                `TMDB search results for "${seriesName}":`,
+                data.results?.length || 0,
+                "results"
+              );
+
+              if (data.results && data.results[0]) {
+                tvShow = data.results[0];
+                tmdbShowCache.set(seriesName.toLowerCase(), tvShow);
+                console.log(
+                  `Cached TMDB show: "${tvShow.name}" (ID: ${tvShow.id})`
+                );
+              }
+            } else {
+              console.log(
+                `Using cached TMDB show: "${tvShow.name}" (ID: ${tvShow.id})`
+              );
+            }
+
+            if (tvShow) {
+              // Store TMDB data in inventory
+              seriesData.tmdbData = tvShow;
+
+              // Process each episode that has files
+              for (const [seasonEpisodeKey, episodeData] of Object.entries(
+                seriesData.files
+              )) {
+                console.log(
+                  `Processing episode: ${seasonEpisodeKey} for ${seriesName}`
+                );
+
+                // Create a TvFile record for this episode
+                // Use the first video file as the primary file, or first subtitle file if no video
+                const primaryFile =
+                  episodeData.videoFiles.length > 0
+                    ? episodeData.videoFiles[0]
+                    : episodeData.subtitleFiles[0];
+
+                if (primaryFile) {
+                  // Collect all related filenames
+                  const allRelatedFilenames = [
+                    ...episodeData.videoFiles.map((f) => f.name),
+                    ...episodeData.subtitleFiles.map((f) => f.name),
+                  ];
+
+                  const tvFile = {
+                    name: seriesName,
+                    seasonNumber: episodeData.seasonNumber,
+                    episodeNumber: episodeData.episodeNumber,
+                    episodeTitle: episodeData.episodeTitle,
+                    tmdbId: tvShow.id,
+                    backdrop_path: tvShow.backdrop_path,
+                    original_language: tvShow.original_language,
+                    popularity: tvShow.popularity,
+                    vote_average: tvShow.vote_average,
+                    vote_count: tvShow.vote_count,
+                    tmdbPoster: tvShow.poster_path,
+                    tmdbTitle: tvShow.name,
+                    tmdbOverview: tvShow.overview,
+                    tmdbReleaseDate: tvShow.first_air_date,
+                    tmdbRating: tvShow.vote_average,
+                    tmdbGenre: tvShow.genre_ids,
+                    fileName: primaryFile.name,
+                    ObjUrl: URL.createObjectURL(primaryFile), // Blob URL for immediate playback only
+                    folderPath: (primaryFile as any).webkitRelativePath,
+                    folderPath2: (primaryFile as any).webkitdirectory,
+                    rootPath: (primaryFile as any).path,
+                    // Enhanced fields for file inventory
+                    relatedFiles: allRelatedFilenames,
+                    hasVideo: episodeData.videoFiles.length > 0,
+                    hasSubtitles: episodeData.subtitleFiles.length > 0,
+                  };
+
+                  // Store all related files for persistence
+                  const allRelatedFiles = [
+                    ...episodeData.videoFiles,
+                    ...episodeData.subtitleFiles,
+                  ];
+                  allRelatedFiles.forEach((file) => {
+                    setOriginalFiles(
+                      (prev) => new Map(prev.set(file.name, file))
+                    );
+                  });
+
+                  // Add to local array for immediate UI feedback
+                  TvFiles.push(tvFile);
+                  // Add to session store for navigation
+                  addSessionTvShow(tvFile);
+                  // Collect for batch saving to Firebase
+                  processedTvShows.push(tvFile);
+
+                  console.log(
+                    `Successfully processed episode: ${seasonEpisodeKey} - ${tvFile.fileName} (${episodeData.videoFiles.length} videos, ${episodeData.subtitleFiles.length} subtitles)`
+                  );
+                }
+              }
+            } else {
+              console.log(`No TMDB results found for series: "${seriesName}"`);
+            }
+          } catch (error) {
+            console.error(`Error processing series ${seriesName}:`, error);
+            handleApiError(error);
           }
         }
       }
@@ -230,7 +601,7 @@ function MediaModal() {
           const savePromises = [];
           if (processedMovies.length > 0) {
             // Associate original files with processed movies
-            const moviesWithFiles = processedMovies.map((movie) => ({
+            const moviesWithFiles = processedMovies.map((movie: MovieFile) => ({
               movieFile: movie,
               originalFile: originalFiles.get(movie.fileName),
             }));
@@ -238,7 +609,7 @@ function MediaModal() {
           }
           if (processedTvShows.length > 0) {
             // Associate original files with processed TV shows
-            const tvShowsWithFiles = processedTvShows.map((tvShow) => ({
+            const tvShowsWithFiles = processedTvShows.map((tvShow: TvFile) => ({
               tvFile: tvShow,
               originalFile: originalFiles.get(tvShow.fileName),
             }));
@@ -251,36 +622,39 @@ function MediaModal() {
           console.log(
             `Saved ${processedMovies.length} movies and ${processedTvShows.length} TV shows to collection`
           );
+          console.log(
+            "TV shows saved:",
+            processedTvShows.map((tv) => ({
+              name: tv.name,
+              season: tv.seasonNumber,
+              episode: tv.episodeNumber,
+              file: tv.fileName,
+            }))
+          );
 
-          // Update persisted data in store
+          // Update persisted data in store using proper actions
           if (processedMovies.length > 0) {
-            const { setPersistedMovies, persistedMovies } =
-              useMediaStore.getState();
-            const updatedMovies = [
-              ...persistedMovies,
-              ...processedMovies.map((movie) => ({
+            processedMovies.forEach((movie: MovieFile) => {
+              const persistedMovie = {
                 ...movie,
                 userId: (session?.user as any)?.uid || "",
                 addedAt: new Date(),
                 lastModified: new Date(),
-              })),
-            ];
-            setPersistedMovies(updatedMovies);
+              };
+              addPersistedMovie(persistedMovie as any); // Type assertion needed
+            });
           }
 
           if (processedTvShows.length > 0) {
-            const { setPersistedTvShows, persistedTvShows } =
-              useMediaStore.getState();
-            const updatedTvShows = [
-              ...persistedTvShows,
-              ...processedTvShows.map((tvShow) => ({
+            processedTvShows.forEach((tvShow: TvFile) => {
+              const persistedTvShow = {
                 ...tvShow,
                 userId: (session?.user as any)?.uid || "",
                 addedAt: new Date(),
                 lastModified: new Date(),
-              })),
-            ];
-            setPersistedTvShows(updatedTvShows);
+              };
+              addPersistedTvShow(persistedTvShow as any); // Type assertion needed
+            });
           }
         } catch (error) {
           console.error("Error saving media to collection:", error);
@@ -304,10 +678,10 @@ function MediaModal() {
   };
 
   const handleTvMedia = () => {
-    // !tvLibrary && setTypeSection(false),
-    //   setFolderLoadSection(true),
-    //   setTvLibrary(true),
-    //   setMovieLibrary(false);
+    !tvLibrary && setTypeSection(false);
+    setFolderLoadSection(true);
+    setTvLibrary(true);
+    setMovieLibrary(false);
   };
 
   const handleOk = () => {
@@ -453,12 +827,12 @@ function MediaModal() {
                       {isSaving
                         ? "SAVING TO COLLECTION..."
                         : isProcessing
-                        ? "PROCESSING..."
-                        : "BROWSE FOR MEDIA FOLDER"}
+                        ? `PROCESSING... (${processedCount}/${totalFiles})`
+                        : "SELECT FOLDER"}
                     </button>
 
                     {isProcessing && (
-                      <div className="mt-4 space-y-2">
+                      <div className="mt-4 space-y-2 pr-4">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-300">
                             Processing files...
@@ -487,7 +861,7 @@ function MediaModal() {
                 <div></div>
               </div>
             </div>
-            <div className="flex items-center justify-end py-2 pr-2 space-x-2 bg-gray-800">
+            <div className="flex items-center justify-end py-2 pr-4 space-x-4 bg-gray-800">
               {/* modal buttons */}
               <button
                 className="p-2 bg-gray-700 rounded-md"

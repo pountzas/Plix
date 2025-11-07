@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -16,7 +16,7 @@ import { FiActivity, FiTool, FiCast, FiSearch } from "react-icons/fi";
 import { BsPersonCircle } from "react-icons/bs";
 
 interface SearchResult {
-  id: number;
+  tmdbId: number;
   name: string;
   tmdbPoster: string;
   tmdbTitle: string;
@@ -44,7 +44,7 @@ function Header() {
 
   const openMedia = (mediaId: number) => {
     const media = searchResults.filter((movie) => {
-      return movie.id === mediaId;
+      return movie.tmdbId === mediaId;
     });
     setMediaItemActive(true);
     Object.assign(MediaItemProps, media[0]);
@@ -126,8 +126,8 @@ function Header() {
               <ul className="absolute z-30 w-full mt-2 border border-gray-800 rounded top-8 left-20">
                 {searchResults.map((result) => (
                   <li
-                    onClick={() => openMedia(result.id)}
-                    key={result.id}
+                    onClick={() => openMedia(result.tmdbId)}
+                    key={result.tmdbId}
                     className="cursor-pointer flex items-center space-x-4 hover:bg-[#232B35] bg-[#333A44] rounded py-1 px-4 font-semibold text-gray-200"
                   >
                     <Image
