@@ -11,7 +11,7 @@
   "dependencies": {
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
-    "next": "^16.4.1",
+    "next": "16.4.4",
     "next-auth": "^4.24.15",
     "rc-slider": "^10.0.0",
     "react": "19.2.3",
@@ -27,7 +27,7 @@
     "@types/react-dom": "19.2.3",
     "autoprefixer": "^10.4.2",
     "eslint": "^9.15.0",
-    "eslint-config-next": "^16.4.1",
+    "eslint-config-next": "16.4.4",
     "postcss": "8.5.25",
     "tailwind-scrollbar": "^3.1.0",
     "tailwind-scrollbar-hide": "^1.1.7",
