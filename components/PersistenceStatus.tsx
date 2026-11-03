@@ -17,37 +17,36 @@ export function PersistenceStatus() {
     clearPersistenceError
   } = useMediaPersistence()
 
-  // State to control notification visibility with auto-dismiss
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [showError, setShowError] = useState(false)
+  const [dismissedSuccessAt, setDismissedSuccessAt] = useState<number | null>(null)
+  const [dismissedError, setDismissedError] = useState<string | null>(null)
 
-  // Auto-dismiss logic for success notifications (3 seconds)
+  const successActive = Boolean(
+    lastSynced && !isLoading && !isSaving && !persistenceError
+  )
+  const successAt = lastSynced?.getTime() ?? null
+  if (!successActive && dismissedSuccessAt != null) {
+    setDismissedSuccessAt(null)
+  }
+  if (persistenceError == null && dismissedError != null) {
+    setDismissedError(null)
+  }
+
+  const showSuccess = successActive && successAt !== dismissedSuccessAt
+  const showError = Boolean(persistenceError) && persistenceError !== dismissedError
+
   useEffect(() => {
-    if (lastSynced && !isLoading && !isSaving && !persistenceError) {
-      setShowSuccess(true)
-      const timer = setTimeout(() => {
-        setShowSuccess(false)
-      }, 3000) // 3 seconds
+    if (!successActive || successAt == null) return
+    const timer = setTimeout(() => setDismissedSuccessAt(successAt), 3000)
+    return () => clearTimeout(timer)
+  }, [successActive, successAt])
 
-      return () => clearTimeout(timer)
-    } else {
-      setShowSuccess(false)
-    }
-  }, [lastSynced, isLoading, isSaving, persistenceError])
-
-  // Auto-dismiss logic for error notifications (10 seconds)
   useEffect(() => {
-    if (persistenceError) {
-      setShowError(true)
-      const timer = setTimeout(() => {
-        setShowError(false)
-        clearPersistenceError() // Also clear the error state
-      }, 10000) // 10 seconds
-
-      return () => clearTimeout(timer)
-    } else {
-      setShowError(false)
-    }
+    if (!persistenceError) return
+    const timer = setTimeout(() => {
+      setDismissedError(persistenceError)
+      clearPersistenceError()
+    }, 10000)
+    return () => clearTimeout(timer)
   }, [persistenceError, clearPersistenceError])
 
   // Don't show anything if user is not authenticated
@@ -84,7 +83,7 @@ export function PersistenceStatus() {
               </div>
               <button
                 onClick={() => {
-                  setShowError(false)
+                  if (persistenceError) setDismissedError(persistenceError)
                   clearPersistenceError()
                 }}
                 className="text-xs underline hover:no-underline mt-2 opacity-75 hover:opacity-100"
