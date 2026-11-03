@@ -100,8 +100,7 @@ function MediaCard({
 
   const press = () => {};
 
-  // Fallback UI for when image is not available or fails to load
-  const ImageFallback = () => {
+  const renderImageFallback = () => {
     const height = parseInt(SliderProps[sliderValue]["height"]);
     const width = parseInt(SliderProps[sliderValue]["width"]);
 
@@ -153,7 +152,7 @@ function MediaCard({
               onError={handleImageError}
             />
           ) : (
-            <ImageFallback />
+            renderImageFallback()
           )}
         </div>
       </div>
