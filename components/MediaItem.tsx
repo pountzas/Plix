@@ -104,24 +104,6 @@ function MediaItem() {
     router.push(`/person/${personId}`);
   };
 
-  useEffect(() => {
-    getMediaDetails();
-    setMenuSize(menuSize);
-    setBackgroundImageUrl(MediaItemProps.backdrop_path || "");
-    setImageVisible(true);
-
-    // Load subtitles for the video
-    const videoPath = MediaItemProps.ObjUrl || MediaItemProps.fileName;
-    if (videoPath) {
-      loadSubtitles(videoPath);
-    }
-
-    setTimeout(() => {
-      setCastVisible(true);
-      setCrew(true);
-    }, 500);
-  }, [menuSize, loadSubtitles]);
-
   const getMediaDetails = async () => {
     if (MediaItemProps.tmdbId) {
       try {
@@ -157,6 +139,24 @@ function MediaItem() {
       }
     }
   };
+
+  useEffect(() => {
+    getMediaDetails();
+    setMenuSize(menuSize);
+    setBackgroundImageUrl(MediaItemProps.backdrop_path || "");
+    setImageVisible(true);
+
+    // Load subtitles for the video
+    const videoPath = MediaItemProps.ObjUrl || MediaItemProps.fileName;
+    if (videoPath) {
+      loadSubtitles(videoPath);
+    }
+
+    setTimeout(() => {
+      setCastVisible(true);
+      setCrew(true);
+    }, 500);
+  }, [menuSize, loadSubtitles]);
 
   const handleClose = () => {
     setMediaItemActive(false);

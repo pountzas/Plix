@@ -153,7 +153,12 @@ export default function MediaDetailPage({
   const handleCastMemberClick = (personId: number) => {
     router.push(`/person/${personId}`);
   };
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const validationError =
+    !mediaType || !id
+      ? `Missing required parameters: mediaType=${mediaType}, id=${id}`
+      : !["movie", "tv"].includes(mediaType)
+        ? `Invalid media type: ${mediaType}. Expected 'movie' or 'tv'`
+        : null;
 
   // Local episodes management (existing files)
   const [localEpisodesBySeason, setLocalEpisodesBySeason] = useState<{
@@ -215,25 +220,9 @@ export default function MediaDetailPage({
   };
 
   useEffect(() => {
-    // Validate required parameters
-    if (!mediaType || !id) {
-      setValidationError(
-        `Missing required parameters: mediaType=${mediaType}, id=${id}`
-      );
-      setLoading(false);
+    if (validationError) {
       return;
     }
-
-    if (!["movie", "tv"].includes(mediaType)) {
-      setValidationError(
-        `Invalid media type: ${mediaType}. Expected 'movie' or 'tv'`
-      );
-      setLoading(false);
-      return;
-    }
-
-    // Clear any previous validation errors
-    setValidationError(null);
 
     const fetchMediaDetails = async () => {
       try {

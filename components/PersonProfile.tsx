@@ -45,10 +45,6 @@ function PersonProfile({ personId }: PersonProfileProps) {
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
-  useEffect(() => {
-    fetchPersonData();
-  }, [personId]);
-
   const fetchPersonData = async () => {
     try {
       setLoading(true);
@@ -94,6 +90,10 @@ function PersonProfile({ personId }: PersonProfileProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPersonData();
+  }, [personId]);
 
   const handleBack = () => {
     router.back();
